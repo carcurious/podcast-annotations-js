@@ -8,9 +8,9 @@ A minimal JSON format for timestamped entity annotations on podcast and spoken m
 
 WebVTT tells you what was said. Podcast annotations tell you what was said *about*.
 
-Transcripts give you words and timestamps. But when a host mentions a 1969 Camaro at 0:45, a turbocharger at 2:00, or Carroll Shelby at 3:15, that meaning is invisible to apps. It's not structured, not linkable, and difficult to extract reliably after the fact.
+Transcripts give you words and timestamps. They usually do not tell an app that a host mentioned a 1969 Camaro at 0:45, switched to turbochargers at 2:00, or spent the next 30 seconds talking about Carroll Shelby. That meaning is present in the audio, but it is rarely available as structured data.
 
-The Podcast Annotation Format is a simple, open JSON spec for timestamped entity annotations on audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. Transcripts made podcasts searchable. Annotations make them understandable.
+The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is modest: a small file that lets players, search systems, and archives know what a moment in an episode is about.
 
 ### Design Principles
 
@@ -19,9 +19,16 @@ The Podcast Annotation Format is a simple, open JSON spec for timestamped entity
 - **Framework-agnostic.** Plain JSON. No JSON-LD, no XML, no runtime dependencies.
 - **Human-readable.** A developer should understand an annotation file without reading this spec.
 
+### Non-Goals
+
+- This is not a transcript format. Use WebVTT, SRT, or a transcript JSON format for spoken text.
+- This does not replace chapters. Chapters describe coarse segments; annotations describe specific references within them.
+- This does not require a fixed ontology. Recommended types exist for interoperability, but producers may extend the format.
+- This does not prescribe one UI. A player may render overlays, timelines, side panels, search results, or no direct UI at all.
+
 ## Prior Art & Inspiration
 
-Timestamped annotation on media is a proven pattern. It works, it scales, and podcasting is the missing piece.
+Timed context around media is already familiar to users. Podcasting has transcripts, chapters, and show notes, but it usually lacks a compact file for within-episode references.
 
 **Proven UX pattern:**
 - **VH1 Pop-Up Video.** The original mainstream example: timestamped contextual notes overlaid on media playback.
@@ -38,7 +45,7 @@ Timestamped annotation on media is a proven pattern. It works, it scales, and po
 - **Overcast.** Podcast-native precedent for structured metadata (Smart Speed, chapters, transcript sync) improving UX. Marco Arment's public discussion of DAI transcript synchronization informed this spec's approach to ad break alignment.
 - **Snipd.** A podcast app that lets listeners highlight and annotate moments for personal note-taking. Listener-side annotation on podcast audio, already in production. This spec makes the same capability possible as an open, shared layer rather than a closed, personal tool.
 
-Podcast audio already contains this information. What's missing is a way to represent it as structured data. This spec defines a format that makes it possible. While annotations can be derived from transcripts, precomputed annotations enable more accurate timing, higher-quality entity resolution, and consistent cross-platform behavior.
+Podcast audio already contains this information. This spec defines one way to represent it as structured data. While annotations can be derived from transcripts, precomputed annotations allow better timing, better entity resolution, and more consistent behavior across players and archives.
 
 ## Annotation Object
 
@@ -390,9 +397,9 @@ The full 113-annotation file is available at [`examples/everyday-driver-episode-
 
 ### Additional Examples
 
-Real-world annotation sets from published podcast episodes, showing the format across genres and production methods:
+Real-world annotation sets from published podcast episodes, showing the format across genres and how each file was assembled:
 
-| Example | Genre | Annotations | Source |
+| Example | Genre | Annotations | Assembly |
 |---------|-------|-------------|--------|
 | [`everyday-driver-episode-1013`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json) | Automotive review | 113 | AI-generated from transcript |
 | [`bat-podcast-just-back-from-japan`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/bat-podcast-just-back-from-japan.annotations.json) | Automotive auction | 21 | Converted from timestamped show notes |
@@ -400,10 +407,10 @@ Real-world annotation sets from published podcast episodes, showing the format a
 | [`lex-fridman-494-jensen-huang`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/lex-fridman-494-jensen-huang.annotations.json) | Tech/AI interview | 21 | Converted from timestamped show notes |
 | [`science-vs-artemis-moon`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-artemis-moon.annotations.json) | Science journalism | 6 | Converted from timestamped show notes |
 | [`science-vs-running`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-running.annotations.json) | Health/fitness | 5 | Converted from timestamped show notes |
-| [`tim-ferriss-770-elizabeth-gilbert`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/tim-ferriss-770-elizabeth-gilbert.annotations.json) | Creativity/self-help | 19 | Converted from timestamped show notes |
+| [`tim-ferriss-770-elizabeth-gilbert`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/tim-ferriss-770-elizabeth-gilbert.annotations.json) | Creativity/self-help | 25 | Converted from timestamped show notes |
 | [`higher-learning-coachella-bambaataa`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/higher-learning-coachella-bambaataa.annotations.json) | Culture/politics | 10 | Converted from timestamped show notes |
 
-### General Podcast (Interview)
+### Minimal Interview Example
 
 ```json
 {

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Podcast Annotation Format</title>
-  <meta name="description" content="An open format for structured podcast show notes — timestamped entities, topics, and links synced to audio playback.">
+  <meta name="description" content="An open format for structured podcast show notes: timestamped entities, topics, and links synced to audio playback.">
   <meta property="og:title" content="Podcast Annotation Format">
   <meta property="og:description" content="WebVTT tells you what was said. Podcast annotations tell you what was said about.">
   <meta property="og:type" content="website">
@@ -12,82 +12,838 @@
   <link rel="canonical" href="https://www.podcastannotation.org">
   <style>
     :root {
-      --text: #1a1a1a;
-      --muted: #555;
-      --border: #ddd;
-      --bg: #fff;
-      --code-bg: #f5f5f5;
-      --link: #1a6bc4;
-      --max-width: 720px;
+      --paper: #f5efe4;
+      --paper-strong: #efe5d5;
+      --ink: #1e1b18;
+      --muted: #6d6257;
+      --accent: #b94c35;
+      --accent-soft: rgba(185, 76, 53, 0.14);
+      --card: rgba(255, 251, 245, 0.78);
+      --line: rgba(30, 27, 24, 0.12);
+      --shadow: 0 20px 60px rgba(42, 24, 12, 0.10);
+      --max-page: 1180px;
+      --max-spec: 760px;
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 999px;
+      --ui-font: "Avenir Next", "Segoe UI", sans-serif;
+      --display-font: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --mono-font: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --text: #e0e0e0;
-        --muted: #999;
-        --border: #333;
-        --bg: #151515;
-        --code-bg: #1e1e1e;
-        --link: #5ba3e6;
-      }
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      color: var(--text);
-      background: var(--bg);
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(185, 76, 53, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(51, 94, 122, 0.12), transparent 24%),
+        linear-gradient(180deg, #f7f0e6 0%, #f3ecdf 44%, #f7f3eb 100%);
+      font-family: var(--ui-font);
       line-height: 1.65;
-      padding: 3rem 1.5rem 4rem;
-      max-width: var(--max-width);
+      padding: 32px 20px 80px;
+    }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .page {
+      max-width: var(--max-page);
       margin: 0 auto;
     }
-    h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
-    h2 { font-size: 1.35rem; margin-top: 2.5rem; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
-    h3 { font-size: 1.1rem; margin-top: 1.75rem; margin-bottom: 0.5rem; }
-    p { margin-bottom: 1rem; }
-    a { color: var(--link); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; }
-    li { margin-bottom: 0.35rem; }
-    code {
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: 0.875em;
-      background: var(--code-bg);
-      padding: 0.15em 0.35em;
-      border-radius: 3px;
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, rgba(255, 250, 244, 0.92), rgba(244, 234, 219, 0.84));
+      box-shadow: var(--shadow);
+      padding: 28px;
     }
-    pre {
-      background: var(--code-bg);
-      padding: 1rem;
-      border-radius: 6px;
-      overflow-x: auto;
-      margin-bottom: 1rem;
-      line-height: 1.45;
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -80px auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(185, 76, 53, 0.22), transparent 65%);
+      pointer-events: none;
     }
-    pre code { background: none; padding: 0; font-size: 0.825em; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.9rem; }
-    th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
-    th { font-weight: 600; }
-    blockquote {
-      border-left: 3px solid var(--border);
-      padding: 0.5rem 1rem;
-      margin-bottom: 1rem;
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.95fr);
+      gap: 26px;
+      align-items: start;
+    }
+    h1, h2, h3 {
+      margin: 0;
+      font-weight: 600;
+      line-height: 1.05;
+    }
+    h1 {
+      font-family: var(--display-font);
+      font-size: clamp(2.6rem, 5vw, 4.7rem);
+      max-width: 9ch;
+      margin-bottom: 14px;
+      letter-spacing: -0.03em;
+    }
+    .hero-copy p {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 62ch;
+      margin: 0 0 18px;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .button-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.62);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .button-link.primary {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #f8f3ea;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .stat-card, .panel, .example-card {
+      border: 1px solid var(--line);
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-md);
+    }
+    .stat-card {
+      padding: 14px 16px;
+    }
+    .stat-card strong {
+      display: block;
+      font-size: 1.6rem;
+      font-family: var(--display-font);
+    }
+    .stat-card span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .hero-panel {
+      padding: 18px;
+    }
+    .hero-panel p {
+      margin: 0;
       color: var(--muted);
     }
-    strong { font-weight: 600; }
-    em { font-style: italic; }
-    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
-    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; }
+    .panel-kicker {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .moment-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 180px;
+      gap: 16px;
+      align-items: start;
+      margin-top: 16px;
+    }
+    .moment-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+    .moment-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 12px;
+    }
+    .moment-card h2 {
+      font-family: var(--display-font);
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .moment-card p {
+      margin-bottom: 10px;
+    }
+    .moment-quote {
+      font-style: italic;
+      color: var(--muted);
+      border-left: 3px solid rgba(185, 76, 53, 0.25);
+      padding-left: 12px;
+    }
+    .moment-image {
+      height: 100%;
+      min-height: 170px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(185, 76, 53, 0.12), rgba(51, 94, 122, 0.14));
+    }
+    .moment-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .moment-image figcaption {
+      padding: 10px 12px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: rgba(255, 251, 245, 0.94);
+    }
+    .section {
+      margin-top: 28px;
+      padding: 24px;
+    }
+    .section h2 {
+      font-family: var(--display-font);
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      margin-bottom: 10px;
+    }
+    .section > p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+    .timeline-stage {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 253, 250, 0.86);
+      padding: 18px;
+    }
+    .timeline-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .timeline-track {
+      position: relative;
+      height: 78px;
+      border-radius: 14px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(236, 226, 211, 0.85)),
+        repeating-linear-gradient(90deg, transparent 0, transparent 11.5%, rgba(30, 27, 24, 0.04) 11.5%, rgba(30, 27, 24, 0.04) 12%);
+      overflow: hidden;
+      border: 1px solid rgba(30, 27, 24, 0.08);
+    }
+    .timeline-marker {
+      position: absolute;
+      top: 22px;
+      height: 34px;
+      border-radius: 8px;
+      opacity: 0.9;
+      background: #c97359;
+    }
+    .timeline-marker[data-type="car"] { background: #cf6b4f; }
+    .timeline-marker[data-type="concept"] { background: #4f7d8b; }
+    .timeline-marker[data-type="person"] { background: #856650; }
+    .timeline-marker[data-type="term"] { background: #a8813f; }
+    .timeline-marker[data-type="company"] { background: #5e6f48; }
+    .timeline-marker[data-type="part"] { background: #3f5968; }
+    .timeline-playhead {
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--ink);
+      left: 0;
+      box-shadow: 0 0 0 4px rgba(30, 27, 24, 0.08);
+      transition: left 240ms ease;
+    }
+    .timeline-playhead::before {
+      content: "";
+      position: absolute;
+      top: -7px;
+      left: -5px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--ink);
+    }
+    .moment-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .moment-button {
+      text-align: left;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.66);
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .moment-button:hover,
+    .moment-button.is-active {
+      transform: translateY(-1px);
+      border-color: rgba(185, 76, 53, 0.44);
+      background: rgba(255, 247, 241, 0.98);
+    }
+    .moment-time {
+      display: block;
+      font-family: var(--mono-font);
+      color: var(--accent);
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+    }
+    .chart {
+      display: grid;
+      gap: 12px;
+    }
+    .chart-row {
+      display: grid;
+      grid-template-columns: minmax(0, 300px) minmax(120px, 1fr) 120px;
+      gap: 14px;
+      align-items: center;
+    }
+    .chart-label {
+      display: grid;
+      gap: 2px;
+    }
+    .chart-label a {
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .chart-label span,
+    .chart-value span {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .chart-bar-wrap {
+      width: 100%;
+      height: 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(30, 27, 24, 0.08);
+      overflow: hidden;
+    }
+    .chart-bar {
+      height: 100%;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(90deg, #b94c35, #d18a63);
+    }
+    .chart-value {
+      font-family: var(--mono-font);
+      text-align: right;
+    }
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .example-card {
+      padding: 18px;
+    }
+    .example-card-header,
+    .example-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+    }
+    .example-card h3 {
+      font-size: 1.15rem;
+      font-family: var(--display-font);
+    }
+    .example-card p {
+      margin: 8px 0 12px;
+      color: var(--muted);
+      min-height: 2.8em;
+    }
+    .type-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .type-pill {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.72);
+      font-size: 0.82rem;
+    }
+    .example-link {
+      display: inline-block;
+      margin-top: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .spec-wrap {
+      margin-top: 28px;
+      padding: 30px;
+    }
+    #spec {
+      max-width: var(--max-spec);
+      margin: 0 auto;
+    }
+    #spec h1 {
+      font-size: 2.8rem;
+      margin-bottom: 0.5rem;
+    }
+    #spec h2 {
+      font-size: 1.55rem;
+      margin-top: 2.7rem;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--line);
+    }
+    #spec h3 {
+      font-size: 1.1rem;
+      margin-top: 1.8rem;
+      margin-bottom: 0.55rem;
+    }
+    #spec p, #spec ul, #spec ol, #spec table, #spec pre, #spec blockquote {
+      margin-bottom: 1rem;
+    }
+    #spec ul, #spec ol {
+      padding-left: 1.4rem;
+    }
+    #spec li {
+      margin-bottom: 0.35rem;
+    }
+    #spec code {
+      font-family: var(--mono-font);
+      font-size: 0.88em;
+      background: rgba(30, 27, 24, 0.05);
+      padding: 0.12em 0.35em;
+      border-radius: 4px;
+    }
+    #spec pre {
+      background: #1f1a17;
+      color: #f5efe4;
+      padding: 1rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      line-height: 1.45;
+    }
+    #spec pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    #spec table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    #spec th, #spec td {
+      text-align: left;
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    #spec blockquote {
+      margin-left: 0;
+      padding-left: 1rem;
+      border-left: 3px solid rgba(185, 76, 53, 0.3);
+      color: var(--muted);
+    }
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    @media (max-width: 900px) {
+      .hero-grid,
+      .moment-shell {
+        grid-template-columns: 1fr;
+      }
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+      .chart-row {
+        grid-template-columns: 1fr;
+      }
+      .chart-value {
+        text-align: left;
+      }
+    }
+    @media (max-width: 680px) {
+      body {
+        padding: 18px 14px 60px;
+      }
+      .hero,
+      .section,
+      .spec-wrap {
+        padding: 18px;
+      }
+      h1 {
+        max-width: none;
+      }
+    }
   </style>
 </head>
 <body>
-  <article id="spec">
+  <div class="page">
+    <section class="hero">
+      <div class="eyebrow">Podcast Annotation Format</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>A small file for what a podcast moment is about.</h1>
+          <p>WebVTT gives you the words. An annotation set gives you the entities, topics, links, and timing needed to build overlays, searchable archives, timelines, and richer show notes.</p>
+          <div class="hero-actions">
+            <a class="button-link primary" href="#demo">See the timeline demo</a>
+            <a class="button-link" href="#spec">Read the spec</a>
+          </div>
+          <div class="stats-row">
+            <div class="stat-card">
+              <strong>8</strong>
+              <span>example files in the repo</span>
+            </div>
+            <div class="stat-card">
+              <strong>217</strong>
+              <span>annotations across the corpus</span>
+            </div>
+            <div class="stat-card">
+              <strong>7</strong>
+              <span>entity and topic types used</span>
+            </div>
+          </div>
+        </div>
+        <aside class="hero-panel panel">
+          <div class="panel-kicker">Corpus Snapshot</div>
+          <p><strong>Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013</strong> is the densest example in this repo at 1.16 annotations per minute.</p>
+          <div class="type-pill-row" style="margin-top:16px;">
+            <span class="type-pill">car <strong>102</strong></span><span class="type-pill">term <strong>8</strong></span><span class="type-pill">part <strong>1</strong></span><span class="type-pill">company <strong>1</strong></span>
+          </div>
+          <p style="margin-top:14px;">The examples already span automotive, science, business history, culture, politics, and interview formats, which is enough to show the format is not tied to one content style.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section panel" id="demo">
+      <div class="panel-kicker">Featured Example</div>
+      <h2>What a player can render from one annotation file</h2>
+      <p>The preview below uses <code>everyday-driver-episode-1013.annotations.json</code>. Click a moment to move the playhead and inspect the structured payload behind that timestamp.</p>
+      <div class="timeline-stage">
+        <div class="timeline-meta">
+          <span>Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013</span>
+          <span>113 annotations across 1:37:04</span>
+        </div>
+        <div class="timeline-track">
+          <span class="timeline-marker" data-type="car" style="left:0.91%;width:0.45%" title="Honda Prelude (0:53)"></span><span class="timeline-marker" data-type="car" style="left:1.41%;width:0.45%" title="Tesla Model Y (1:21)"></span><span class="timeline-marker" data-type="part" style="left:2.49%;width:0.45%" title="solenoid handles (2:25)"></span><span class="timeline-marker" data-type="car" style="left:2.66%;width:0.45%" title="Chevrolet Corvette (2:34)"></span><span class="timeline-marker" data-type="car" style="left:5.42%;width:0.45%" title="Nissan GT-R (5:15)"></span><span class="timeline-marker" data-type="car" style="left:5.88%;width:0.45%" title="Nissan Leaf (5:42)"></span><span class="timeline-marker" data-type="company" style="left:13.06%;width:0.45%" title="FCP Euro (12:40)"></span><span class="timeline-marker" data-type="term" style="left:13.24%;width:0.45%" title="OEM parts (12:50)"></span><span class="timeline-marker" data-type="term" style="left:13.56%;width:0.45%" title="lifetime replacement guarantee (13:09)"></span><span class="timeline-marker" data-type="term" style="left:13.59%;width:0.45%" title="consumables (13:11)"></span><span class="timeline-marker" data-type="term" style="left:15.42%;width:0.45%" title="2JZ engine (14:58)"></span><span class="timeline-marker" data-type="car" style="left:15.42%;width:0.45%" title="Toyota Supra (14:58)"></span><span class="timeline-marker" data-type="car" style="left:16.89%;width:0.45%" title="BMW Z4 (16:23)"></span><span class="timeline-marker" data-type="car" style="left:16.97%;width:0.45%" title="Toyota GR86 (16:28)"></span><span class="timeline-marker" data-type="car" style="left:17.24%;width:0.45%" title="Acura NSX (16:44)"></span><span class="timeline-marker" data-type="term" style="left:17.64%;width:0.45%" title="hybrid technology (17:07)"></span><span class="timeline-marker" data-type="term" style="left:17.64%;width:0.45%" title="all-wheel drive (17:07)"></span><span class="timeline-marker" data-type="car" style="left:18.36%;width:0.45%" title="Lotus Amira (17:49)"></span><span class="timeline-marker" data-type="term" style="left:18.39%;width:0.45%" title="mid-engine (17:51)"></span><span class="timeline-marker" data-type="term" style="left:18.44%;width:0.45%" title="manual transmission (17:54)"></span><span class="timeline-marker" data-type="car" style="left:18.48%;width:0.45%" title="Porsche 918 Spyder (17:56)"></span><span class="timeline-marker" data-type="car" style="left:19.43%;width:0.45%" title="Honda Accord (18:51)"></span><span class="timeline-marker" data-type="car" style="left:20.30%;width:0.45%" title="Audi R8 (19:42)"></span><span class="timeline-marker" data-type="car" style="left:21.12%;width:0.45%" title="Honda Insight (20:30)"></span><span class="timeline-marker" data-type="car" style="left:21.16%;width:0.45%" title="Honda Crz (20:32)"></span><span class="timeline-marker" data-type="car" style="left:21.44%;width:0.45%" title="Honda Nsx (20:48)"></span><span class="timeline-marker" data-type="concept" style="left:21.86%;width:0.45%" title="full EV (21:13)"></span><span class="timeline-marker" data-type="car" style="left:22.61%;width:0.45%" title="Aston Martin DB5 (21:56)"></span><span class="timeline-marker" data-type="car" style="left:22.71%;width:0.45%" title="Tesla 63 Model (22:02)"></span><span class="timeline-marker" data-type="car" style="left:22.92%;width:0.45%" title="Ford Edge (22:14)"></span><span class="timeline-marker" data-type="car" style="left:22.96%;width:0.45%" title="Aston Martin Vantage (22:17)"></span><span class="timeline-marker" data-type="car" style="left:23.47%;width:0.45%" title="Aston Valkyries (22:46)"></span><span class="timeline-marker" data-type="car" style="left:23.50%;width:0.45%" title="Aston Martin Valhalla (22:48)"></span><span class="timeline-marker" data-type="car" style="left:23.72%;width:0.45%" title="Audi Quattro (23:01)"></span><span class="timeline-marker" data-type="car" style="left:24.70%;width:0.45%" title="BMW Z8 (23:58)"></span><span class="timeline-marker" data-type="car" style="left:24.70%;width:0.45%" title="Alpina Z8 (23:58)"></span><span class="timeline-marker" data-type="car" style="left:25.30%;width:0.45%" title="BMW M5 (24:33)"></span><span class="timeline-marker" data-type="car" style="left:26.16%;width:0.45%" title="Chevrolet Blazer (25:23)"></span><span class="timeline-marker" data-type="car" style="left:26.97%;width:0.45%" title="Ford F-150 Raptor (26:11)"></span><span class="timeline-marker" data-type="car" style="left:27.04%;width:0.45%" title="Ford Bronco (26:15)"></span><span class="timeline-marker" data-type="car" style="left:27.21%;width:0.45%" title="Chevrolet Camaro (26:24)"></span><span class="timeline-marker" data-type="car" style="left:29.20%;width:0.45%" title="Dodge Charger Daytona (28:20)"></span><span class="timeline-marker" data-type="car" style="left:29.37%;width:0.45%" title="Dodge Challenger (28:30)"></span><span class="timeline-marker" data-type="car" style="left:29.50%;width:0.45%" title="Porsche 928 (28:38)"></span><span class="timeline-marker" data-type="car" style="left:30.88%;width:0.45%" title="Honda S2000 (29:58)"></span><span class="timeline-marker" data-type="car" style="left:31.19%;width:0.45%" title="Toyota Prius (30:16)"></span><span class="timeline-marker" data-type="car" style="left:31.58%;width:0.45%" title="Hyundai Veloster N (30:39)"></span><span class="timeline-marker" data-type="car" style="left:33.50%;width:0.45%" title="Jaguar XKSS (32:31)"></span><span class="timeline-marker" data-type="car" style="left:34.31%;width:0.45%" title="Jeep Wrangler (33:18)"></span><span class="timeline-marker" data-type="car" style="left:35.65%;width:0.45%" title="Oldsmobile Intrigues (34:36)"></span><span class="timeline-marker" data-type="car" style="left:36.15%;width:0.45%" title="Volkswagen Bora (35:05)"></span><span class="timeline-marker" data-type="car" style="left:36.59%;width:0.45%" title="Maserati MC20 (35:31)"></span><span class="timeline-marker" data-type="car" style="left:36.74%;width:0.45%" title="Mazda Rx7 (35:40)"></span><span class="timeline-marker" data-type="car" style="left:37.80%;width:0.45%" title="Mercedes-Benz SLK (36:41)"></span><span class="timeline-marker" data-type="car" style="left:38.71%;width:0.45%" title="Mitsubishi Outlanders (37:34)"></span><span class="timeline-marker" data-type="car" style="left:38.86%;width:0.45%" title="Mitsubishi Eclipse Cross (37:43)"></span><span class="timeline-marker" data-type="car" style="left:41.03%;width:0.45%" title="Alfa Romeo Spider (39:49)"></span><span class="timeline-marker" data-type="car" style="left:41.07%;width:0.45%" title="Mazda Miata (39:52)"></span><span class="timeline-marker" data-type="car" style="left:41.32%;width:0.45%" title="Fiat 124 (40:06)"></span><span class="timeline-marker" data-type="car" style="left:41.62%;width:0.45%" title="Mazda Mx5 (40:24)"></span><span class="timeline-marker" data-type="car" style="left:42.84%;width:0.45%" title="Porsche Boxster (41:35)"></span><span class="timeline-marker" data-type="car" style="left:43.18%;width:0.45%" title="Porsche Cayman (41:55)"></span><span class="timeline-marker" data-type="car" style="left:43.53%;width:0.45%" title="Audi Tt (42:15)"></span><span class="timeline-marker" data-type="car" style="left:47.14%;width:0.45%" title="Cadillac XLR (45:45)"></span><span class="timeline-marker" data-type="car" style="left:48.86%;width:0.45%" title="Pontiac Solstice (47:26)"></span><span class="timeline-marker" data-type="car" style="left:52.05%;width:0.45%" title="Ford Fiesta ST (50:31)"></span><span class="timeline-marker" data-type="car" style="left:52.70%;width:0.45%" title="Nissan Sentra (51:09)"></span><span class="timeline-marker" data-type="car" style="left:53.68%;width:0.45%" title="Ford Focus RS (52:06)"></span><span class="timeline-marker" data-type="car" style="left:54.34%;width:0.45%" title="Honda Civic (52:44)"></span><span class="timeline-marker" data-type="car" style="left:56.05%;width:0.45%" title="Hyundai Genesis (54:24)"></span><span class="timeline-marker" data-type="car" style="left:57.93%;width:0.45%" title="Genesis G70 (56:14)"></span><span class="timeline-marker" data-type="car" style="left:58.54%;width:0.45%" title="Nissan 350Z (56:49)"></span><span class="timeline-marker" data-type="car" style="left:59.50%;width:0.45%" title="Nissan Z (57:45)"></span><span class="timeline-marker" data-type="car" style="left:59.82%;width:0.45%" title="Lexus Rc (58:03)"></span><span class="timeline-marker" data-type="car" style="left:59.86%;width:0.45%" title="Infiniti G37 (58:06)"></span><span class="timeline-marker" data-type="car" style="left:61.01%;width:0.45%" title="BMW E36 (59:13)"></span><span class="timeline-marker" data-type="car" style="left:64.28%;width:0.45%" title="Buick Envision (1:02:23)"></span><span class="timeline-marker" data-type="car" style="left:66.03%;width:0.45%" title="Mini Countryman (1:04:05)"></span><span class="timeline-marker" data-type="car" style="left:66.37%;width:0.45%" title="Mitsubishi Lancer (1:04:25)"></span><span class="timeline-marker" data-type="car" style="left:72.10%;width:0.45%" title="Honda Civic Type R (1:09:59)"></span><span class="timeline-marker" data-type="car" style="left:72.64%;width:0.45%" title="Toyota Highlander (1:10:30)"></span><span class="timeline-marker" data-type="car" style="left:72.86%;width:0.45%" title="Porsche 718 (1:10:43)"></span><span class="timeline-marker" data-type="car" style="left:74.48%;width:0.45%" title="Porsche Carrera T (1:12:17)"></span><span class="timeline-marker" data-type="car" style="left:74.68%;width:0.45%" title="Subaru Brz (1:12:29)"></span><span class="timeline-marker" data-type="car" style="left:76.68%;width:0.45%" title="Acura Integra (1:14:25)"></span><span class="timeline-marker" data-type="car" style="left:77.37%;width:0.45%" title="BMW Z3 (1:15:06)"></span><span class="timeline-marker" data-type="car" style="left:80.76%;width:0.45%" title="Toyota MR2 (1:18:23)"></span><span class="timeline-marker" data-type="car" style="left:83.24%;width:0.45%" title="Honda That Honda (1:20:48)"></span><span class="timeline-marker" data-type="car" style="left:84.17%;width:0.45%" title="Cupra Born (1:21:42)"></span><span class="timeline-marker" data-type="car" style="left:84.21%;width:0.45%" title="BMW M2 (1:21:44)"></span><span class="timeline-marker" data-type="car" style="left:84.21%;width:0.45%" title="Lotus Evora (1:21:44)"></span><span class="timeline-marker" data-type="car" style="left:84.62%;width:0.45%" title="Volkswagen Golf GTI (1:22:08)"></span><span class="timeline-marker" data-type="car" style="left:84.89%;width:0.45%" title="Toyota Sienna (1:22:24)"></span><span class="timeline-marker" data-type="car" style="left:85.11%;width:0.45%" title="Audi RS6 Avant (1:22:37)"></span><span class="timeline-marker" data-type="car" style="left:85.11%;width:0.45%" title="Volvo V90 (1:22:37)"></span><span class="timeline-marker" data-type="car" style="left:85.16%;width:0.45%" title="Mercedes-Benz Eclass (1:22:39)"></span><span class="timeline-marker" data-type="car" style="left:85.77%;width:0.45%" title="Subaru Outback (1:23:15)"></span><span class="timeline-marker" data-type="car" style="left:86.60%;width:0.45%" title="Kia Tellide (1:24:04)"></span><span class="timeline-marker" data-type="car" style="left:86.72%;width:0.45%" title="Hyundai Palisade (1:24:11)"></span><span class="timeline-marker" data-type="car" style="left:86.76%;width:0.45%" title="Hyundai Santa Fe (1:24:13)"></span><span class="timeline-marker" data-type="car" style="left:87.38%;width:0.45%" title="Genesis GV80 (1:24:49)"></span><span class="timeline-marker" data-type="car" style="left:88.19%;width:0.45%" title="Cadillac Escalade (1:25:36)"></span><span class="timeline-marker" data-type="car" style="left:89.78%;width:0.45%" title="Porsche Cayenne (1:27:08)"></span><span class="timeline-marker" data-type="car" style="left:91.44%;width:0.45%" title="Chrysler Pacifica (1:28:45)"></span><span class="timeline-marker" data-type="car" style="left:91.81%;width:0.45%" title="Tesla Model S (1:29:07)"></span><span class="timeline-marker" data-type="car" style="left:94.40%;width:0.45%" title="Ford Thunderbird (1:31:38)"></span><span class="timeline-marker" data-type="car" style="left:95.57%;width:0.45%" title="Genesis G90 (1:32:46)"></span><span class="timeline-marker" data-type="car" style="left:97.15%;width:0.45%" title="BMW M3 (1:34:18)"></span><span class="timeline-marker" data-type="car" style="left:97.34%;width:0.45%" title="BMW E39 (1:34:29)"></span><span class="timeline-marker" data-type="car" style="left:97.77%;width:0.45%" title="Hyundai Elantra N (1:34:54)"></span><span class="timeline-marker" data-type="car" style="left:98.91%;width:0.45%" title="BMW 440I (1:36:01)"></span><span class="timeline-marker" data-type="car" style="left:98.97%;width:0.45%" title="Audi S5 (1:36:04)"></span><span class="timeline-marker" data-type="car" style="left:99.94%;width:0.45%" title="Alfa Romeo Giulia (1:37:00)"></span>
+          <div class="timeline-playhead" id="timeline-playhead"></div>
+        </div>
+      </div>
+      <div class="moment-shell">
+        <article class="moment-card">
+          <div class="moment-type" id="moment-type">car</div>
+          <h2 id="moment-title">Honda Prelude</h2>
+          <p id="moment-explanation"></p>
+          <p class="moment-quote" id="moment-quote">Examples in this corpus often use title, type, image, and explanation without requiring a full quote.</p>
+        </article>
+        <figure class="moment-image" id="moment-figure">
+          <img id="moment-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/1982_Honda_Prelude_%2815977118997%29.jpg/1200px-1982_Honda_Prelude_%2815977118997%29.jpg" alt="Honda Prelude">
+          <figcaption id="moment-attribution">Riley from Christchurch, New Zealand (CC BY 2.0)</figcaption>
+        </figure>
+      </div>
+      <div class="moment-buttons">
+        <button class="moment-button is-active" type="button"
+      data-index="0"
+      data-start="53.12"
+      data-title="Honda Prelude"
+      data-type="car"
+      data-explanation=""
+      data-image="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/1982_Honda_Prelude_%2815977118997%29.jpg/1200px-1982_Honda_Prelude_%2815977118997%29.jpg"
+      data-attribution="Riley from Christchurch, New Zealand (CC BY 2.0)"
+      data-quote="">
+      <span class="moment-time">0:53</span>
+      <span>Honda Prelude</span>
+    </button><button class="moment-button" type="button"
+      data-index="1"
+      data-start="81.92"
+      data-title="Tesla Model Y"
+      data-type="car"
+      data-explanation="The Tesla Model Y is an all-electric compact SUV that shares a platform with the Model 3 sedan. It offers impressive range, performance, and advanced technology features, making it a popular choice in the electric vehicle market."
+      data-image="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Tesla_Model_Y_%282025%29_MYLE_Festival_2025_DSC_9565.jpg/1200px-Tesla_Model_Y_%282025%29_MYLE_Festival_2025_DSC_9565.jpg"
+      data-attribution="Alexander Migl (CC BY-SA 4.0)"
+      data-quote="">
+      <span class="moment-time">1:21</span>
+      <span>Tesla Model Y</span>
+    </button><button class="moment-button" type="button"
+      data-index="2"
+      data-start="145.1"
+      data-title="solenoid handles"
+      data-type="part"
+      data-explanation="Solenoid handles are electronic door handles that use a solenoid mechanism to lock and unlock the door. They are often found in modern vehicles, including electric cars like Teslas, and can malfunction if jammed or stuck."
+      data-image=""
+      data-attribution=""
+      data-quote="">
+      <span class="moment-time">2:25</span>
+      <span>solenoid handles</span>
+    </button><button class="moment-button" type="button"
+      data-index="3"
+      data-start="154.8"
+      data-title="Chevrolet Corvette"
+      data-type="car"
+      data-explanation="The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup."
+      data-image="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg/1200px-Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg"
+      data-attribution="Matti Blume (CC BY-SA)"
+      data-quote="">
+      <span class="moment-time">2:34</span>
+      <span>Chevrolet Corvette</span>
+    </button><button class="moment-button" type="button"
+      data-index="4"
+      data-start="315.5"
+      data-title="Nissan GT-R"
+      data-type="car"
+      data-explanation="The Nissan GT-R is a high-performance sports car known for its advanced technology and impressive speed. It has a strong motorsport heritage and is often regarded as a benchmark in the supercar segment."
+      data-image="https://upload.wikimedia.org/wikipedia/commons/f/ff/Nissan_4BA-R35_GT-R_NISMO_%2823092416543%29.jpg"
+      data-attribution="先従隗始 (CC0)"
+      data-quote="">
+      <span class="moment-time">5:15</span>
+      <span>Nissan GT-R</span>
+    </button><button class="moment-button" type="button"
+      data-index="5"
+      data-start="342.48"
+      data-title="Nissan Leaf"
+      data-type="car"
+      data-explanation="The Nissan Leaf is an all-electric hatchback that has been one of the best-selling electric vehicles globally, known for its practicality and affordability."
+      data-image="https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg/1200px-2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg"
+      data-attribution="EurovisionNim (CC BY-SA 4.0)"
+      data-quote="">
+      <span class="moment-time">5:42</span>
+      <span>Nissan Leaf</span>
+    </button>
+      </div>
+    </section>
+
+    <section class="section panel">
+      <div class="panel-kicker">Visualization</div>
+      <h2>Corpus chart</h2>
+      <p>This is the simplest useful chart for the project right now: how many annotations each example contains, plus density per minute. It makes the difference between chapter-like files and dense entity timelines immediately visible.</p>
+      <div class="chart">
+        <div class="chart-row">
+      <div class="chart-label">
+        <a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json">everyday-driver-episode-1013</a>
+        <span>Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013</span>
+      </div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="width:100.00%"></div>
+      </div>
+      <div class="chart-value">113 <span>1.16/min</span></div>
+    </div><div class="chart-row">
+      <div class="chart-label">
+        <a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/tim-ferriss-770-elizabeth-gilbert.annotations.json">tim-ferriss-770-elizabeth-gilbert</a>
+        <span>#770: Elizabeth Gilbert — How to Set Strong Boundaries, Overcome Purpose Anxiety, and Find Your Deep Inner Voice</span>
+      </div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="width:22.12%"></div>
+      </div>
+      <div class="chart-value">25 <span>0.22/min</span></div>
+    </div><div class="chart-row">
+      <div class="chart-label">
+        <a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/bat-podcast-just-back-from-japan.annotations.json">bat-podcast-just-back-from-japan</a>
+        <span>Just Back from Japan and Watching our Watchlists</span>
+      </div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="width:18.58%"></div>
+      </div>
+      <div class="chart-value">21 <span>0.49/min</span></div>
+    </div><div class="chart-row">
+      <div class="chart-label">
+        <a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/lex-fridman-494-jensen-huang.annotations.json">lex-fridman-494-jensen-huang</a>
+        <span>#494 Jensen Huang: NVIDIA - The $4 Trillion Company &amp; the AI Revolution</span>
+      </div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="width:18.58%"></div>
+      </div>
+      <div class="chart-value">21 <span>0.15/min</span></div>
+    </div><div class="chart-row">
+      <div class="chart-label">
+        <a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/acquired-ferrari.annotations.json">acquired-ferrari</a>
+        <span>Ferrari</span>
+      </div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="width:14.16%"></div>
+      </div>
+      <div class="chart-value">16 <span>0.07/min</span></div>
+    </div><div class="chart-row">
+      <div class="chart-label">
+        <a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/higher-learning-coachella-bambaataa.annotations.json">higher-learning-coachella-bambaataa</a>
+        <span>Coachella, Afrika Bambaataa, and Their Lord and Savior Donald Trump</span>
+      </div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="width:8.85%"></div>
+      </div>
+      <div class="chart-value">10 <span>0.08/min</span></div>
+    </div><div class="chart-row">
+      <div class="chart-label">
+        <a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-artemis-moon.annotations.json">science-vs-artemis-moon</a>
+        <span>Artemis: Why Are We Really Going Back to the Moon?</span>
+      </div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="width:5.31%"></div>
+      </div>
+      <div class="chart-value">6 <span>0.21/min</span></div>
+    </div><div class="chart-row">
+      <div class="chart-label">
+        <a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-running.annotations.json">science-vs-running</a>
+        <span>Running: Will It Wreck Your Body?</span>
+      </div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="width:4.42%"></div>
+      </div>
+      <div class="chart-value">5 <span>0.17/min</span></div>
+    </div>
+      </div>
+    </section>
+
+    <section class="section panel">
+      <div class="panel-kicker">Example Library</div>
+      <h2>Real files, not placeholder cases</h2>
+      <p>These examples are strong enough to anchor the spec. They should do more of the explanatory work so the prose can stay tighter and less promotional.</p>
+      <div class="examples-grid">
+        <article class="example-card">
+      <div class="example-card-header">
+        <h3>Ferrari</h3>
+        <span>16 annotations</span>
+      </div>
+      <p>acquired-ferrari</p>
+      <div class="example-meta">
+        <span>3:51:04</span>
+        <span>0.07 per minute</span>
+      </div>
+      <div class="type-pill-row"><span class="type-pill">concept <strong>11</strong></span><span class="type-pill">person <strong>2</strong></span><span class="type-pill">car <strong>2</strong></span><span class="type-pill">brand <strong>1</strong></span></div>
+      <a class="example-link" href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/acquired-ferrari.annotations.json">Open example JSON</a>
+    </article><article class="example-card">
+      <div class="example-card-header">
+        <h3>Just Back from Japan and Watching our Watchlists</h3>
+        <span>21 annotations</span>
+      </div>
+      <p>bat-podcast-just-back-from-japan</p>
+      <div class="example-meta">
+        <span>42:54</span>
+        <span>0.49 per minute</span>
+      </div>
+      <div class="type-pill-row"><span class="type-pill">car <strong>19</strong></span><span class="type-pill">concept <strong>2</strong></span></div>
+      <a class="example-link" href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/bat-podcast-just-back-from-japan.annotations.json">Open example JSON</a>
+    </article><article class="example-card">
+      <div class="example-card-header">
+        <h3>Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013</h3>
+        <span>113 annotations</span>
+      </div>
+      <p>everyday-driver-episode-1013</p>
+      <div class="example-meta">
+        <span>1:37:04</span>
+        <span>1.16 per minute</span>
+      </div>
+      <div class="type-pill-row"><span class="type-pill">car <strong>102</strong></span><span class="type-pill">term <strong>8</strong></span><span class="type-pill">part <strong>1</strong></span><span class="type-pill">company <strong>1</strong></span></div>
+      <a class="example-link" href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json">Open example JSON</a>
+    </article><article class="example-card">
+      <div class="example-card-header">
+        <h3>Coachella, Afrika Bambaataa, and Their Lord and Savior Donald Trump</h3>
+        <span>10 annotations</span>
+      </div>
+      <p>higher-learning-coachella-bambaataa</p>
+      <div class="example-meta">
+        <span>1:57:55</span>
+        <span>0.08 per minute</span>
+      </div>
+      <div class="type-pill-row"><span class="type-pill">concept <strong>6</strong></span><span class="type-pill">person <strong>4</strong></span></div>
+      <a class="example-link" href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/higher-learning-coachella-bambaataa.annotations.json">Open example JSON</a>
+    </article><article class="example-card">
+      <div class="example-card-header">
+        <h3>#494 Jensen Huang: NVIDIA - The $4 Trillion Company &amp; the AI Revolution</h3>
+        <span>21 annotations</span>
+      </div>
+      <p>lex-fridman-494-jensen-huang</p>
+      <div class="example-meta">
+        <span>2:24:23</span>
+        <span>0.15 per minute</span>
+      </div>
+      <div class="type-pill-row"><span class="type-pill">concept <strong>21</strong></span></div>
+      <a class="example-link" href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/lex-fridman-494-jensen-huang.annotations.json">Open example JSON</a>
+    </article><article class="example-card">
+      <div class="example-card-header">
+        <h3>Artemis: Why Are We Really Going Back to the Moon?</h3>
+        <span>6 annotations</span>
+      </div>
+      <p>science-vs-artemis-moon</p>
+      <div class="example-meta">
+        <span>28:12</span>
+        <span>0.21 per minute</span>
+      </div>
+      <div class="type-pill-row"><span class="type-pill">concept <strong>5</strong></span><span class="type-pill">term <strong>1</strong></span></div>
+      <a class="example-link" href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-artemis-moon.annotations.json">Open example JSON</a>
+    </article><article class="example-card">
+      <div class="example-card-header">
+        <h3>Running: Will It Wreck Your Body?</h3>
+        <span>5 annotations</span>
+      </div>
+      <p>science-vs-running</p>
+      <div class="example-meta">
+        <span>29:58</span>
+        <span>0.17 per minute</span>
+      </div>
+      <div class="type-pill-row"><span class="type-pill">concept <strong>4</strong></span><span class="type-pill">term <strong>1</strong></span></div>
+      <a class="example-link" href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-running.annotations.json">Open example JSON</a>
+    </article><article class="example-card">
+      <div class="example-card-header">
+        <h3>#770: Elizabeth Gilbert — How to Set Strong Boundaries, Overcome Purpose Anxiety, and Find Your Deep Inner Voice</h3>
+        <span>25 annotations</span>
+      </div>
+      <p>tim-ferriss-770-elizabeth-gilbert</p>
+      <div class="example-meta">
+        <span>1:52:01</span>
+        <span>0.22 per minute</span>
+      </div>
+      <div class="type-pill-row"><span class="type-pill">concept <strong>24</strong></span><span class="type-pill">term <strong>1</strong></span></div>
+      <a class="example-link" href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/tim-ferriss-770-elizabeth-gilbert.annotations.json">Open example JSON</a>
+    </article>
+      </div>
+    </section>
+
+    <section class="spec-wrap panel">
+      <article id="spec">
 <h1>Podcast Annotation Format</h1>
 <p><strong>Version 1.0.0</strong></p>
 <p>A minimal JSON format for timestamped entity annotations on podcast and spoken media content.</p>
 <h2>Overview</h2>
 <p>WebVTT tells you what was said. Podcast annotations tell you what was said <em>about</em>.</p>
-<p>Transcripts give you words and timestamps. But when a host mentions a 1969 Camaro at 0:45, a turbocharger at 2:00, or Carroll Shelby at 3:15, that meaning is invisible to apps. It&#39;s not structured, not linkable, and difficult to extract reliably after the fact.</p>
-<p>The Podcast Annotation Format is a simple, open JSON spec for timestamped entity annotations on audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. Transcripts made podcasts searchable. Annotations make them understandable.</p>
+<p>Transcripts give you words and timestamps. They usually do not tell an app that a host mentioned a 1969 Camaro at 0:45, switched to turbochargers at 2:00, or spent the next 30 seconds talking about Carroll Shelby. That meaning is present in the audio, but it is rarely available as structured data.</p>
+<p>The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is modest: a small file that lets players, search systems, and archives know what a moment in an episode is about.</p>
 <h3>Design Principles</h3>
 <ul>
 <li><strong>Minimal.</strong> Only two required fields (<code>startTime</code>, <code>endTime</code>). Everything else is optional.</li>
@@ -95,8 +851,15 @@
 <li><strong>Framework-agnostic.</strong> Plain JSON. No JSON-LD, no XML, no runtime dependencies.</li>
 <li><strong>Human-readable.</strong> A developer should understand an annotation file without reading this spec.</li>
 </ul>
+<h3>Non-Goals</h3>
+<ul>
+<li>This is not a transcript format. Use WebVTT, SRT, or a transcript JSON format for spoken text.</li>
+<li>This does not replace chapters. Chapters describe coarse segments; annotations describe specific references within them.</li>
+<li>This does not require a fixed ontology. Recommended types exist for interoperability, but producers may extend the format.</li>
+<li>This does not prescribe one UI. A player may render overlays, timelines, side panels, search results, or no direct UI at all.</li>
+</ul>
 <h2>Prior Art &amp; Inspiration</h2>
-<p>Timestamped annotation on media is a proven pattern. It works, it scales, and podcasting is the missing piece.</p>
+<p>Timed context around media is already familiar to users. Podcasting has transcripts, chapters, and show notes, but it usually lacks a compact file for within-episode references.</p>
 <p><strong>Proven UX pattern:</strong></p>
 <ul>
 <li><strong>VH1 Pop-Up Video.</strong> The original mainstream example: timestamped contextual notes overlaid on media playback.</li>
@@ -115,7 +878,7 @@
 <li><strong>Overcast.</strong> Podcast-native precedent for structured metadata (Smart Speed, chapters, transcript sync) improving UX. Marco Arment&#39;s public discussion of DAI transcript synchronization informed this spec&#39;s approach to ad break alignment.</li>
 <li><strong>Snipd.</strong> A podcast app that lets listeners highlight and annotate moments for personal note-taking. Listener-side annotation on podcast audio, already in production. This spec makes the same capability possible as an open, shared layer rather than a closed, personal tool.</li>
 </ul>
-<p>Podcast audio already contains this information. What&#39;s missing is a way to represent it as structured data. This spec defines a format that makes it possible. While annotations can be derived from transcripts, precomputed annotations enable more accurate timing, higher-quality entity resolution, and consistent cross-platform behavior.</p>
+<p>Podcast audio already contains this information. This spec defines one way to represent it as structured data. While annotations can be derived from transcripts, precomputed annotations allow better timing, better entity resolution, and more consistent behavior across players and archives.</p>
 <h2>Annotation Object</h2>
 <p>An annotation represents a single entity mention or topic reference in audio. An annotation&#39;s time range represents the duration over which the entity is actively discussed or relevant, not just the exact moment it is first mentioned.</p>
 <table>
@@ -677,14 +1440,14 @@
 </code></pre>
 <p>The full 113-annotation file is available at <a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json"><code>examples/everyday-driver-episode-1013.annotations.json</code></a>.</p>
 <h3>Additional Examples</h3>
-<p>Real-world annotation sets from published podcast episodes, showing the format across genres and production methods:</p>
+<p>Real-world annotation sets from published podcast episodes, showing the format across genres and how each file was assembled:</p>
 <table>
 <thead>
 <tr>
 <th>Example</th>
 <th>Genre</th>
 <th>Annotations</th>
-<th>Source</th>
+<th>Assembly</th>
 </tr>
 </thead>
 <tbody><tr>
@@ -726,7 +1489,7 @@
 <tr>
 <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/tim-ferriss-770-elizabeth-gilbert.annotations.json"><code>tim-ferriss-770-elizabeth-gilbert</code></a></td>
 <td>Creativity/self-help</td>
-<td>19</td>
+<td>25</td>
 <td>Converted from timestamped show notes</td>
 </tr>
 <tr>
@@ -736,7 +1499,7 @@
 <td>Converted from timestamped show notes</td>
 </tr>
 </tbody></table>
-<h3>General Podcast (Interview)</h3>
+<h3>Minimal Interview Example</h3>
 <pre><code class="language-json">{
   &quot;version&quot;: &quot;1.0.0&quot;,
   &quot;episode&quot;: {
@@ -881,11 +1644,57 @@
 <h2>License</h2>
 <p>This specification is released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
 
-  </article>
-  <footer>
-    Developed by <a href="https://getcarcurious.com">Car Curious</a> &middot;
-    <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a> &middot;
-    <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
-  </footer>
+      </article>
+    </section>
+
+    <footer>
+      Developed by <a href="https://getcarcurious.com">Car Curious</a> &middot;
+      <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a> &middot;
+      <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+    </footer>
+  </div>
+
+  <script>
+    const duration = 5824.4
+    const playhead = document.getElementById('timeline-playhead')
+    const titleEl = document.getElementById('moment-title')
+    const typeEl = document.getElementById('moment-type')
+    const explanationEl = document.getElementById('moment-explanation')
+    const quoteEl = document.getElementById('moment-quote')
+    const figureEl = document.getElementById('moment-figure')
+    const imageEl = document.getElementById('moment-image')
+    const attributionEl = document.getElementById('moment-attribution')
+    const buttons = [...document.querySelectorAll('.moment-button')]
+
+    function setPlayhead(seconds) {
+      const percent = duration > 0 ? (seconds / duration) * 100 : 0
+      playhead.style.left = percent.toFixed(2) + '%'
+    }
+
+    function selectButton(button) {
+      buttons.forEach((candidate) => candidate.classList.toggle('is-active', candidate === button))
+      titleEl.textContent = button.dataset.title || 'Featured annotation'
+      typeEl.textContent = button.dataset.type || 'unknown'
+      explanationEl.textContent = button.dataset.explanation || 'No explanation provided.'
+      quoteEl.textContent = button.dataset.quote ? '"' + button.dataset.quote + '"' : 'This annotation uses timing and typed metadata without relying on a quoted transcript span.'
+
+      if (button.dataset.image) {
+        figureEl.style.display = ''
+        imageEl.src = button.dataset.image
+        imageEl.alt = button.dataset.title || ''
+        attributionEl.textContent = button.dataset.attribution || ''
+      } else {
+        figureEl.style.display = 'none'
+      }
+
+      setPlayhead(Number(button.dataset.start || 0))
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => selectButton(button))
+    })
+
+    if (buttons[0]) selectButton(buttons[0])
+  </script>
 </body>
 </html>
