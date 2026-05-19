@@ -4,7 +4,6 @@ import { marked } from 'marked'
 
 const spec = readFileSync('SPEC.md', 'utf-8')
 const body = marked.parse(spec)
-
 const lastmod = execSync('git log -1 --format=%cI SPEC.md', { encoding: 'utf-8' }).trim().slice(0, 10)
 
 const exampleFiles = readdirSync('examples')
@@ -36,19 +35,17 @@ const exampleSets = exampleFiles.map((file) => {
 })
 
 const featured = exampleSets.find((example) => example.slug === 'everyday-driver-episode-1013') ?? exampleSets[0]
-const featuredMoments = featured.annotations
+const demoMoments = featured.annotations
   .filter((annotation) => annotation.title && (annotation.data?.explanation || annotation.data?.simplifiedExplanation || annotation.quote))
-  .slice(0, 6)
+  .slice(0, 3)
   .map((annotation, index) => ({
-    id: annotation.id ?? `featured-${index}`,
+    index,
     startTime: annotation.startTime,
     endTime: annotation.endTime,
     title: annotation.title,
     type: annotation.type ?? 'unknown',
-    image: annotation.image ?? '',
-    quote: annotation.quote ?? '',
     explanation: annotation.data?.explanation ?? annotation.data?.simplifiedExplanation ?? '',
-    attribution: annotation.data?.imageAttribution ?? '',
+    quote: annotation.quote ?? '',
     payload: {
       startTime: annotation.startTime,
       endTime: annotation.endTime,
@@ -59,14 +56,8 @@ const featuredMoments = featured.annotations
       data: annotation.data ?? {}
     }
   }))
-const featuredMomentLookup = new Map(
-  featuredMoments.map((annotation, index) => [`${annotation.startTime}:${annotation.title}`, index])
-)
 
 const totalAnnotations = exampleSets.reduce((sum, example) => sum + example.annotationCount, 0)
-const totalTypes = new Set(exampleSets.flatMap((example) => example.typeCounts.map(([type]) => type))).size
-const densestExample = [...exampleSets].sort((a, b) => b.densityPerMinute - a.densityPerMinute)[0]
-const chartMax = Math.max(...exampleSets.map((example) => example.annotationCount), 1)
 
 function escapeHtml(value) {
   return String(value)
@@ -86,85 +77,53 @@ function formatTime(seconds) {
   return `${mins}:${String(secs).padStart(2, '0')}`
 }
 
-function renderTypePills(typeCounts, limit = 3) {
-  return typeCounts
-    .slice(0, limit)
-    .map(([type, count]) => `<span class="type-pill">${escapeHtml(type)} <strong>${count}</strong></span>`)
-    .join('')
-}
-
-function renderTimelineMarkers(annotations, duration, featuredLookup) {
-  return annotations
-    .map((annotation) => {
-      const start = duration > 0 ? (annotation.startTime / duration) * 100 : 0
-      const end = duration > 0 ? (annotation.endTime / duration) * 100 : start + 0.4
-      const width = Math.max(end - start, 0.45)
-      const key = `${annotation.startTime}:${annotation.title ?? ''}`
-      const featuredIndex = featuredLookup.get(key)
-      const tag = featuredIndex === undefined ? 'span' : 'button'
-      const attrs = featuredIndex === undefined
-        ? ''
-        : ` type="button" data-index="${featuredIndex}" aria-label="${escapeHtml(`Select ${annotation.title ?? 'annotation'} at ${formatTime(annotation.startTime)}`)}"`
-      const extraClass = featuredIndex === undefined ? '' : ' is-featured'
-      return `<${tag} class="timeline-marker${extraClass}" data-type="${escapeHtml(annotation.type ?? 'unknown')}" style="left:${start.toFixed(2)}%;width:${width.toFixed(2)}%" title="${escapeHtml(`${annotation.title ?? 'Untitled'} (${formatTime(annotation.startTime)})`)}"${attrs}></${tag}>`
+function renderExampleRows(examples) {
+  return examples
+    .map((example) => {
+      const topTypes = example.typeCounts.slice(0, 3).map(([type, count]) => `${type} (${count})`).join(', ')
+      return `<tr>
+        <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/${escapeHtml(example.file)}">${escapeHtml(example.slug)}</a></td>
+        <td>${escapeHtml(example.annotationSet.episode?.title ?? '')}</td>
+        <td>${example.annotationCount}</td>
+        <td>${example.densityPerMinute.toFixed(2)}/min</td>
+        <td>${escapeHtml(topTypes)}</td>
+      </tr>`
     })
     .join('')
 }
 
-const featuredMomentButtons = featuredMoments
-  .map((annotation, index) => {
-    return `<button class="moment-button${index === 0 ? ' is-active' : ''}" type="button"
-      data-index="${index}"
-      data-start="${annotation.startTime}"
-      data-title="${escapeHtml(annotation.title)}"
-      data-type="${escapeHtml(annotation.type)}"
-      data-explanation="${escapeHtml(annotation.explanation)}"
-      data-image="${escapeHtml(annotation.image)}"
-      data-attribution="${escapeHtml(annotation.attribution)}"
-      data-quote="${escapeHtml(annotation.quote)}"
-      data-payload="${escapeHtml(JSON.stringify(annotation.payload, null, 2))}">
-      <span class="moment-time">${formatTime(annotation.startTime)}</span>
-      <span>${escapeHtml(annotation.title)}</span>
-    </button>`
-  })
-  .join('')
+function renderDemoMarkers(moments) {
+  const count = Math.max(moments.length - 1, 1)
+  return moments
+    .map((moment, index) => {
+      const left = count === 0 ? 0 : (index / count) * 100
+      return `<button class="demo-marker${index === 0 ? ' is-active' : ''}" type="button" data-index="${moment.index}" style="left:${left.toFixed(2)}%">
+        <span class="demo-marker-dot"></span>
+        <span class="demo-marker-time">${formatTime(moment.startTime)}</span>
+      </button>`
+    })
+    .join('')
+}
 
-const featuredInitial = featuredMoments[0]
-const chartRows = exampleSets
-  .slice()
-  .sort((a, b) => b.annotationCount - a.annotationCount)
-  .map((example) => {
-    const width = (example.annotationCount / chartMax) * 100
-    return `<div class="chart-row">
-      <div class="chart-label">
-        <a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/${escapeHtml(example.file)}">${escapeHtml(example.slug)}</a>
-        <span>${escapeHtml(example.annotationSet.episode?.title ?? '')}</span>
-      </div>
-      <div class="chart-bar-wrap">
-        <div class="chart-bar" style="width:${width.toFixed(2)}%"></div>
-      </div>
-      <div class="chart-value">${example.annotationCount} <span>${example.densityPerMinute.toFixed(2)}/min</span></div>
-    </div>`
-  })
-  .join('')
+function renderDemoButtons(moments) {
+  return moments
+    .map((moment, index) => {
+      return `<button class="demo-chip${index === 0 ? ' is-active' : ''}" type="button"
+        data-index="${moment.index}"
+        data-title="${escapeHtml(moment.title)}"
+        data-type="${escapeHtml(moment.type)}"
+        data-explanation="${escapeHtml(moment.explanation)}"
+        data-quote="${escapeHtml(moment.quote)}"
+        data-payload="${escapeHtml(JSON.stringify(moment.payload, null, 2))}"
+        data-start="${moment.startTime}">
+        <span>${formatTime(moment.startTime)}</span>
+        <strong>${escapeHtml(moment.title)}</strong>
+      </button>`
+    })
+    .join('')
+}
 
-const exampleCards = exampleSets
-  .map((example) => {
-    return `<article class="example-card">
-      <div class="example-card-header">
-        <h3>${escapeHtml(example.annotationSet.episode?.title ?? example.slug)}</h3>
-        <span>${example.annotationCount} annotations</span>
-      </div>
-      <p>${escapeHtml(example.slug)}</p>
-      <div class="example-meta">
-        <span>${formatTime(example.duration)}</span>
-        <span>${example.densityPerMinute.toFixed(2)} per minute</span>
-      </div>
-      <div class="type-pill-row">${renderTypePills(example.typeCounts, 4)}</div>
-      <a class="example-link" href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/${escapeHtml(example.file)}">Open example JSON</a>
-    </article>`
-  })
-  .join('')
+const demoInitial = demoMoments[0]
 
 const html = `<!DOCTYPE html>
 <html lang="en">
@@ -172,475 +131,344 @@ const html = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Podcast Annotation Format</title>
-  <meta name="description" content="An open format for structured podcast show notes: timestamped entities, topics, and links synced to audio playback.">
+  <meta name="description" content="A JSON format for timestamped topics, entities, and links in spoken audio.">
   <meta property="og:title" content="Podcast Annotation Format">
-  <meta property="og:description" content="WebVTT tells you what was said. Podcast annotations tell you what was said about.">
+  <meta property="og:description" content="Transcripts say what was said. Annotations say what the moment is about.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.podcastannotation.org">
   <link rel="canonical" href="https://www.podcastannotation.org">
   <style>
     :root {
-      --paper: #f5efe4;
-      --paper-strong: #efe5d5;
-      --ink: #1e1b18;
-      --muted: #968777;
-      --accent: #b94c35;
-      --accent-soft: rgba(185, 76, 53, 0.14);
-      --card: rgba(255, 251, 245, 0.78);
-      --line: rgba(30, 27, 24, 0.12);
-      --shadow: 0 20px 60px rgba(42, 24, 12, 0.10);
-      --max-page: 1180px;
+      --bg: #f8f8f3;
+      --surface: #ffffff;
+      --surface-muted: #f1f4f1;
+      --text: #1f2823;
+      --muted: #5f6c65;
+      --border: #d6ddd7;
+      --accent: #2f6f62;
+      --accent-soft: #e4f0ec;
+      --code-bg: #f3f5f2;
+      --shadow: 0 1px 2px rgba(16, 24, 20, 0.04);
+      --max-page: 1080px;
       --max-spec: 760px;
-      --radius-lg: 28px;
-      --radius-md: 18px;
-      --radius-sm: 999px;
-      --ui-font: "Avenir Next", "Segoe UI", sans-serif;
-      --display-font: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-      --mono-font: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(185, 76, 53, 0.16), transparent 28%),
-        radial-gradient(circle at top right, rgba(51, 94, 122, 0.12), transparent 24%),
-        linear-gradient(180deg, #f7f0e6 0%, #f3ecdf 44%, #f7f3eb 100%);
-      font-family: var(--ui-font);
-      line-height: 1.65;
-      padding: 32px 20px 80px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      padding: 32px 18px 72px;
     }
-    a { color: inherit; }
-    img { display: block; max-width: 100%; }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover { text-decoration: underline; }
+    code {
+      font-family: var(--mono);
+      background: var(--code-bg);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+      font-size: 0.92em;
+    }
+    pre {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow: auto;
+    }
     .page {
       max-width: var(--max-page);
       margin: 0 auto;
     }
-    .hero {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: linear-gradient(145deg, rgba(255, 250, 244, 0.92), rgba(244, 234, 219, 0.84));
-      box-shadow: var(--shadow);
-      padding: 28px;
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: baseline;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
     }
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: auto -60px -80px auto;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(185, 76, 53, 0.22), transparent 65%);
-      pointer-events: none;
-    }
-    .eyebrow {
-      display: inline-flex;
-      gap: 10px;
-      align-items: center;
-      font-size: 12px;
-      letter-spacing: 0.18em;
+    .topbar strong {
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 14px;
     }
-    .hero-grid {
+    .topbar nav {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .intro {
       display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.95fr);
-      gap: 26px;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      gap: 32px;
       align-items: start;
+      margin-bottom: 40px;
     }
     h1, h2, h3 {
       margin: 0;
-      font-weight: 600;
-      line-height: 1.05;
+      font-weight: 650;
+      line-height: 1.15;
+      letter-spacing: 0;
     }
     h1 {
-      font-family: var(--display-font);
-      font-size: clamp(2.6rem, 5vw, 4.7rem);
-      max-width: 9ch;
+      font-size: clamp(2rem, 4vw, 3rem);
       margin-bottom: 14px;
-      letter-spacing: -0.03em;
     }
-    .hero-copy p {
-      font-size: 1.05rem;
+    .intro p,
+    .section p {
+      margin: 0 0 14px;
       color: var(--muted);
-      max-width: 62ch;
-      margin: 0 0 18px;
+      max-width: 64ch;
+      font-size: 1rem;
     }
-    .hero-actions {
+    .intro-actions {
       display: flex;
-      flex-wrap: wrap;
       gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
     }
     .button-link {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 46px;
-      padding: 0 18px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.88);
-      color: var(--ink);
-      text-decoration: none;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
       font-weight: 600;
+      text-decoration: none;
+      box-shadow: var(--shadow);
     }
     .button-link.primary {
-      background: linear-gradient(135deg, #f4ebdd, #e7d6bc);
-      border-color: rgba(255, 255, 255, 0.18);
-      color: #1b1612;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
-    }
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 22px;
-    }
-    .stat-card, .panel, .example-card {
-      border: 1px solid var(--line);
-      background: var(--card);
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-      border-radius: var(--radius-md);
-    }
-    .stat-card {
-      padding: 14px 16px;
-    }
-    .stat-card strong {
-      display: block;
-      font-size: 1.6rem;
-      font-family: var(--display-font);
-    }
-    .stat-card span {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-    .hero-panel {
-      padding: 18px;
-    }
-    .hero-panel p {
-      margin: 0;
-      color: var(--muted);
-    }
-    .panel-kicker {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--accent);
-      margin-bottom: 10px;
-    }
-    .moment-shell {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 180px;
-      gap: 16px;
-      align-items: start;
-      margin-top: 16px;
-    }
-    .moment-card {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.72);
-    }
-    .moment-type {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: var(--radius-sm);
-      background: var(--accent-soft);
-      color: var(--accent);
-      padding: 5px 10px;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 12px;
-    }
-    .moment-card h2 {
-      font-family: var(--display-font);
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-    .moment-card p {
-      margin-bottom: 10px;
-    }
-    .moment-quote {
-      font-style: italic;
-      color: var(--muted);
-      border-left: 3px solid rgba(185, 76, 53, 0.25);
-      padding-left: 12px;
-    }
-    .moment-payload {
-      height: 100%;
-      min-height: 170px;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: rgba(255, 251, 245, 0.72);
-    }
-    .moment-payload pre {
-      margin: 0;
-      height: 100%;
-      min-height: 170px;
-      overflow: auto;
-      padding: 16px;
-      background: #171310;
-      color: #f5efe4;
-      font-family: var(--mono-font);
-      font-size: 0.84rem;
-      line-height: 1.5;
-    }
-    .moment-meta {
-      margin-top: 14px;
-      font-size: 0.88rem;
-      color: var(--muted);
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
     }
     .section {
-      margin-top: 28px;
-      padding: 24px;
+      margin-bottom: 32px;
     }
     .section h2 {
-      font-family: var(--display-font);
-      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-size: 1.35rem;
       margin-bottom: 10px;
     }
-    .section > p {
-      margin: 0 0 20px;
-      color: var(--muted);
-      max-width: 70ch;
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
     }
-    .timeline-stage {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: rgba(255, 253, 250, 0.86);
+    .why-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+    .why-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+    .why-item p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    .demo {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
       padding: 18px;
+      box-shadow: var(--shadow);
     }
-    .timeline-meta {
+    .demo-head {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 12px;
-      color: var(--muted);
-      font-size: 0.92rem;
+      gap: 14px;
+      align-items: baseline;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
-    .timeline-track {
+    .demo-head p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    .demo-track {
       position: relative;
-      height: 78px;
-      border-radius: 14px;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(236, 226, 211, 0.85)),
-        repeating-linear-gradient(90deg, transparent 0, transparent 11.5%, rgba(30, 27, 24, 0.04) 11.5%, rgba(30, 27, 24, 0.04) 12%);
-      overflow: hidden;
-      border: 1px solid rgba(30, 27, 24, 0.08);
+      height: 44px;
+      margin: 8px 0 20px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
-    .timeline-marker {
+    .demo-marker {
       position: absolute;
-      top: 22px;
-      height: 34px;
-      border-radius: 8px;
-      opacity: 0.9;
-      background: #c97359;
+      top: 50%;
+      transform: translate(-50%, -50%);
       border: 0;
+      background: transparent;
       padding: 0;
+      cursor: pointer;
+      color: var(--muted);
+      text-align: center;
     }
-    .timeline-marker.is-featured { cursor: pointer; box-shadow: 0 0 0 1px rgba(255, 244, 230, 0.22); }
-    .timeline-marker.is-featured:hover,
-    .timeline-marker.is-featured.is-active { opacity: 1; transform: translateY(-1px); box-shadow: 0 0 0 2px rgba(255, 244, 230, 0.65); }
-    .timeline-marker[data-type="car"] { background: #cf6b4f; }
-    .timeline-marker[data-type="concept"] { background: #4f7d8b; }
-    .timeline-marker[data-type="person"] { background: #856650; }
-    .timeline-marker[data-type="term"] { background: #a8813f; }
-    .timeline-marker[data-type="company"] { background: #5e6f48; }
-    .timeline-marker[data-type="part"] { background: #3f5968; }
-    .timeline-playhead {
-      position: absolute;
-      top: 8px;
-      bottom: 8px;
-      width: 2px;
-      background: var(--ink);
-      left: 0;
-      box-shadow: 0 0 0 4px rgba(30, 27, 24, 0.08);
-      transition: left 240ms ease;
-    }
-    .timeline-playhead::before {
-      content: "";
-      position: absolute;
-      top: -7px;
-      left: -5px;
+    .demo-marker-dot {
+      display: block;
       width: 12px;
       height: 12px;
+      margin: 0 auto 6px;
       border-radius: 50%;
-      background: var(--ink);
+      background: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
     }
-    .moment-buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 10px;
-      margin-top: 16px;
-    }
-    .moment-button {
-      text-align: left;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.66);
-      border-radius: 14px;
-      padding: 12px 14px;
-      cursor: pointer;
-      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
-    }
-    .moment-button:hover,
-    .moment-button.is-active {
-      transform: translateY(-1px);
-      border-color: rgba(185, 76, 53, 0.44);
-      background: rgba(255, 247, 241, 0.98);
-    }
-    .moment-time {
+    .demo-marker-time {
       display: block;
-      font-family: var(--mono-font);
-      color: var(--accent);
-      font-size: 0.8rem;
-      margin-bottom: 6px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
     }
-    .chart {
+    .demo-marker.is-active { color: var(--text); }
+    .demo-marker.is-active .demo-marker-dot { background: #1e4a41; }
+    .demo-detail {
       display: grid;
-      gap: 12px;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
+      gap: 18px;
+      align-items: start;
     }
-    .chart-row {
-      display: grid;
-      grid-template-columns: minmax(0, 300px) minmax(120px, 1fr) 120px;
-      gap: 14px;
-      align-items: center;
+    .demo-copy {
+      min-width: 0;
     }
-    .chart-label {
-      display: grid;
-      gap: 2px;
-    }
-    .chart-label a {
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .chart-label span,
-    .chart-value span {
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-    .chart-bar-wrap {
-      width: 100%;
-      height: 14px;
-      border-radius: var(--radius-sm);
-      background: rgba(30, 27, 24, 0.08);
-      overflow: hidden;
-    }
-    .chart-bar {
-      height: 100%;
-      border-radius: var(--radius-sm);
-      background: linear-gradient(90deg, #b94c35, #d18a63);
-    }
-    .chart-value {
-      font-family: var(--mono-font);
-      text-align: right;
-    }
-    .examples-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 14px;
-    }
-    .example-card {
-      padding: 18px;
-    }
-    .example-card-header,
-    .example-meta {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: baseline;
-    }
-    .example-card h3 {
-      font-size: 1.15rem;
-      font-family: var(--display-font);
-    }
-    .example-card p {
-      margin: 8px 0 12px;
-      color: var(--muted);
-      min-height: 2.8em;
-    }
-    .type-pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 14px;
-    }
-    .type-pill {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      padding: 5px 10px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      background: rgba(255, 255, 255, 0.72);
-      font-size: 0.82rem;
-    }
-    .example-link {
+    .demo-type {
       display: inline-block;
-      margin-top: 14px;
-      font-weight: 600;
-      text-decoration: none;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 4px 8px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+    .demo-copy h3 {
+      font-size: 1.9rem;
+      margin-bottom: 10px;
+    }
+    .demo-copy p {
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
+    .demo-quote {
+      padding-left: 12px;
+      border-left: 3px solid var(--border);
+      font-style: italic;
+    }
+    .demo-chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    .demo-chip {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 6px;
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+      min-width: 170px;
+      box-shadow: var(--shadow);
+    }
+    .demo-chip span,
+    .demo-chip strong {
+      display: block;
+    }
+    .demo-chip span {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .demo-chip strong {
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .demo-chip.is-active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .examples-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .examples-table th,
+    .examples-table td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 0.95rem;
+    }
+    .examples-table th {
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      background: var(--surface-muted);
+    }
+    .examples-table tr:last-child td {
+      border-bottom: 0;
     }
     .spec-wrap {
-      margin-top: 28px;
-      padding: 30px;
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
     }
     #spec {
       max-width: var(--max-spec);
-      margin: 0 auto;
     }
     #spec h1 {
-      font-size: 2.8rem;
+      font-size: 2.2rem;
       margin-bottom: 0.5rem;
     }
     #spec h2 {
-      font-size: 1.55rem;
-      margin-top: 2.7rem;
+      font-size: 1.45rem;
+      margin-top: 2.5rem;
       margin-bottom: 0.8rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
     }
     #spec h3 {
       font-size: 1.1rem;
-      margin-top: 1.8rem;
+      margin-top: 1.7rem;
       margin-bottom: 0.55rem;
     }
     #spec p, #spec ul, #spec ol, #spec table, #spec pre, #spec blockquote {
       margin-bottom: 1rem;
     }
     #spec ul, #spec ol {
-      padding-left: 1.4rem;
+      padding-left: 1.35rem;
     }
     #spec li {
       margin-bottom: 0.35rem;
-    }
-    #spec code {
-      font-family: var(--mono-font);
-      font-size: 0.88em;
-      background: rgba(30, 27, 24, 0.05);
-      padding: 0.12em 0.35em;
-      border-radius: 4px;
-    }
-    #spec pre {
-      background: #1f1a17;
-      color: #f5efe4;
-      padding: 1rem;
-      border-radius: 12px;
-      overflow-x: auto;
-      line-height: 1.45;
-    }
-    #spec pre code {
-      background: transparent;
-      color: inherit;
-      padding: 0;
     }
     #spec table {
       width: 100%;
@@ -649,267 +477,189 @@ const html = `<!DOCTYPE html>
     }
     #spec th, #spec td {
       text-align: left;
-      padding: 0.55rem 0.75rem;
-      border-bottom: 1px solid var(--line);
+      padding: 0.55rem 0.7rem;
+      border-bottom: 1px solid var(--border);
       vertical-align: top;
     }
     #spec blockquote {
       margin-left: 0;
       padding-left: 1rem;
-      border-left: 3px solid rgba(185, 76, 53, 0.3);
+      border-left: 3px solid var(--border);
       color: var(--muted);
     }
     footer {
-      margin-top: 24px;
-      text-align: center;
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.92rem;
     }
     @media (max-width: 900px) {
-      .hero-grid,
-      .moment-shell {
+      .intro,
+      .demo-detail,
+      .why-grid {
         grid-template-columns: 1fr;
-      }
-      .stats-row {
-        grid-template-columns: 1fr;
-      }
-      .chart-row {
-        grid-template-columns: 1fr;
-      }
-      .chart-value {
-        text-align: left;
       }
     }
-    @media (max-width: 680px) {
+    @media (max-width: 720px) {
       body {
-        padding: 18px 14px 60px;
+        padding: 22px 14px 56px;
       }
-      .hero,
-      .section,
-      .spec-wrap {
-        padding: 18px;
+      .topbar {
+        display: block;
       }
-      h1 {
-        max-width: none;
+      .topbar nav {
+        margin-top: 10px;
       }
-    }
-    .hero-code {
-      background: #1f1a17;
-      color: #f5efe4;
-      padding: 1rem;
-      border-radius: 12px;
-      overflow-x: auto;
-      line-height: 1.5;
-      font-family: var(--mono-font);
-      font-size: 0.88rem;
-      margin: 14px 0 0;
-    }
-    .hero-code code {
-      background: transparent;
-      color: inherit;
-      padding: 0;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --ink: #ede7dc;
-        --muted: #9a8f82;
-        --accent: #d4634a;
-        --accent-soft: rgba(212, 99, 74, 0.18);
-        --card: rgba(28, 23, 18, 0.82);
-        --line: rgba(237, 231, 220, 0.10);
-        --shadow: 0 20px 60px rgba(0, 0, 0, 0.30);
+      .examples-table {
+        display: block;
+        overflow-x: auto;
       }
-      body {
-        background:
-          radial-gradient(circle at top left, rgba(185, 76, 53, 0.12), transparent 28%),
-          radial-gradient(circle at top right, rgba(51, 94, 122, 0.08), transparent 24%),
-          linear-gradient(180deg, #1a1512 0%, #18140f 44%, #1c1812 100%);
-        color: var(--ink);
-      }
-      .hero {
-        background: linear-gradient(145deg, rgba(30, 24, 18, 0.92), rgba(24, 18, 12, 0.84));
-      }
-      .moment-card {
-        background: rgba(28, 23, 18, 0.82);
-      }
-      .timeline-stage {
-        background: rgba(26, 21, 16, 0.86);
-      }
-      .timeline-track {
-        background:
-          linear-gradient(180deg, rgba(40, 35, 28, 0.9), rgba(30, 25, 18, 0.85)),
-          repeating-linear-gradient(90deg, transparent 0, transparent 11.5%, rgba(237, 231, 220, 0.04) 11.5%, rgba(237, 231, 220, 0.04) 12%);
-      }
-      .moment-button {
-        background: rgba(32, 26, 20, 0.66);
-      }
-      .moment-button:hover,
-      .moment-button.is-active {
-        background: rgba(50, 30, 22, 0.98);
-        border-color: rgba(212, 99, 74, 0.44);
-      }
-      .type-pill {
-        background: rgba(32, 26, 20, 0.72);
-      }
-      .button-link {
-        background: rgba(40, 33, 26, 0.62);
-      }
-      #spec pre {
-        background: #120f0c;
-      }
-      #spec code {
-        background: rgba(237, 231, 220, 0.08);
+      .demo-chip {
+        min-width: 0;
+        flex: 1 1 100%;
       }
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <section class="hero">
-      <div class="eyebrow">Podcast Annotation Format</div>
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <h1>A small file for what a podcast moment is about.</h1>
-          <p>WebVTT gives you the words. An annotation set gives you the entities, topics, links, and timing needed to build overlays, searchable archives, timelines, and richer show notes.</p>
-          <div class="hero-actions">
-            <a class="button-link primary" href="#demo">See the timeline demo</a>
-            <a class="button-link" href="#spec">Read the spec</a>
-          </div>
+    <header class="topbar">
+      <strong>Podcast Annotation Format</strong>
+      <nav>
+        <a href="#example">Example</a>
+        <a href="#examples">Examples</a>
+        <a href="#spec">Spec</a>
+        <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>
+      </nav>
+    </header>
+
+    <section class="intro">
+      <div>
+        <h1>A format for what a podcast moment is about.</h1>
+        <p>Transcripts say what was said. An annotation set says what the moment means: a person, a car, a place, a term, or a topic.</p>
+        <p>The goal is straightforward. Give players, search systems, and archives a simple way to attach structure to spoken moments.</p>
+        <div class="intro-actions">
+          <a class="button-link primary" href="#spec">Read the spec</a>
+          <a class="button-link" href="#example">See a small example</a>
         </div>
-        <aside class="hero-panel panel">
-          <div class="panel-kicker">What one annotation looks like</div>
-          <pre class="hero-code"><code>{
-  "id": "annotation-42",
-  "startTime": 125,
-  "endTime": 142,
-  "title": "Carroll Shelby",
-  "type": "person"
+      </div>
+      <pre><code>{
+  "startTime": 81.92,
+  "endTime": 85.44,
+  "type": "car",
+  "title": "Tesla Model Y"
 }</code></pre>
-          <p style="margin-top:14px;">Two required fields. Works with any spoken audio. A player renders what it wants: overlay, card, search result, or nothing.</p>
-        </aside>
+    </section>
+
+    <section class="section">
+      <h2>Why this exists</h2>
+      <div class="why-grid">
+        <div class="why-item">
+          <strong>Transcripts are not enough</strong>
+          <p>A transcript gives you words and timestamps, but not the structure needed to know what the discussion is about.</p>
+        </div>
+        <div class="why-item">
+          <strong>Show notes are useful but loose</strong>
+          <p>Most podcasts already publish the right information in prose. This format gives that information stable timing and structure.</p>
+        </div>
+        <div class="why-item">
+          <strong>The file stays small</strong>
+          <p>Only <code>startTime</code> and <code>endTime</code> are required. Everything else is optional and easy to extend.</p>
+        </div>
       </div>
     </section>
 
-    <section class="section panel" id="demo">
-      <div class="panel-kicker">Featured Example</div>
-      <h2>What a player can render from one annotation file</h2>
-      <p>The preview below uses <code>${escapeHtml(featured.file)}</code>. Click a moment to move the playhead and inspect the structured payload behind that timestamp.</p>
-      <div class="timeline-stage">
-        <div class="timeline-meta">
-          <span>${escapeHtml(featured.annotationSet.episode?.title ?? featured.slug)}</span>
-          <span>${featured.annotationCount} annotations across ${formatTime(featured.duration)}</span>
+    <section class="section" id="example">
+      <h2>Small example</h2>
+      <p>This uses three real annotations from <code>${escapeHtml(featured.file)}</code>. It is enough to show the format without turning the page into a product demo.</p>
+      <div class="demo">
+        <div class="demo-head">
+          <strong>${escapeHtml(featured.annotationSet.episode?.title ?? featured.slug)}</strong>
+          <p>${featured.annotationCount} annotations across ${formatTime(featured.duration)}</p>
         </div>
-        <div class="timeline-track">
-          ${renderTimelineMarkers(featured.annotations, featured.duration, featuredMomentLookup)}
-          <div class="timeline-playhead" id="timeline-playhead"></div>
+        <div class="demo-track">
+          ${renderDemoMarkers(demoMoments)}
         </div>
-      </div>
-      <div class="moment-shell">
-        <article class="moment-card">
-          <div class="moment-type" id="moment-type">${escapeHtml(featuredInitial?.type ?? 'unknown')}</div>
-          <h2 id="moment-title">${escapeHtml(featuredInitial?.title ?? 'Featured annotation')}</h2>
-          <p id="moment-explanation">${escapeHtml(featuredInitial?.explanation ?? 'Select a moment to inspect the annotation payload.')}</p>
-          <p class="moment-quote" id="moment-quote">${featuredInitial?.quote ? escapeHtml(`"${featuredInitial.quote}"`) : 'Examples in this corpus often use title, type, image, and explanation without requiring a full quote.'}</p>
-          <p class="moment-meta" id="moment-meta">${featuredInitial?.image ? 'Includes image metadata in the payload.' : 'Structured payload only; no image required for the demo.'}</p>
-        </article>
-        <aside class="moment-payload">
-          <pre id="moment-payload">${escapeHtml(JSON.stringify(featuredInitial?.payload ?? {}, null, 2))}</pre>
-        </aside>
-      </div>
-      <div class="moment-buttons">
-        ${featuredMomentButtons}
+        <div class="demo-detail">
+          <div class="demo-copy">
+            <div class="demo-type" id="demo-type">${escapeHtml(demoInitial?.type ?? 'unknown')}</div>
+            <h3 id="demo-title">${escapeHtml(demoInitial?.title ?? 'Annotation')}</h3>
+            <p id="demo-explanation">${escapeHtml(demoInitial?.explanation ?? 'No explanation provided.')}</p>
+            <p class="demo-quote" id="demo-quote">${demoInitial?.quote ? escapeHtml(`"${demoInitial.quote}"`) : 'This annotation uses timing and typed metadata without relying on a quoted transcript span.'}</p>
+          </div>
+          <pre id="demo-payload">${escapeHtml(JSON.stringify(demoInitial?.payload ?? {}, null, 2))}</pre>
+        </div>
+        <div class="demo-chips">
+          ${renderDemoButtons(demoMoments)}
+        </div>
       </div>
     </section>
 
-    <section class="section panel">
-      <div class="panel-kicker">Corpus</div>
-      <h2>Corpus chart</h2>
-      <div class="stats-row" style="margin-bottom:20px;">
-        <div class="stat-card">
-          <strong>${exampleSets.length}</strong>
-          <span>example files</span>
-        </div>
-        <div class="stat-card">
-          <strong>${totalAnnotations}</strong>
-          <span>total annotations</span>
-        </div>
-        <div class="stat-card">
-          <strong>${totalTypes}</strong>
-          <span>entity and topic types</span>
-        </div>
-      </div>
-      <p>Each bar shows annotation count and density per minute. The range from sparse (chapter-like) to dense (entity timeline) shows how the same format handles different production styles.</p>
-      <div class="chart">
-        ${chartRows}
-      </div>
+    <section class="section" id="examples">
+      <h2>Example files</h2>
+      <p>The repository currently includes ${exampleSets.length} example files and ${totalAnnotations} annotations across several genres and production styles.</p>
+      <table class="examples-table">
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Episode</th>
+            <th>Count</th>
+            <th>Density</th>
+            <th>Top types</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${renderExampleRows(exampleSets)}
+        </tbody>
+      </table>
     </section>
 
-    <section class="section panel">
-      <div class="panel-kicker">Example Library</div>
-      <h2>Real files, not placeholder cases</h2>
-      <p>These examples are strong enough to anchor the spec. They should do more of the explanatory work so the prose can stay tighter and less promotional.</p>
-      <div class="examples-grid">
-        ${exampleCards}
-      </div>
-    </section>
-
-    <section class="spec-wrap panel">
+    <section class="spec-wrap">
       <article id="spec">
 ${body}
       </article>
     </section>
 
     <footer>
-      Developed by <a href="https://getcarcurious.com">Car Curious</a> &middot;
-      <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a> &middot;
-      <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+      Developed by <a href="https://getcarcurious.com">Car Curious</a>. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
     </footer>
   </div>
 
   <script>
-    const duration = ${JSON.stringify(featured.duration)}
-    const playhead = document.getElementById('timeline-playhead')
-    const titleEl = document.getElementById('moment-title')
-    const typeEl = document.getElementById('moment-type')
-    const explanationEl = document.getElementById('moment-explanation')
-    const quoteEl = document.getElementById('moment-quote')
-    const metaEl = document.getElementById('moment-meta')
-    const payloadEl = document.getElementById('moment-payload')
-    const buttons = [...document.querySelectorAll('.moment-button')]
-    const markers = [...document.querySelectorAll('.timeline-marker.is-featured')]
+    const demoMoments = ${JSON.stringify(demoMoments)}
+    const chips = [...document.querySelectorAll('.demo-chip')]
+    const markers = [...document.querySelectorAll('.demo-marker')]
+    const typeEl = document.getElementById('demo-type')
+    const titleEl = document.getElementById('demo-title')
+    const explanationEl = document.getElementById('demo-explanation')
+    const quoteEl = document.getElementById('demo-quote')
+    const payloadEl = document.getElementById('demo-payload')
 
-    function setPlayhead(seconds) {
-      const percent = duration > 0 ? (seconds / duration) * 100 : 0
-      playhead.style.left = percent.toFixed(2) + '%'
+    function selectDemo(index) {
+      const annotation = demoMoments.find((moment) => moment.index === index)
+      if (!annotation) return
+
+      chips.forEach((chip) => chip.classList.toggle('is-active', Number(chip.dataset.index) === index))
+      markers.forEach((marker) => marker.classList.toggle('is-active', Number(marker.dataset.index) === index))
+      typeEl.textContent = annotation.type || 'unknown'
+      titleEl.textContent = annotation.title || 'Annotation'
+      explanationEl.textContent = annotation.explanation || 'No explanation provided.'
+      quoteEl.textContent = annotation.quote
+        ? '"' + annotation.quote + '"'
+        : 'This annotation uses timing and typed metadata without relying on a quoted transcript span.'
+      payloadEl.textContent = JSON.stringify(annotation.payload || {}, null, 2)
     }
 
-    function selectButton(button) {
-      buttons.forEach((candidate) => candidate.classList.toggle('is-active', candidate === button))
-      markers.forEach((marker) => marker.classList.toggle('is-active', marker.dataset.index === button.dataset.index))
-      titleEl.textContent = button.dataset.title || 'Featured annotation'
-      typeEl.textContent = button.dataset.type || 'unknown'
-      explanationEl.textContent = button.dataset.explanation || 'No explanation provided.'
-      quoteEl.textContent = button.dataset.quote ? '"' + button.dataset.quote + '"' : 'This annotation uses timing and typed metadata without relying on a quoted transcript span.'
-      metaEl.textContent = button.dataset.image
-        ? 'Includes image metadata' + (button.dataset.attribution ? ' (' + button.dataset.attribution + ')' : '') + '.'
-        : 'Structured payload only; no image required for the demo.'
-      payloadEl.textContent = button.dataset.payload || '{}'
-
-      setPlayhead(Number(button.dataset.start || 0))
-    }
-
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => selectButton(button))
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => selectDemo(Number(chip.dataset.index)))
     })
 
     markers.forEach((marker) => {
-      marker.addEventListener('click', () => {
-        const button = buttons.find((candidate) => candidate.dataset.index === marker.dataset.index)
-        if (button) selectButton(button)
-      })
+      marker.addEventListener('click', () => selectDemo(Number(marker.dataset.index)))
     })
 
-    if (buttons[0]) selectButton(buttons[0])
+    if (demoMoments[0]) selectDemo(demoMoments[0].index)
   </script>
 </body>
 </html>`
