@@ -660,6 +660,74 @@ const html = `<!DOCTYPE html>
         max-width: none;
       }
     }
+    .hero-code {
+      background: #1f1a17;
+      color: #f5efe4;
+      padding: 1rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      line-height: 1.5;
+      font-family: var(--mono-font);
+      font-size: 0.88rem;
+      margin: 14px 0 0;
+    }
+    .hero-code code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --ink: #ede7dc;
+        --muted: #9a8f82;
+        --accent: #d4634a;
+        --accent-soft: rgba(212, 99, 74, 0.18);
+        --card: rgba(28, 23, 18, 0.82);
+        --line: rgba(237, 231, 220, 0.10);
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.30);
+      }
+      body {
+        background:
+          radial-gradient(circle at top left, rgba(185, 76, 53, 0.12), transparent 28%),
+          radial-gradient(circle at top right, rgba(51, 94, 122, 0.08), transparent 24%),
+          linear-gradient(180deg, #1a1512 0%, #18140f 44%, #1c1812 100%);
+        color: var(--ink);
+      }
+      .hero {
+        background: linear-gradient(145deg, rgba(30, 24, 18, 0.92), rgba(24, 18, 12, 0.84));
+      }
+      .moment-card {
+        background: rgba(28, 23, 18, 0.82);
+      }
+      .timeline-stage {
+        background: rgba(26, 21, 16, 0.86);
+      }
+      .timeline-track {
+        background:
+          linear-gradient(180deg, rgba(40, 35, 28, 0.9), rgba(30, 25, 18, 0.85)),
+          repeating-linear-gradient(90deg, transparent 0, transparent 11.5%, rgba(237, 231, 220, 0.04) 11.5%, rgba(237, 231, 220, 0.04) 12%);
+      }
+      .moment-button {
+        background: rgba(32, 26, 20, 0.66);
+      }
+      .moment-button:hover,
+      .moment-button.is-active {
+        background: rgba(50, 30, 22, 0.98);
+        border-color: rgba(212, 99, 74, 0.44);
+      }
+      .type-pill {
+        background: rgba(32, 26, 20, 0.72);
+      }
+      .button-link {
+        background: rgba(40, 33, 26, 0.62);
+      }
+      #spec pre {
+        background: #120f0c;
+      }
+      #spec code {
+        background: rgba(237, 231, 220, 0.08);
+      }
+    }
   </style>
 </head>
 <body>
@@ -674,28 +742,17 @@ const html = `<!DOCTYPE html>
             <a class="button-link primary" href="#demo">See the timeline demo</a>
             <a class="button-link" href="#spec">Read the spec</a>
           </div>
-          <div class="stats-row">
-            <div class="stat-card">
-              <strong>${exampleSets.length}</strong>
-              <span>example files in the repo</span>
-            </div>
-            <div class="stat-card">
-              <strong>${totalAnnotations}</strong>
-              <span>annotations across the corpus</span>
-            </div>
-            <div class="stat-card">
-              <strong>${totalTypes}</strong>
-              <span>entity and topic types used</span>
-            </div>
-          </div>
         </div>
         <aside class="hero-panel panel">
-          <div class="panel-kicker">Corpus Snapshot</div>
-          <p><strong>${escapeHtml(densestExample.annotationSet.episode?.title ?? densestExample.slug)}</strong> is the densest example in this repo at ${densestExample.densityPerMinute.toFixed(2)} annotations per minute.</p>
-          <div class="type-pill-row" style="margin-top:16px;">
-            ${renderTypePills(densestExample.typeCounts, 4)}
-          </div>
-          <p style="margin-top:14px;">The examples already span automotive, science, business history, culture, politics, and interview formats, which is enough to show the format is not tied to one content style.</p>
+          <div class="panel-kicker">What one annotation looks like</div>
+          <pre class="hero-code"><code>{
+  "id": "annotation-42",
+  "startTime": 125,
+  "endTime": 142,
+  "title": "Carroll Shelby",
+  "type": "person"
+}</code></pre>
+          <p style="margin-top:14px;">Four required fields. Works with any spoken audio. A player renders what it wants — overlay, card, search result, or nothing.</p>
         </aside>
       </div>
     </section>
@@ -732,9 +789,23 @@ const html = `<!DOCTYPE html>
     </section>
 
     <section class="section panel">
-      <div class="panel-kicker">Visualization</div>
+      <div class="panel-kicker">Corpus</div>
       <h2>Corpus chart</h2>
-      <p>This is the simplest useful chart for the project right now: how many annotations each example contains, plus density per minute. It makes the difference between chapter-like files and dense entity timelines immediately visible.</p>
+      <div class="stats-row" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <strong>${exampleSets.length}</strong>
+          <span>example files</span>
+        </div>
+        <div class="stat-card">
+          <strong>${totalAnnotations}</strong>
+          <span>total annotations</span>
+        </div>
+        <div class="stat-card">
+          <strong>${totalTypes}</strong>
+          <span>entity and topic types</span>
+        </div>
+      </div>
+      <p>Each bar shows annotation count and density per minute. The range from sparse (chapter-like) to dense (entity timeline) shows how the same format handles different production styles.</p>
       <div class="chart">
         ${chartRows}
       </div>
