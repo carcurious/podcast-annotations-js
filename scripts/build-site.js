@@ -37,7 +37,7 @@ const exampleSets = exampleFiles.map((file) => {
 
 const featured = exampleSets.find((example) => example.slug === 'everyday-driver-episode-1013') ?? exampleSets[0]
 const featuredMoments = featured.annotations
-  .filter((annotation) => annotation.title && (annotation.data?.explanation || annotation.image))
+  .filter((annotation) => annotation.title && (annotation.data?.explanation || annotation.data?.simplifiedExplanation || annotation.quote))
   .slice(0, 6)
   .map((annotation, index) => ({
     id: annotation.id ?? `featured-${index}`,
@@ -48,8 +48,20 @@ const featuredMoments = featured.annotations
     image: annotation.image ?? '',
     quote: annotation.quote ?? '',
     explanation: annotation.data?.explanation ?? annotation.data?.simplifiedExplanation ?? '',
-    attribution: annotation.data?.imageAttribution ?? ''
+    attribution: annotation.data?.imageAttribution ?? '',
+    payload: {
+      startTime: annotation.startTime,
+      endTime: annotation.endTime,
+      type: annotation.type ?? 'unknown',
+      title: annotation.title,
+      image: annotation.image,
+      quote: annotation.quote,
+      data: annotation.data ?? {}
+    }
   }))
+const featuredMomentLookup = new Map(
+  featuredMoments.map((annotation, index) => [`${annotation.startTime}:${annotation.title}`, index])
+)
 
 const totalAnnotations = exampleSets.reduce((sum, example) => sum + example.annotationCount, 0)
 const totalTypes = new Set(exampleSets.flatMap((example) => example.typeCounts.map(([type]) => type))).size
@@ -81,13 +93,20 @@ function renderTypePills(typeCounts, limit = 3) {
     .join('')
 }
 
-function renderTimelineMarkers(annotations, duration) {
+function renderTimelineMarkers(annotations, duration, featuredLookup) {
   return annotations
-    .map((annotation, index) => {
+    .map((annotation) => {
       const start = duration > 0 ? (annotation.startTime / duration) * 100 : 0
       const end = duration > 0 ? (annotation.endTime / duration) * 100 : start + 0.4
       const width = Math.max(end - start, 0.45)
-      return `<span class="timeline-marker" data-type="${escapeHtml(annotation.type ?? 'unknown')}" style="left:${start.toFixed(2)}%;width:${width.toFixed(2)}%" title="${escapeHtml(`${annotation.title ?? 'Untitled'} (${formatTime(annotation.startTime)})`)}"></span>`
+      const key = `${annotation.startTime}:${annotation.title ?? ''}`
+      const featuredIndex = featuredLookup.get(key)
+      const tag = featuredIndex === undefined ? 'span' : 'button'
+      const attrs = featuredIndex === undefined
+        ? ''
+        : ` type="button" data-index="${featuredIndex}" aria-label="${escapeHtml(`Select ${annotation.title ?? 'annotation'} at ${formatTime(annotation.startTime)}`)}"`
+      const extraClass = featuredIndex === undefined ? '' : ' is-featured'
+      return `<${tag} class="timeline-marker${extraClass}" data-type="${escapeHtml(annotation.type ?? 'unknown')}" style="left:${start.toFixed(2)}%;width:${width.toFixed(2)}%" title="${escapeHtml(`${annotation.title ?? 'Untitled'} (${formatTime(annotation.startTime)})`)}"${attrs}></${tag}>`
     })
     .join('')
 }
@@ -102,7 +121,8 @@ const featuredMomentButtons = featuredMoments
       data-explanation="${escapeHtml(annotation.explanation)}"
       data-image="${escapeHtml(annotation.image)}"
       data-attribution="${escapeHtml(annotation.attribution)}"
-      data-quote="${escapeHtml(annotation.quote)}">
+      data-quote="${escapeHtml(annotation.quote)}"
+      data-payload="${escapeHtml(JSON.stringify(annotation.payload, null, 2))}">
       <span class="moment-time">${formatTime(annotation.startTime)}</span>
       <span>${escapeHtml(annotation.title)}</span>
     </button>`
@@ -353,24 +373,30 @@ const html = `<!DOCTYPE html>
       border-left: 3px solid rgba(185, 76, 53, 0.25);
       padding-left: 12px;
     }
-    .moment-image {
+    .moment-payload {
       height: 100%;
       min-height: 170px;
       border-radius: 16px;
       overflow: hidden;
       border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(185, 76, 53, 0.12), rgba(51, 94, 122, 0.14));
+      background: rgba(255, 251, 245, 0.72);
     }
-    .moment-image img {
-      width: 100%;
+    .moment-payload pre {
+      margin: 0;
       height: 100%;
-      object-fit: cover;
+      min-height: 170px;
+      overflow: auto;
+      padding: 16px;
+      background: #171310;
+      color: #f5efe4;
+      font-family: var(--mono-font);
+      font-size: 0.84rem;
+      line-height: 1.5;
     }
-    .moment-image figcaption {
-      padding: 10px 12px;
-      font-size: 0.78rem;
+    .moment-meta {
+      margin-top: 14px;
+      font-size: 0.88rem;
       color: var(--muted);
-      background: rgba(255, 251, 245, 0.94);
     }
     .section {
       margin-top: 28px;
@@ -418,7 +444,12 @@ const html = `<!DOCTYPE html>
       border-radius: 8px;
       opacity: 0.9;
       background: #c97359;
+      border: 0;
+      padding: 0;
     }
+    .timeline-marker.is-featured { cursor: pointer; box-shadow: 0 0 0 1px rgba(255, 244, 230, 0.22); }
+    .timeline-marker.is-featured:hover,
+    .timeline-marker.is-featured.is-active { opacity: 1; transform: translateY(-1px); box-shadow: 0 0 0 2px rgba(255, 244, 230, 0.65); }
     .timeline-marker[data-type="car"] { background: #cf6b4f; }
     .timeline-marker[data-type="concept"] { background: #4f7d8b; }
     .timeline-marker[data-type="person"] { background: #856650; }
@@ -769,7 +800,7 @@ const html = `<!DOCTYPE html>
           <span>${featured.annotationCount} annotations across ${formatTime(featured.duration)}</span>
         </div>
         <div class="timeline-track">
-          ${renderTimelineMarkers(featured.annotations, featured.duration)}
+          ${renderTimelineMarkers(featured.annotations, featured.duration, featuredMomentLookup)}
           <div class="timeline-playhead" id="timeline-playhead"></div>
         </div>
       </div>
@@ -779,11 +810,11 @@ const html = `<!DOCTYPE html>
           <h2 id="moment-title">${escapeHtml(featuredInitial?.title ?? 'Featured annotation')}</h2>
           <p id="moment-explanation">${escapeHtml(featuredInitial?.explanation ?? 'Select a moment to inspect the annotation payload.')}</p>
           <p class="moment-quote" id="moment-quote">${featuredInitial?.quote ? escapeHtml(`"${featuredInitial.quote}"`) : 'Examples in this corpus often use title, type, image, and explanation without requiring a full quote.'}</p>
+          <p class="moment-meta" id="moment-meta">${featuredInitial?.image ? 'Includes image metadata in the payload.' : 'Structured payload only; no image required for the demo.'}</p>
         </article>
-        <figure class="moment-image" id="moment-figure"${featuredInitial?.image ? '' : ' style="display:none;"'}>
-          <img id="moment-image" src="${escapeHtml(featuredInitial?.image ?? '')}" alt="${escapeHtml(featuredInitial?.title ?? '')}">
-          <figcaption id="moment-attribution">${escapeHtml(featuredInitial?.attribution ?? '')}</figcaption>
-        </figure>
+        <aside class="moment-payload">
+          <pre id="moment-payload">${escapeHtml(JSON.stringify(featuredInitial?.payload ?? {}, null, 2))}</pre>
+        </aside>
       </div>
       <div class="moment-buttons">
         ${featuredMomentButtons}
@@ -842,10 +873,10 @@ ${body}
     const typeEl = document.getElementById('moment-type')
     const explanationEl = document.getElementById('moment-explanation')
     const quoteEl = document.getElementById('moment-quote')
-    const figureEl = document.getElementById('moment-figure')
-    const imageEl = document.getElementById('moment-image')
-    const attributionEl = document.getElementById('moment-attribution')
+    const metaEl = document.getElementById('moment-meta')
+    const payloadEl = document.getElementById('moment-payload')
     const buttons = [...document.querySelectorAll('.moment-button')]
+    const markers = [...document.querySelectorAll('.timeline-marker.is-featured')]
 
     function setPlayhead(seconds) {
       const percent = duration > 0 ? (seconds / duration) * 100 : 0
@@ -854,25 +885,28 @@ ${body}
 
     function selectButton(button) {
       buttons.forEach((candidate) => candidate.classList.toggle('is-active', candidate === button))
+      markers.forEach((marker) => marker.classList.toggle('is-active', marker.dataset.index === button.dataset.index))
       titleEl.textContent = button.dataset.title || 'Featured annotation'
       typeEl.textContent = button.dataset.type || 'unknown'
       explanationEl.textContent = button.dataset.explanation || 'No explanation provided.'
       quoteEl.textContent = button.dataset.quote ? '"' + button.dataset.quote + '"' : 'This annotation uses timing and typed metadata without relying on a quoted transcript span.'
-
-      if (button.dataset.image) {
-        figureEl.style.display = ''
-        imageEl.src = button.dataset.image
-        imageEl.alt = button.dataset.title || ''
-        attributionEl.textContent = button.dataset.attribution || ''
-      } else {
-        figureEl.style.display = 'none'
-      }
+      metaEl.textContent = button.dataset.image
+        ? 'Includes image metadata' + (button.dataset.attribution ? ' (' + button.dataset.attribution + ')' : '') + '.'
+        : 'Structured payload only; no image required for the demo.'
+      payloadEl.textContent = button.dataset.payload || '{}'
 
       setPlayhead(Number(button.dataset.start || 0))
     }
 
     buttons.forEach((button) => {
       button.addEventListener('click', () => selectButton(button))
+    })
+
+    markers.forEach((marker) => {
+      marker.addEventListener('click', () => {
+        const button = buttons.find((candidate) => candidate.dataset.index === marker.dataset.index)
+        if (button) selectButton(button)
+      })
     })
 
     if (buttons[0]) selectButton(buttons[0])

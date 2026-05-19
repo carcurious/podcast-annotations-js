@@ -205,24 +205,30 @@
       border-left: 3px solid rgba(185, 76, 53, 0.25);
       padding-left: 12px;
     }
-    .moment-image {
+    .moment-payload {
       height: 100%;
       min-height: 170px;
       border-radius: 16px;
       overflow: hidden;
       border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(185, 76, 53, 0.12), rgba(51, 94, 122, 0.14));
+      background: rgba(255, 251, 245, 0.72);
     }
-    .moment-image img {
-      width: 100%;
+    .moment-payload pre {
+      margin: 0;
       height: 100%;
-      object-fit: cover;
+      min-height: 170px;
+      overflow: auto;
+      padding: 16px;
+      background: #171310;
+      color: #f5efe4;
+      font-family: var(--mono-font);
+      font-size: 0.84rem;
+      line-height: 1.5;
     }
-    .moment-image figcaption {
-      padding: 10px 12px;
-      font-size: 0.78rem;
+    .moment-meta {
+      margin-top: 14px;
+      font-size: 0.88rem;
       color: var(--muted);
-      background: rgba(255, 251, 245, 0.94);
     }
     .section {
       margin-top: 28px;
@@ -270,7 +276,12 @@
       border-radius: 8px;
       opacity: 0.9;
       background: #c97359;
+      border: 0;
+      padding: 0;
     }
+    .timeline-marker.is-featured { cursor: pointer; box-shadow: 0 0 0 1px rgba(255, 244, 230, 0.22); }
+    .timeline-marker.is-featured:hover,
+    .timeline-marker.is-featured.is-active { opacity: 1; transform: translateY(-1px); box-shadow: 0 0 0 2px rgba(255, 244, 230, 0.65); }
     .timeline-marker[data-type="car"] { background: #cf6b4f; }
     .timeline-marker[data-type="concept"] { background: #4f7d8b; }
     .timeline-marker[data-type="person"] { background: #856650; }
@@ -621,89 +632,168 @@
           <span>113 annotations across 1:37:04</span>
         </div>
         <div class="timeline-track">
-          <span class="timeline-marker" data-type="car" style="left:0.91%;width:0.45%" title="Honda Prelude (0:53)"></span><span class="timeline-marker" data-type="car" style="left:1.41%;width:0.45%" title="Tesla Model Y (1:21)"></span><span class="timeline-marker" data-type="part" style="left:2.49%;width:0.45%" title="solenoid handles (2:25)"></span><span class="timeline-marker" data-type="car" style="left:2.66%;width:0.45%" title="Chevrolet Corvette (2:34)"></span><span class="timeline-marker" data-type="car" style="left:5.42%;width:0.45%" title="Nissan GT-R (5:15)"></span><span class="timeline-marker" data-type="car" style="left:5.88%;width:0.45%" title="Nissan Leaf (5:42)"></span><span class="timeline-marker" data-type="company" style="left:13.06%;width:0.45%" title="FCP Euro (12:40)"></span><span class="timeline-marker" data-type="term" style="left:13.24%;width:0.45%" title="OEM parts (12:50)"></span><span class="timeline-marker" data-type="term" style="left:13.56%;width:0.45%" title="lifetime replacement guarantee (13:09)"></span><span class="timeline-marker" data-type="term" style="left:13.59%;width:0.45%" title="consumables (13:11)"></span><span class="timeline-marker" data-type="term" style="left:15.42%;width:0.45%" title="2JZ engine (14:58)"></span><span class="timeline-marker" data-type="car" style="left:15.42%;width:0.45%" title="Toyota Supra (14:58)"></span><span class="timeline-marker" data-type="car" style="left:16.89%;width:0.45%" title="BMW Z4 (16:23)"></span><span class="timeline-marker" data-type="car" style="left:16.97%;width:0.45%" title="Toyota GR86 (16:28)"></span><span class="timeline-marker" data-type="car" style="left:17.24%;width:0.45%" title="Acura NSX (16:44)"></span><span class="timeline-marker" data-type="term" style="left:17.64%;width:0.45%" title="hybrid technology (17:07)"></span><span class="timeline-marker" data-type="term" style="left:17.64%;width:0.45%" title="all-wheel drive (17:07)"></span><span class="timeline-marker" data-type="car" style="left:18.36%;width:0.45%" title="Lotus Amira (17:49)"></span><span class="timeline-marker" data-type="term" style="left:18.39%;width:0.45%" title="mid-engine (17:51)"></span><span class="timeline-marker" data-type="term" style="left:18.44%;width:0.45%" title="manual transmission (17:54)"></span><span class="timeline-marker" data-type="car" style="left:18.48%;width:0.45%" title="Porsche 918 Spyder (17:56)"></span><span class="timeline-marker" data-type="car" style="left:19.43%;width:0.45%" title="Honda Accord (18:51)"></span><span class="timeline-marker" data-type="car" style="left:20.30%;width:0.45%" title="Audi R8 (19:42)"></span><span class="timeline-marker" data-type="car" style="left:21.12%;width:0.45%" title="Honda Insight (20:30)"></span><span class="timeline-marker" data-type="car" style="left:21.16%;width:0.45%" title="Honda Crz (20:32)"></span><span class="timeline-marker" data-type="car" style="left:21.44%;width:0.45%" title="Honda Nsx (20:48)"></span><span class="timeline-marker" data-type="concept" style="left:21.86%;width:0.45%" title="full EV (21:13)"></span><span class="timeline-marker" data-type="car" style="left:22.61%;width:0.45%" title="Aston Martin DB5 (21:56)"></span><span class="timeline-marker" data-type="car" style="left:22.71%;width:0.45%" title="Tesla 63 Model (22:02)"></span><span class="timeline-marker" data-type="car" style="left:22.92%;width:0.45%" title="Ford Edge (22:14)"></span><span class="timeline-marker" data-type="car" style="left:22.96%;width:0.45%" title="Aston Martin Vantage (22:17)"></span><span class="timeline-marker" data-type="car" style="left:23.47%;width:0.45%" title="Aston Valkyries (22:46)"></span><span class="timeline-marker" data-type="car" style="left:23.50%;width:0.45%" title="Aston Martin Valhalla (22:48)"></span><span class="timeline-marker" data-type="car" style="left:23.72%;width:0.45%" title="Audi Quattro (23:01)"></span><span class="timeline-marker" data-type="car" style="left:24.70%;width:0.45%" title="BMW Z8 (23:58)"></span><span class="timeline-marker" data-type="car" style="left:24.70%;width:0.45%" title="Alpina Z8 (23:58)"></span><span class="timeline-marker" data-type="car" style="left:25.30%;width:0.45%" title="BMW M5 (24:33)"></span><span class="timeline-marker" data-type="car" style="left:26.16%;width:0.45%" title="Chevrolet Blazer (25:23)"></span><span class="timeline-marker" data-type="car" style="left:26.97%;width:0.45%" title="Ford F-150 Raptor (26:11)"></span><span class="timeline-marker" data-type="car" style="left:27.04%;width:0.45%" title="Ford Bronco (26:15)"></span><span class="timeline-marker" data-type="car" style="left:27.21%;width:0.45%" title="Chevrolet Camaro (26:24)"></span><span class="timeline-marker" data-type="car" style="left:29.20%;width:0.45%" title="Dodge Charger Daytona (28:20)"></span><span class="timeline-marker" data-type="car" style="left:29.37%;width:0.45%" title="Dodge Challenger (28:30)"></span><span class="timeline-marker" data-type="car" style="left:29.50%;width:0.45%" title="Porsche 928 (28:38)"></span><span class="timeline-marker" data-type="car" style="left:30.88%;width:0.45%" title="Honda S2000 (29:58)"></span><span class="timeline-marker" data-type="car" style="left:31.19%;width:0.45%" title="Toyota Prius (30:16)"></span><span class="timeline-marker" data-type="car" style="left:31.58%;width:0.45%" title="Hyundai Veloster N (30:39)"></span><span class="timeline-marker" data-type="car" style="left:33.50%;width:0.45%" title="Jaguar XKSS (32:31)"></span><span class="timeline-marker" data-type="car" style="left:34.31%;width:0.45%" title="Jeep Wrangler (33:18)"></span><span class="timeline-marker" data-type="car" style="left:35.65%;width:0.45%" title="Oldsmobile Intrigues (34:36)"></span><span class="timeline-marker" data-type="car" style="left:36.15%;width:0.45%" title="Volkswagen Bora (35:05)"></span><span class="timeline-marker" data-type="car" style="left:36.59%;width:0.45%" title="Maserati MC20 (35:31)"></span><span class="timeline-marker" data-type="car" style="left:36.74%;width:0.45%" title="Mazda Rx7 (35:40)"></span><span class="timeline-marker" data-type="car" style="left:37.80%;width:0.45%" title="Mercedes-Benz SLK (36:41)"></span><span class="timeline-marker" data-type="car" style="left:38.71%;width:0.45%" title="Mitsubishi Outlanders (37:34)"></span><span class="timeline-marker" data-type="car" style="left:38.86%;width:0.45%" title="Mitsubishi Eclipse Cross (37:43)"></span><span class="timeline-marker" data-type="car" style="left:41.03%;width:0.45%" title="Alfa Romeo Spider (39:49)"></span><span class="timeline-marker" data-type="car" style="left:41.07%;width:0.45%" title="Mazda Miata (39:52)"></span><span class="timeline-marker" data-type="car" style="left:41.32%;width:0.45%" title="Fiat 124 (40:06)"></span><span class="timeline-marker" data-type="car" style="left:41.62%;width:0.45%" title="Mazda Mx5 (40:24)"></span><span class="timeline-marker" data-type="car" style="left:42.84%;width:0.45%" title="Porsche Boxster (41:35)"></span><span class="timeline-marker" data-type="car" style="left:43.18%;width:0.45%" title="Porsche Cayman (41:55)"></span><span class="timeline-marker" data-type="car" style="left:43.53%;width:0.45%" title="Audi Tt (42:15)"></span><span class="timeline-marker" data-type="car" style="left:47.14%;width:0.45%" title="Cadillac XLR (45:45)"></span><span class="timeline-marker" data-type="car" style="left:48.86%;width:0.45%" title="Pontiac Solstice (47:26)"></span><span class="timeline-marker" data-type="car" style="left:52.05%;width:0.45%" title="Ford Fiesta ST (50:31)"></span><span class="timeline-marker" data-type="car" style="left:52.70%;width:0.45%" title="Nissan Sentra (51:09)"></span><span class="timeline-marker" data-type="car" style="left:53.68%;width:0.45%" title="Ford Focus RS (52:06)"></span><span class="timeline-marker" data-type="car" style="left:54.34%;width:0.45%" title="Honda Civic (52:44)"></span><span class="timeline-marker" data-type="car" style="left:56.05%;width:0.45%" title="Hyundai Genesis (54:24)"></span><span class="timeline-marker" data-type="car" style="left:57.93%;width:0.45%" title="Genesis G70 (56:14)"></span><span class="timeline-marker" data-type="car" style="left:58.54%;width:0.45%" title="Nissan 350Z (56:49)"></span><span class="timeline-marker" data-type="car" style="left:59.50%;width:0.45%" title="Nissan Z (57:45)"></span><span class="timeline-marker" data-type="car" style="left:59.82%;width:0.45%" title="Lexus Rc (58:03)"></span><span class="timeline-marker" data-type="car" style="left:59.86%;width:0.45%" title="Infiniti G37 (58:06)"></span><span class="timeline-marker" data-type="car" style="left:61.01%;width:0.45%" title="BMW E36 (59:13)"></span><span class="timeline-marker" data-type="car" style="left:64.28%;width:0.45%" title="Buick Envision (1:02:23)"></span><span class="timeline-marker" data-type="car" style="left:66.03%;width:0.45%" title="Mini Countryman (1:04:05)"></span><span class="timeline-marker" data-type="car" style="left:66.37%;width:0.45%" title="Mitsubishi Lancer (1:04:25)"></span><span class="timeline-marker" data-type="car" style="left:72.10%;width:0.45%" title="Honda Civic Type R (1:09:59)"></span><span class="timeline-marker" data-type="car" style="left:72.64%;width:0.45%" title="Toyota Highlander (1:10:30)"></span><span class="timeline-marker" data-type="car" style="left:72.86%;width:0.45%" title="Porsche 718 (1:10:43)"></span><span class="timeline-marker" data-type="car" style="left:74.48%;width:0.45%" title="Porsche Carrera T (1:12:17)"></span><span class="timeline-marker" data-type="car" style="left:74.68%;width:0.45%" title="Subaru Brz (1:12:29)"></span><span class="timeline-marker" data-type="car" style="left:76.68%;width:0.45%" title="Acura Integra (1:14:25)"></span><span class="timeline-marker" data-type="car" style="left:77.37%;width:0.45%" title="BMW Z3 (1:15:06)"></span><span class="timeline-marker" data-type="car" style="left:80.76%;width:0.45%" title="Toyota MR2 (1:18:23)"></span><span class="timeline-marker" data-type="car" style="left:83.24%;width:0.45%" title="Honda That Honda (1:20:48)"></span><span class="timeline-marker" data-type="car" style="left:84.17%;width:0.45%" title="Cupra Born (1:21:42)"></span><span class="timeline-marker" data-type="car" style="left:84.21%;width:0.45%" title="BMW M2 (1:21:44)"></span><span class="timeline-marker" data-type="car" style="left:84.21%;width:0.45%" title="Lotus Evora (1:21:44)"></span><span class="timeline-marker" data-type="car" style="left:84.62%;width:0.45%" title="Volkswagen Golf GTI (1:22:08)"></span><span class="timeline-marker" data-type="car" style="left:84.89%;width:0.45%" title="Toyota Sienna (1:22:24)"></span><span class="timeline-marker" data-type="car" style="left:85.11%;width:0.45%" title="Audi RS6 Avant (1:22:37)"></span><span class="timeline-marker" data-type="car" style="left:85.11%;width:0.45%" title="Volvo V90 (1:22:37)"></span><span class="timeline-marker" data-type="car" style="left:85.16%;width:0.45%" title="Mercedes-Benz Eclass (1:22:39)"></span><span class="timeline-marker" data-type="car" style="left:85.77%;width:0.45%" title="Subaru Outback (1:23:15)"></span><span class="timeline-marker" data-type="car" style="left:86.60%;width:0.45%" title="Kia Tellide (1:24:04)"></span><span class="timeline-marker" data-type="car" style="left:86.72%;width:0.45%" title="Hyundai Palisade (1:24:11)"></span><span class="timeline-marker" data-type="car" style="left:86.76%;width:0.45%" title="Hyundai Santa Fe (1:24:13)"></span><span class="timeline-marker" data-type="car" style="left:87.38%;width:0.45%" title="Genesis GV80 (1:24:49)"></span><span class="timeline-marker" data-type="car" style="left:88.19%;width:0.45%" title="Cadillac Escalade (1:25:36)"></span><span class="timeline-marker" data-type="car" style="left:89.78%;width:0.45%" title="Porsche Cayenne (1:27:08)"></span><span class="timeline-marker" data-type="car" style="left:91.44%;width:0.45%" title="Chrysler Pacifica (1:28:45)"></span><span class="timeline-marker" data-type="car" style="left:91.81%;width:0.45%" title="Tesla Model S (1:29:07)"></span><span class="timeline-marker" data-type="car" style="left:94.40%;width:0.45%" title="Ford Thunderbird (1:31:38)"></span><span class="timeline-marker" data-type="car" style="left:95.57%;width:0.45%" title="Genesis G90 (1:32:46)"></span><span class="timeline-marker" data-type="car" style="left:97.15%;width:0.45%" title="BMW M3 (1:34:18)"></span><span class="timeline-marker" data-type="car" style="left:97.34%;width:0.45%" title="BMW E39 (1:34:29)"></span><span class="timeline-marker" data-type="car" style="left:97.77%;width:0.45%" title="Hyundai Elantra N (1:34:54)"></span><span class="timeline-marker" data-type="car" style="left:98.91%;width:0.45%" title="BMW 440I (1:36:01)"></span><span class="timeline-marker" data-type="car" style="left:98.97%;width:0.45%" title="Audi S5 (1:36:04)"></span><span class="timeline-marker" data-type="car" style="left:99.94%;width:0.45%" title="Alfa Romeo Giulia (1:37:00)"></span>
+          <span class="timeline-marker" data-type="car" style="left:0.91%;width:0.45%" title="Honda Prelude (0:53)"></span><button class="timeline-marker is-featured" data-type="car" style="left:1.41%;width:0.45%" title="Tesla Model Y (1:21)" type="button" data-index="0" aria-label="Select Tesla Model Y at 1:21"></button><button class="timeline-marker is-featured" data-type="part" style="left:2.49%;width:0.45%" title="solenoid handles (2:25)" type="button" data-index="1" aria-label="Select solenoid handles at 2:25"></button><button class="timeline-marker is-featured" data-type="car" style="left:2.66%;width:0.45%" title="Chevrolet Corvette (2:34)" type="button" data-index="2" aria-label="Select Chevrolet Corvette at 2:34"></button><button class="timeline-marker is-featured" data-type="car" style="left:5.42%;width:0.45%" title="Nissan GT-R (5:15)" type="button" data-index="3" aria-label="Select Nissan GT-R at 5:15"></button><button class="timeline-marker is-featured" data-type="car" style="left:5.88%;width:0.45%" title="Nissan Leaf (5:42)" type="button" data-index="4" aria-label="Select Nissan Leaf at 5:42"></button><button class="timeline-marker is-featured" data-type="company" style="left:13.06%;width:0.45%" title="FCP Euro (12:40)" type="button" data-index="5" aria-label="Select FCP Euro at 12:40"></button><span class="timeline-marker" data-type="term" style="left:13.24%;width:0.45%" title="OEM parts (12:50)"></span><span class="timeline-marker" data-type="term" style="left:13.56%;width:0.45%" title="lifetime replacement guarantee (13:09)"></span><span class="timeline-marker" data-type="term" style="left:13.59%;width:0.45%" title="consumables (13:11)"></span><span class="timeline-marker" data-type="term" style="left:15.42%;width:0.45%" title="2JZ engine (14:58)"></span><span class="timeline-marker" data-type="car" style="left:15.42%;width:0.45%" title="Toyota Supra (14:58)"></span><span class="timeline-marker" data-type="car" style="left:16.89%;width:0.45%" title="BMW Z4 (16:23)"></span><span class="timeline-marker" data-type="car" style="left:16.97%;width:0.45%" title="Toyota GR86 (16:28)"></span><span class="timeline-marker" data-type="car" style="left:17.24%;width:0.45%" title="Acura NSX (16:44)"></span><span class="timeline-marker" data-type="term" style="left:17.64%;width:0.45%" title="hybrid technology (17:07)"></span><span class="timeline-marker" data-type="term" style="left:17.64%;width:0.45%" title="all-wheel drive (17:07)"></span><span class="timeline-marker" data-type="car" style="left:18.36%;width:0.45%" title="Lotus Amira (17:49)"></span><span class="timeline-marker" data-type="term" style="left:18.39%;width:0.45%" title="mid-engine (17:51)"></span><span class="timeline-marker" data-type="term" style="left:18.44%;width:0.45%" title="manual transmission (17:54)"></span><span class="timeline-marker" data-type="car" style="left:18.48%;width:0.45%" title="Porsche 918 Spyder (17:56)"></span><span class="timeline-marker" data-type="car" style="left:19.43%;width:0.45%" title="Honda Accord (18:51)"></span><span class="timeline-marker" data-type="car" style="left:20.30%;width:0.45%" title="Audi R8 (19:42)"></span><span class="timeline-marker" data-type="car" style="left:21.12%;width:0.45%" title="Honda Insight (20:30)"></span><span class="timeline-marker" data-type="car" style="left:21.16%;width:0.45%" title="Honda Crz (20:32)"></span><span class="timeline-marker" data-type="car" style="left:21.44%;width:0.45%" title="Honda Nsx (20:48)"></span><span class="timeline-marker" data-type="concept" style="left:21.86%;width:0.45%" title="full EV (21:13)"></span><span class="timeline-marker" data-type="car" style="left:22.61%;width:0.45%" title="Aston Martin DB5 (21:56)"></span><span class="timeline-marker" data-type="car" style="left:22.71%;width:0.45%" title="Tesla 63 Model (22:02)"></span><span class="timeline-marker" data-type="car" style="left:22.92%;width:0.45%" title="Ford Edge (22:14)"></span><span class="timeline-marker" data-type="car" style="left:22.96%;width:0.45%" title="Aston Martin Vantage (22:17)"></span><span class="timeline-marker" data-type="car" style="left:23.47%;width:0.45%" title="Aston Valkyries (22:46)"></span><span class="timeline-marker" data-type="car" style="left:23.50%;width:0.45%" title="Aston Martin Valhalla (22:48)"></span><span class="timeline-marker" data-type="car" style="left:23.72%;width:0.45%" title="Audi Quattro (23:01)"></span><span class="timeline-marker" data-type="car" style="left:24.70%;width:0.45%" title="BMW Z8 (23:58)"></span><span class="timeline-marker" data-type="car" style="left:24.70%;width:0.45%" title="Alpina Z8 (23:58)"></span><span class="timeline-marker" data-type="car" style="left:25.30%;width:0.45%" title="BMW M5 (24:33)"></span><span class="timeline-marker" data-type="car" style="left:26.16%;width:0.45%" title="Chevrolet Blazer (25:23)"></span><span class="timeline-marker" data-type="car" style="left:26.97%;width:0.45%" title="Ford F-150 Raptor (26:11)"></span><span class="timeline-marker" data-type="car" style="left:27.04%;width:0.45%" title="Ford Bronco (26:15)"></span><span class="timeline-marker" data-type="car" style="left:27.21%;width:0.45%" title="Chevrolet Camaro (26:24)"></span><span class="timeline-marker" data-type="car" style="left:29.20%;width:0.45%" title="Dodge Charger Daytona (28:20)"></span><span class="timeline-marker" data-type="car" style="left:29.37%;width:0.45%" title="Dodge Challenger (28:30)"></span><span class="timeline-marker" data-type="car" style="left:29.50%;width:0.45%" title="Porsche 928 (28:38)"></span><span class="timeline-marker" data-type="car" style="left:30.88%;width:0.45%" title="Honda S2000 (29:58)"></span><span class="timeline-marker" data-type="car" style="left:31.19%;width:0.45%" title="Toyota Prius (30:16)"></span><span class="timeline-marker" data-type="car" style="left:31.58%;width:0.45%" title="Hyundai Veloster N (30:39)"></span><span class="timeline-marker" data-type="car" style="left:33.50%;width:0.45%" title="Jaguar XKSS (32:31)"></span><span class="timeline-marker" data-type="car" style="left:34.31%;width:0.45%" title="Jeep Wrangler (33:18)"></span><span class="timeline-marker" data-type="car" style="left:35.65%;width:0.45%" title="Oldsmobile Intrigues (34:36)"></span><span class="timeline-marker" data-type="car" style="left:36.15%;width:0.45%" title="Volkswagen Bora (35:05)"></span><span class="timeline-marker" data-type="car" style="left:36.59%;width:0.45%" title="Maserati MC20 (35:31)"></span><span class="timeline-marker" data-type="car" style="left:36.74%;width:0.45%" title="Mazda Rx7 (35:40)"></span><span class="timeline-marker" data-type="car" style="left:37.80%;width:0.45%" title="Mercedes-Benz SLK (36:41)"></span><span class="timeline-marker" data-type="car" style="left:38.71%;width:0.45%" title="Mitsubishi Outlanders (37:34)"></span><span class="timeline-marker" data-type="car" style="left:38.86%;width:0.45%" title="Mitsubishi Eclipse Cross (37:43)"></span><span class="timeline-marker" data-type="car" style="left:41.03%;width:0.45%" title="Alfa Romeo Spider (39:49)"></span><span class="timeline-marker" data-type="car" style="left:41.07%;width:0.45%" title="Mazda Miata (39:52)"></span><span class="timeline-marker" data-type="car" style="left:41.32%;width:0.45%" title="Fiat 124 (40:06)"></span><span class="timeline-marker" data-type="car" style="left:41.62%;width:0.45%" title="Mazda Mx5 (40:24)"></span><span class="timeline-marker" data-type="car" style="left:42.84%;width:0.45%" title="Porsche Boxster (41:35)"></span><span class="timeline-marker" data-type="car" style="left:43.18%;width:0.45%" title="Porsche Cayman (41:55)"></span><span class="timeline-marker" data-type="car" style="left:43.53%;width:0.45%" title="Audi Tt (42:15)"></span><span class="timeline-marker" data-type="car" style="left:47.14%;width:0.45%" title="Cadillac XLR (45:45)"></span><span class="timeline-marker" data-type="car" style="left:48.86%;width:0.45%" title="Pontiac Solstice (47:26)"></span><span class="timeline-marker" data-type="car" style="left:52.05%;width:0.45%" title="Ford Fiesta ST (50:31)"></span><span class="timeline-marker" data-type="car" style="left:52.70%;width:0.45%" title="Nissan Sentra (51:09)"></span><span class="timeline-marker" data-type="car" style="left:53.68%;width:0.45%" title="Ford Focus RS (52:06)"></span><span class="timeline-marker" data-type="car" style="left:54.34%;width:0.45%" title="Honda Civic (52:44)"></span><span class="timeline-marker" data-type="car" style="left:56.05%;width:0.45%" title="Hyundai Genesis (54:24)"></span><span class="timeline-marker" data-type="car" style="left:57.93%;width:0.45%" title="Genesis G70 (56:14)"></span><span class="timeline-marker" data-type="car" style="left:58.54%;width:0.45%" title="Nissan 350Z (56:49)"></span><span class="timeline-marker" data-type="car" style="left:59.50%;width:0.45%" title="Nissan Z (57:45)"></span><span class="timeline-marker" data-type="car" style="left:59.82%;width:0.45%" title="Lexus Rc (58:03)"></span><span class="timeline-marker" data-type="car" style="left:59.86%;width:0.45%" title="Infiniti G37 (58:06)"></span><span class="timeline-marker" data-type="car" style="left:61.01%;width:0.45%" title="BMW E36 (59:13)"></span><span class="timeline-marker" data-type="car" style="left:64.28%;width:0.45%" title="Buick Envision (1:02:23)"></span><span class="timeline-marker" data-type="car" style="left:66.03%;width:0.45%" title="Mini Countryman (1:04:05)"></span><span class="timeline-marker" data-type="car" style="left:66.37%;width:0.45%" title="Mitsubishi Lancer (1:04:25)"></span><span class="timeline-marker" data-type="car" style="left:72.10%;width:0.45%" title="Honda Civic Type R (1:09:59)"></span><span class="timeline-marker" data-type="car" style="left:72.64%;width:0.45%" title="Toyota Highlander (1:10:30)"></span><span class="timeline-marker" data-type="car" style="left:72.86%;width:0.45%" title="Porsche 718 (1:10:43)"></span><span class="timeline-marker" data-type="car" style="left:74.48%;width:0.45%" title="Porsche Carrera T (1:12:17)"></span><span class="timeline-marker" data-type="car" style="left:74.68%;width:0.45%" title="Subaru Brz (1:12:29)"></span><span class="timeline-marker" data-type="car" style="left:76.68%;width:0.45%" title="Acura Integra (1:14:25)"></span><span class="timeline-marker" data-type="car" style="left:77.37%;width:0.45%" title="BMW Z3 (1:15:06)"></span><span class="timeline-marker" data-type="car" style="left:80.76%;width:0.45%" title="Toyota MR2 (1:18:23)"></span><span class="timeline-marker" data-type="car" style="left:83.24%;width:0.45%" title="Honda That Honda (1:20:48)"></span><span class="timeline-marker" data-type="car" style="left:84.17%;width:0.45%" title="Cupra Born (1:21:42)"></span><span class="timeline-marker" data-type="car" style="left:84.21%;width:0.45%" title="BMW M2 (1:21:44)"></span><span class="timeline-marker" data-type="car" style="left:84.21%;width:0.45%" title="Lotus Evora (1:21:44)"></span><span class="timeline-marker" data-type="car" style="left:84.62%;width:0.45%" title="Volkswagen Golf GTI (1:22:08)"></span><span class="timeline-marker" data-type="car" style="left:84.89%;width:0.45%" title="Toyota Sienna (1:22:24)"></span><span class="timeline-marker" data-type="car" style="left:85.11%;width:0.45%" title="Audi RS6 Avant (1:22:37)"></span><span class="timeline-marker" data-type="car" style="left:85.11%;width:0.45%" title="Volvo V90 (1:22:37)"></span><span class="timeline-marker" data-type="car" style="left:85.16%;width:0.45%" title="Mercedes-Benz Eclass (1:22:39)"></span><span class="timeline-marker" data-type="car" style="left:85.77%;width:0.45%" title="Subaru Outback (1:23:15)"></span><span class="timeline-marker" data-type="car" style="left:86.60%;width:0.45%" title="Kia Tellide (1:24:04)"></span><span class="timeline-marker" data-type="car" style="left:86.72%;width:0.45%" title="Hyundai Palisade (1:24:11)"></span><span class="timeline-marker" data-type="car" style="left:86.76%;width:0.45%" title="Hyundai Santa Fe (1:24:13)"></span><span class="timeline-marker" data-type="car" style="left:87.38%;width:0.45%" title="Genesis GV80 (1:24:49)"></span><span class="timeline-marker" data-type="car" style="left:88.19%;width:0.45%" title="Cadillac Escalade (1:25:36)"></span><span class="timeline-marker" data-type="car" style="left:89.78%;width:0.45%" title="Porsche Cayenne (1:27:08)"></span><span class="timeline-marker" data-type="car" style="left:91.44%;width:0.45%" title="Chrysler Pacifica (1:28:45)"></span><span class="timeline-marker" data-type="car" style="left:91.81%;width:0.45%" title="Tesla Model S (1:29:07)"></span><span class="timeline-marker" data-type="car" style="left:94.40%;width:0.45%" title="Ford Thunderbird (1:31:38)"></span><span class="timeline-marker" data-type="car" style="left:95.57%;width:0.45%" title="Genesis G90 (1:32:46)"></span><span class="timeline-marker" data-type="car" style="left:97.15%;width:0.45%" title="BMW M3 (1:34:18)"></span><span class="timeline-marker" data-type="car" style="left:97.34%;width:0.45%" title="BMW E39 (1:34:29)"></span><span class="timeline-marker" data-type="car" style="left:97.77%;width:0.45%" title="Hyundai Elantra N (1:34:54)"></span><span class="timeline-marker" data-type="car" style="left:98.91%;width:0.45%" title="BMW 440I (1:36:01)"></span><span class="timeline-marker" data-type="car" style="left:98.97%;width:0.45%" title="Audi S5 (1:36:04)"></span><span class="timeline-marker" data-type="car" style="left:99.94%;width:0.45%" title="Alfa Romeo Giulia (1:37:00)"></span>
           <div class="timeline-playhead" id="timeline-playhead"></div>
         </div>
       </div>
       <div class="moment-shell">
         <article class="moment-card">
           <div class="moment-type" id="moment-type">car</div>
-          <h2 id="moment-title">Honda Prelude</h2>
-          <p id="moment-explanation"></p>
+          <h2 id="moment-title">Tesla Model Y</h2>
+          <p id="moment-explanation">The Tesla Model Y is an all-electric compact SUV that shares a platform with the Model 3 sedan. It offers impressive range, performance, and advanced technology features, making it a popular choice in the electric vehicle market.</p>
           <p class="moment-quote" id="moment-quote">Examples in this corpus often use title, type, image, and explanation without requiring a full quote.</p>
+          <p class="moment-meta" id="moment-meta">Includes image metadata in the payload.</p>
         </article>
-        <figure class="moment-image" id="moment-figure">
-          <img id="moment-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/1982_Honda_Prelude_%2815977118997%29.jpg/1200px-1982_Honda_Prelude_%2815977118997%29.jpg" alt="Honda Prelude">
-          <figcaption id="moment-attribution">Riley from Christchurch, New Zealand (CC BY 2.0)</figcaption>
-        </figure>
+        <aside class="moment-payload">
+          <pre id="moment-payload">{
+  &quot;startTime&quot;: 81.92,
+  &quot;endTime&quot;: 85.44,
+  &quot;type&quot;: &quot;car&quot;,
+  &quot;title&quot;: &quot;Tesla Model Y&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Tesla_Model_Y_%282025%29_MYLE_Festival_2025_DSC_9565.jpg/1200px-Tesla_Model_Y_%282025%29_MYLE_Festival_2025_DSC_9565.jpg&quot;,
+  &quot;data&quot;: {
+    &quot;explanation&quot;: &quot;The Tesla Model Y is an all-electric compact SUV that shares a platform with the Model 3 sedan. It offers impressive range, performance, and advanced technology features, making it a popular choice in the electric vehicle market.&quot;,
+    &quot;simplifiedExplanation&quot;: &quot;The Tesla Model Y is a type of electric car that looks like an SUV. It&#39;s known for being efficient and having lots of modern features, like a big touchscreen inside.&quot;,
+    &quot;imageAttribution&quot;: &quot;Alexander Migl (CC BY-SA 4.0)&quot;
+  }
+}</pre>
+        </aside>
       </div>
       <div class="moment-buttons">
         <button class="moment-button is-active" type="button"
       data-index="0"
-      data-start="53.12"
-      data-title="Honda Prelude"
-      data-type="car"
-      data-explanation=""
-      data-image="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/1982_Honda_Prelude_%2815977118997%29.jpg/1200px-1982_Honda_Prelude_%2815977118997%29.jpg"
-      data-attribution="Riley from Christchurch, New Zealand (CC BY 2.0)"
-      data-quote="">
-      <span class="moment-time">0:53</span>
-      <span>Honda Prelude</span>
-    </button><button class="moment-button" type="button"
-      data-index="1"
       data-start="81.92"
       data-title="Tesla Model Y"
       data-type="car"
       data-explanation="The Tesla Model Y is an all-electric compact SUV that shares a platform with the Model 3 sedan. It offers impressive range, performance, and advanced technology features, making it a popular choice in the electric vehicle market."
       data-image="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Tesla_Model_Y_%282025%29_MYLE_Festival_2025_DSC_9565.jpg/1200px-Tesla_Model_Y_%282025%29_MYLE_Festival_2025_DSC_9565.jpg"
       data-attribution="Alexander Migl (CC BY-SA 4.0)"
-      data-quote="">
+      data-quote=""
+      data-payload="{
+  &quot;startTime&quot;: 81.92,
+  &quot;endTime&quot;: 85.44,
+  &quot;type&quot;: &quot;car&quot;,
+  &quot;title&quot;: &quot;Tesla Model Y&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Tesla_Model_Y_%282025%29_MYLE_Festival_2025_DSC_9565.jpg/1200px-Tesla_Model_Y_%282025%29_MYLE_Festival_2025_DSC_9565.jpg&quot;,
+  &quot;data&quot;: {
+    &quot;explanation&quot;: &quot;The Tesla Model Y is an all-electric compact SUV that shares a platform with the Model 3 sedan. It offers impressive range, performance, and advanced technology features, making it a popular choice in the electric vehicle market.&quot;,
+    &quot;simplifiedExplanation&quot;: &quot;The Tesla Model Y is a type of electric car that looks like an SUV. It&#39;s known for being efficient and having lots of modern features, like a big touchscreen inside.&quot;,
+    &quot;imageAttribution&quot;: &quot;Alexander Migl (CC BY-SA 4.0)&quot;
+  }
+}">
       <span class="moment-time">1:21</span>
       <span>Tesla Model Y</span>
     </button><button class="moment-button" type="button"
-      data-index="2"
+      data-index="1"
       data-start="145.1"
       data-title="solenoid handles"
       data-type="part"
       data-explanation="Solenoid handles are electronic door handles that use a solenoid mechanism to lock and unlock the door. They are often found in modern vehicles, including electric cars like Teslas, and can malfunction if jammed or stuck."
       data-image=""
       data-attribution=""
-      data-quote="">
+      data-quote=""
+      data-payload="{
+  &quot;startTime&quot;: 145.1,
+  &quot;endTime&quot;: 145.1,
+  &quot;type&quot;: &quot;part&quot;,
+  &quot;title&quot;: &quot;solenoid handles&quot;,
+  &quot;data&quot;: {
+    &quot;explanation&quot;: &quot;Solenoid handles are electronic door handles that use a solenoid mechanism to lock and unlock the door. They are often found in modern vehicles, including electric cars like Teslas, and can malfunction if jammed or stuck.&quot;,
+    &quot;simplifiedExplanation&quot;: &quot;Solenoid handles are the parts that help you open and close car doors electronically. They can sometimes get stuck, making it hard to get into the car.&quot;
+  }
+}">
       <span class="moment-time">2:25</span>
       <span>solenoid handles</span>
     </button><button class="moment-button" type="button"
-      data-index="3"
+      data-index="2"
       data-start="154.8"
       data-title="Chevrolet Corvette"
       data-type="car"
       data-explanation="The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup."
       data-image="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg/1200px-Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg"
       data-attribution="Matti Blume (CC BY-SA)"
-      data-quote="">
+      data-quote=""
+      data-payload="{
+  &quot;startTime&quot;: 154.8,
+  &quot;endTime&quot;: 158.48,
+  &quot;type&quot;: &quot;car&quot;,
+  &quot;title&quot;: &quot;Chevrolet Corvette&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg/1200px-Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg&quot;,
+  &quot;data&quot;: {
+    &quot;explanation&quot;: &quot;The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup.&quot;,
+    &quot;simplifiedExplanation&quot;: &quot;The Corvette C8 is a modern sports car from Chevrolet that has its engine located in the middle of the car, which helps with handling and speed. It&#39;s known for being very powerful and high-tech.&quot;,
+    &quot;imageAttribution&quot;: &quot;Matti Blume (CC BY-SA)&quot;
+  }
+}">
       <span class="moment-time">2:34</span>
       <span>Chevrolet Corvette</span>
     </button><button class="moment-button" type="button"
-      data-index="4"
+      data-index="3"
       data-start="315.5"
       data-title="Nissan GT-R"
       data-type="car"
       data-explanation="The Nissan GT-R is a high-performance sports car known for its advanced technology and impressive speed. It has a strong motorsport heritage and is often regarded as a benchmark in the supercar segment."
       data-image="https://upload.wikimedia.org/wikipedia/commons/f/ff/Nissan_4BA-R35_GT-R_NISMO_%2823092416543%29.jpg"
       data-attribution="先従隗始 (CC0)"
-      data-quote="">
+      data-quote=""
+      data-payload="{
+  &quot;startTime&quot;: 315.5,
+  &quot;endTime&quot;: 319.76,
+  &quot;type&quot;: &quot;car&quot;,
+  &quot;title&quot;: &quot;Nissan GT-R&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/f/ff/Nissan_4BA-R35_GT-R_NISMO_%2823092416543%29.jpg&quot;,
+  &quot;data&quot;: {
+    &quot;explanation&quot;: &quot;The Nissan GT-R is a high-performance sports car known for its advanced technology and impressive speed. It has a strong motorsport heritage and is often regarded as a benchmark in the supercar segment.&quot;,
+    &quot;simplifiedExplanation&quot;: &quot;The Nissan GT-R is a fast sports car that many people admire for its speed and technology. It&#39;s famous for being very powerful and is often compared to other supercars.&quot;,
+    &quot;imageAttribution&quot;: &quot;先従隗始 (CC0)&quot;
+  }
+}">
       <span class="moment-time">5:15</span>
       <span>Nissan GT-R</span>
     </button><button class="moment-button" type="button"
-      data-index="5"
+      data-index="4"
       data-start="342.48"
       data-title="Nissan Leaf"
       data-type="car"
       data-explanation="The Nissan Leaf is an all-electric hatchback that has been one of the best-selling electric vehicles globally, known for its practicality and affordability."
       data-image="https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg/1200px-2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg"
       data-attribution="EurovisionNim (CC BY-SA 4.0)"
-      data-quote="">
+      data-quote=""
+      data-payload="{
+  &quot;startTime&quot;: 342.48,
+  &quot;endTime&quot;: 346.72,
+  &quot;type&quot;: &quot;car&quot;,
+  &quot;title&quot;: &quot;Nissan Leaf&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg/1200px-2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg&quot;,
+  &quot;data&quot;: {
+    &quot;explanation&quot;: &quot;The Nissan Leaf is an all-electric hatchback that has been one of the best-selling electric vehicles globally, known for its practicality and affordability.&quot;,
+    &quot;simplifiedExplanation&quot;: &quot;The Nissan Leaf is an electric car that is popular for being affordable and practical for everyday use.&quot;,
+    &quot;imageAttribution&quot;: &quot;EurovisionNim (CC BY-SA 4.0)&quot;
+  }
+}">
       <span class="moment-time">5:42</span>
       <span>Nissan Leaf</span>
+    </button><button class="moment-button" type="button"
+      data-index="5"
+      data-start="760.6"
+      data-title="FCP Euro"
+      data-type="company"
+      data-explanation="FCP Euro is a well-known supplier of automotive parts, specializing in genuine original equipment and aftermarket performance upgrades for European vehicles. They have been in the industry for nearly 40 years, making them a trusted source for car enthusiasts and professionals alike."
+      data-image=""
+      data-attribution=""
+      data-quote=""
+      data-payload="{
+  &quot;startTime&quot;: 760.6,
+  &quot;endTime&quot;: 773,
+  &quot;type&quot;: &quot;company&quot;,
+  &quot;title&quot;: &quot;FCP Euro&quot;,
+  &quot;data&quot;: {
+    &quot;explanation&quot;: &quot;FCP Euro is a well-known supplier of automotive parts, specializing in genuine original equipment and aftermarket performance upgrades for European vehicles. They have been in the industry for nearly 40 years, making them a trusted source for car enthusiasts and professionals alike.&quot;,
+    &quot;simplifiedExplanation&quot;: &quot;FCP Euro is a company that sells car parts, especially for European cars. They provide both original parts and performance upgrades, helping people maintain or improve their vehicles.&quot;
+  }
+}">
+      <span class="moment-time">12:40</span>
+      <span>FCP Euro</span>
     </button>
       </div>
     </section>
@@ -1734,10 +1824,10 @@
     const typeEl = document.getElementById('moment-type')
     const explanationEl = document.getElementById('moment-explanation')
     const quoteEl = document.getElementById('moment-quote')
-    const figureEl = document.getElementById('moment-figure')
-    const imageEl = document.getElementById('moment-image')
-    const attributionEl = document.getElementById('moment-attribution')
+    const metaEl = document.getElementById('moment-meta')
+    const payloadEl = document.getElementById('moment-payload')
     const buttons = [...document.querySelectorAll('.moment-button')]
+    const markers = [...document.querySelectorAll('.timeline-marker.is-featured')]
 
     function setPlayhead(seconds) {
       const percent = duration > 0 ? (seconds / duration) * 100 : 0
@@ -1746,25 +1836,28 @@
 
     function selectButton(button) {
       buttons.forEach((candidate) => candidate.classList.toggle('is-active', candidate === button))
+      markers.forEach((marker) => marker.classList.toggle('is-active', marker.dataset.index === button.dataset.index))
       titleEl.textContent = button.dataset.title || 'Featured annotation'
       typeEl.textContent = button.dataset.type || 'unknown'
       explanationEl.textContent = button.dataset.explanation || 'No explanation provided.'
       quoteEl.textContent = button.dataset.quote ? '"' + button.dataset.quote + '"' : 'This annotation uses timing and typed metadata without relying on a quoted transcript span.'
-
-      if (button.dataset.image) {
-        figureEl.style.display = ''
-        imageEl.src = button.dataset.image
-        imageEl.alt = button.dataset.title || ''
-        attributionEl.textContent = button.dataset.attribution || ''
-      } else {
-        figureEl.style.display = 'none'
-      }
+      metaEl.textContent = button.dataset.image
+        ? 'Includes image metadata' + (button.dataset.attribution ? ' (' + button.dataset.attribution + ')' : '') + '.'
+        : 'Structured payload only; no image required for the demo.'
+      payloadEl.textContent = button.dataset.payload || '{}'
 
       setPlayhead(Number(button.dataset.start || 0))
     }
 
     buttons.forEach((button) => {
       button.addEventListener('click', () => selectButton(button))
+    })
+
+    markers.forEach((marker) => {
+      marker.addEventListener('click', () => {
+        const button = buttons.find((candidate) => candidate.dataset.index === marker.dataset.index)
+        if (button) selectButton(button)
+      })
     })
 
     if (buttons[0]) selectButton(buttons[0])
