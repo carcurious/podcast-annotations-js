@@ -124,7 +124,7 @@ Common uses:
 - Additional provenance or source metadata beyond `confidence` and `source`
 
 **Recommended conventions:**
-- `data.endTimeEstimated` (`boolean`) — Set to `true` when `endTime` is approximate, such as annotations derived from show notes timestamps where only a start time is known. Consumers may use this to adjust display behavior (e.g., shorten display windows or avoid hard cuts).
+- `data.endTimeEstimated` (`boolean`) - Set to `true` when `endTime` is approximate, such as annotations derived from show notes timestamps where only a start time is known. Consumers may use this to adjust display behavior (e.g., shorten display windows or avoid hard cuts).
 
 ### Identifiers
 
@@ -138,7 +138,7 @@ Annotations MAY overlap in time. Multiple annotations at the same timestamp are 
 
 ### Density
 
-An annotation set might contain 5 chapter-like topic markers for a 3-hour episode or 100+ fine-grained entity references for a 90-minute episode — both are valid. Producers generating dense annotation sets SHOULD assign `priority` values so that consumers can filter to a manageable subset (e.g., showing only annotations with `priority >= 0.7` in a minimal UI, or all annotations in a detailed entity view).
+An annotation set might contain 5 chapter-like topic markers for a 3-hour episode or 100+ fine-grained entity references for a 90-minute episode; both are valid. Producers generating dense annotation sets SHOULD assign `priority` values so that consumers can filter to a manageable subset (e.g., showing only annotations with `priority >= 0.7` in a minimal UI, or all annotations in a detailed entity view).
 
 ### Validation Rules
 
@@ -300,17 +300,17 @@ The `company` and `brand` types overlap in practice: most brands belong to a com
 
 The rule is a *role test*, not an *ontology test*. Tag based on how the name is being used in the surrounding utterance, not on what the entity ontologically is.
 
-- **`brand`** — the name as it appears on a product, in marketing, or as a consumer-facing identity. Signals: product ownership, design references, model lineups, marque or livery talk.
-- **`company`** — the entity as a corporate or market actor. Signals: M&A, financials, executives, hiring or layoffs, lawsuits, vendor or supplier relationships, headquarters references.
+- **`brand`** - the name as it appears on a product, in marketing, or as a consumer-facing identity. Signals: product ownership, design references, model lineups, marque or livery talk.
+- **`company`** - the entity as a corporate or market actor. Signals: M&A, financials, executives, hiring or layoffs, lawsuits, vendor or supplier relationships, headquarters references.
 
 Examples:
 
-- "I upgraded to Brembo calipers" — `brand` (product ownership)
-- "Cosworth tuned the rod ratio to 1.8" — `brand` (the name on the engine)
-- "The Stellantis lineup is mostly trucks and SUVs now" — `brand` (model lineup)
-- "Brembo acquired Marelli's suspension business" — `company` (M&A)
-- "Cosworth was sold to Engelhard in 1998" — `company` (M&A)
-- "Stellantis raised prices across the portfolio" — `company` (market actor)
+- "I upgraded to Brembo calipers" - `brand` (product ownership)
+- "Cosworth tuned the rod ratio to 1.8" - `brand` (the name on the engine)
+- "The Stellantis lineup is mostly trucks and SUVs now" - `brand` (model lineup)
+- "Brembo acquired Marelli's suspension business" - `company` (M&A)
+- "Cosworth was sold to Engelhard in 1998" - `company` (M&A)
+- "Stellantis raised prices across the portfolio" - `company` (market actor)
 
 When both senses apply in the same mention, producers SHOULD prefer `brand`; consumer-facing podcast audio is more often product-focused than market-actor-focused. If the role cannot be decided from a 2-3 sentence window, default to `brand`.
 

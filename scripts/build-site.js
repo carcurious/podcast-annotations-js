@@ -163,7 +163,7 @@ const html = `<!DOCTYPE html>
       --paper: #f5efe4;
       --paper-strong: #efe5d5;
       --ink: #1e1b18;
-      --muted: #6d6257;
+      --muted: #968777;
       --accent: #b94c35;
       --accent-soft: rgba(185, 76, 53, 0.14);
       --card: rgba(255, 251, 245, 0.78);
@@ -263,14 +263,16 @@ const html = `<!DOCTYPE html>
       padding: 0 18px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.62);
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
       text-decoration: none;
       font-weight: 600;
     }
     .button-link.primary {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: #f8f3ea;
+      background: linear-gradient(135deg, #f4ebdd, #e7d6bc);
+      border-color: rgba(255, 255, 255, 0.18);
+      color: #1b1612;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
     }
     .stats-row {
       display: grid;
@@ -752,7 +754,7 @@ const html = `<!DOCTYPE html>
   "title": "Carroll Shelby",
   "type": "person"
 }</code></pre>
-          <p style="margin-top:14px;">Four required fields. Works with any spoken audio. A player renders what it wants — overlay, card, search result, or nothing.</p>
+          <p style="margin-top:14px;">Two required fields. Works with any spoken audio. A player renders what it wants: overlay, card, search result, or nothing.</p>
         </aside>
       </div>
     </section>

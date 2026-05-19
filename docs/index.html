@@ -15,7 +15,7 @@
       --paper: #f5efe4;
       --paper-strong: #efe5d5;
       --ink: #1e1b18;
-      --muted: #6d6257;
+      --muted: #968777;
       --accent: #b94c35;
       --accent-soft: rgba(185, 76, 53, 0.14);
       --card: rgba(255, 251, 245, 0.78);
@@ -115,14 +115,16 @@
       padding: 0 18px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.62);
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
       text-decoration: none;
       font-weight: 600;
     }
     .button-link.primary {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: #f8f3ea;
+      background: linear-gradient(135deg, #f4ebdd, #e7d6bc);
+      border-color: rgba(255, 255, 255, 0.18);
+      color: #1b1612;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
     }
     .stats-row {
       display: grid;
@@ -604,7 +606,7 @@
   "title": "Carroll Shelby",
   "type": "person"
 }</code></pre>
-          <p style="margin-top:14px;">Four required fields. Works with any spoken audio. A player renders what it wants — overlay, card, search result, or nothing.</p>
+          <p style="margin-top:14px;">Two required fields. Works with any spoken audio. A player renders what it wants: overlay, card, search result, or nothing.</p>
         </aside>
       </div>
     </section>
@@ -1098,7 +1100,7 @@
 </ul>
 <p><strong>Recommended conventions:</strong></p>
 <ul>
-<li><code>data.endTimeEstimated</code> (<code>boolean</code>) — Set to <code>true</code> when <code>endTime</code> is approximate, such as annotations derived from show notes timestamps where only a start time is known. Consumers may use this to adjust display behavior (e.g., shorten display windows or avoid hard cuts).</li>
+<li><code>data.endTimeEstimated</code> (<code>boolean</code>) - Set to <code>true</code> when <code>endTime</code> is approximate, such as annotations derived from show notes timestamps where only a start time is known. Consumers may use this to adjust display behavior (e.g., shorten display windows or avoid hard cuts).</li>
 </ul>
 <h3>Identifiers</h3>
 <p>If provided, <code>id</code> MUST be unique within the annotation set. IDs SHOULD be stable across revisions of the same annotation set to support diffing, syncing, and caching. IDs MAY be strings or numbers, but producers SHOULD prefer strings for consistency.</p>
@@ -1106,7 +1108,7 @@
 <p>Annotations SHOULD be sorted by <code>startTime</code> in ascending order. Consumers MUST NOT rely on ordering and SHOULD sort if necessary.</p>
 <p>Annotations MAY overlap in time. Multiple annotations at the same timestamp are valid. A single moment might reference both a car and the person driving it. Implementations should define rendering behavior for overlapping annotations, such as stacking, prioritizing by type or confidence, or limiting simultaneous display.</p>
 <h3>Density</h3>
-<p>An annotation set might contain 5 chapter-like topic markers for a 3-hour episode or 100+ fine-grained entity references for a 90-minute episode — both are valid. Producers generating dense annotation sets SHOULD assign <code>priority</code> values so that consumers can filter to a manageable subset (e.g., showing only annotations with <code>priority &gt;= 0.7</code> in a minimal UI, or all annotations in a detailed entity view).</p>
+<p>An annotation set might contain 5 chapter-like topic markers for a 3-hour episode or 100+ fine-grained entity references for a 90-minute episode; both are valid. Producers generating dense annotation sets SHOULD assign <code>priority</code> values so that consumers can filter to a manageable subset (e.g., showing only annotations with <code>priority &gt;= 0.7</code> in a minimal UI, or all annotations in a detailed entity view).</p>
 <h3>Validation Rules</h3>
 <ul>
 <li><code>startTime</code> MUST be &gt;= 0</li>
@@ -1413,17 +1415,17 @@
 <p>The <code>company</code> and <code>brand</code> types overlap in practice: most brands belong to a company, and many companies are referred to by their brand name. The following guidance is non-normative. Producers MAY disregard it. It is offered as a consistency tool to keep annotator judgment from drifting between coin flips, particularly for automated producers.</p>
 <p>The rule is a <em>role test</em>, not an <em>ontology test</em>. Tag based on how the name is being used in the surrounding utterance, not on what the entity ontologically is.</p>
 <ul>
-<li><strong><code>brand</code></strong> — the name as it appears on a product, in marketing, or as a consumer-facing identity. Signals: product ownership, design references, model lineups, marque or livery talk.</li>
-<li><strong><code>company</code></strong> — the entity as a corporate or market actor. Signals: M&amp;A, financials, executives, hiring or layoffs, lawsuits, vendor or supplier relationships, headquarters references.</li>
+<li><strong><code>brand</code></strong> - the name as it appears on a product, in marketing, or as a consumer-facing identity. Signals: product ownership, design references, model lineups, marque or livery talk.</li>
+<li><strong><code>company</code></strong> - the entity as a corporate or market actor. Signals: M&amp;A, financials, executives, hiring or layoffs, lawsuits, vendor or supplier relationships, headquarters references.</li>
 </ul>
 <p>Examples:</p>
 <ul>
-<li>&quot;I upgraded to Brembo calipers&quot; — <code>brand</code> (product ownership)</li>
-<li>&quot;Cosworth tuned the rod ratio to 1.8&quot; — <code>brand</code> (the name on the engine)</li>
-<li>&quot;The Stellantis lineup is mostly trucks and SUVs now&quot; — <code>brand</code> (model lineup)</li>
-<li>&quot;Brembo acquired Marelli&#39;s suspension business&quot; — <code>company</code> (M&amp;A)</li>
-<li>&quot;Cosworth was sold to Engelhard in 1998&quot; — <code>company</code> (M&amp;A)</li>
-<li>&quot;Stellantis raised prices across the portfolio&quot; — <code>company</code> (market actor)</li>
+<li>&quot;I upgraded to Brembo calipers&quot; - <code>brand</code> (product ownership)</li>
+<li>&quot;Cosworth tuned the rod ratio to 1.8&quot; - <code>brand</code> (the name on the engine)</li>
+<li>&quot;The Stellantis lineup is mostly trucks and SUVs now&quot; - <code>brand</code> (model lineup)</li>
+<li>&quot;Brembo acquired Marelli&#39;s suspension business&quot; - <code>company</code> (M&amp;A)</li>
+<li>&quot;Cosworth was sold to Engelhard in 1998&quot; - <code>company</code> (M&amp;A)</li>
+<li>&quot;Stellantis raised prices across the portfolio&quot; - <code>company</code> (market actor)</li>
 </ul>
 <p>When both senses apply in the same mention, producers SHOULD prefer <code>brand</code>; consumer-facing podcast audio is more often product-focused than market-actor-focused. If the role cannot be decided from a 2-3 sentence window, default to <code>brand</code>.</p>
 <p>All type values use <strong>lowercase</strong>. Producers SHOULD use recommended types when applicable to maximize interoperability. Single words are preferred for common types. Custom types SHOULD be hyphenated (e.g., <code>&quot;race-series&quot;</code>, <code>&quot;engine-code&quot;</code>).</p>
