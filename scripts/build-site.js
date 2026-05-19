@@ -36,7 +36,13 @@ const exampleSets = exampleFiles.map((file) => {
 
 const featured = exampleSets.find((example) => example.slug === 'everyday-driver-episode-1013') ?? exampleSets[0]
 const demoMoments = featured.annotations
-  .filter((annotation) => annotation.title && (annotation.data?.explanation || annotation.data?.simplifiedExplanation || annotation.quote))
+  .filter((annotation) =>
+    annotation.title &&
+    (annotation.data?.explanation || annotation.data?.simplifiedExplanation || annotation.quote) &&
+    !/tesla/i.test(annotation.title) &&
+    !/tesla/i.test(annotation.data?.explanation ?? '') &&
+    !/tesla/i.test(annotation.data?.simplifiedExplanation ?? '')
+  )
   .slice(0, 3)
   .map((annotation, index) => ({
     index,
@@ -537,7 +543,7 @@ const html = `<!DOCTYPE html>
     <section class="intro">
       <div>
         <h1>A format for what a podcast moment is about.</h1>
-        <p>Transcripts say what was said. An annotation set says what the moment means: a person, a car, a place, a term, or a topic.</p>
+        <p>Transcripts say what was said. An annotation set says what the moment means.</p>
         <p>The goal is straightforward. Give players, search systems, and archives a simple way to attach structure to spoken moments.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
@@ -545,10 +551,10 @@ const html = `<!DOCTYPE html>
         </div>
       </div>
       <pre><code>{
-  "startTime": 81.92,
-  "endTime": 85.44,
+  "startTime": 154.8,
+  "endTime": 158.48,
   "type": "car",
-  "title": "Tesla Model Y"
+  "title": "Chevrolet Corvette"
 }</code></pre>
     </section>
 
