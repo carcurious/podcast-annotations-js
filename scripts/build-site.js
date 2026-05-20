@@ -674,7 +674,7 @@ const html = `<!DOCTYPE html>
     </section>
 
     <section class="section" id="example">
-      <h2>Small example</h2>
+      <h2>Example</h2>
       <p>Three real annotations from <code>${escapeHtml(featured.file)}</code>. Click a marker to see what a player could show at that moment.</p>
       <div class="demo">
         <div class="demo-head">
