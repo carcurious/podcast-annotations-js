@@ -198,9 +198,9 @@ const html = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Podcast Annotation Format</title>
-  <meta name="description" content="Timestamped context for what podcast moments are about.">
+  <meta name="description" content="Open JSON spec for marking entities, topics, and references inside podcast episodes.">
   <meta property="og:title" content="Podcast Annotation Format">
-  <meta property="og:description" content="Transcripts say what was said. Annotations say what the moment is about.">
+  <meta property="og:description" content="A minimal sidecar file that pins entity and topic references to the seconds where they happen in an audio episode.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.podcastannotation.org">
   <link rel="canonical" href="https://www.podcastannotation.org">
@@ -658,7 +658,7 @@ const html = `<!DOCTYPE html>
     <section class="intro">
       <div>
         <h1>Timestamped context for podcast audio.</h1>
-        <p class="lede">Transcripts tell you what was said. Annotations add context to specific moments: what the reference means, when it happens, and where to go next.</p>
+        <p class="lede">An annotation file is a small JSON sidecar that lines up the references inside an episode, like a car at 24:33, a person at 47:26, or a place at 1:12:29, with the seconds where they are actually being discussed.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
           <a class="button-link" href="https://github.com/ryanwi/podcast-annotations-js">View on GitHub</a>

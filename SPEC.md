@@ -10,7 +10,7 @@ WebVTT tells you what was said. Podcast annotations tell you what was said *abou
 
 Transcripts give you words and timestamps. They usually do not tell an app that a host mentioned a 1969 Camaro at 0:45, switched to turbochargers at 2:00, or spent the next 30 seconds talking about Carroll Shelby. That meaning is present in the audio, but it is rarely available as structured data.
 
-The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is modest: a small file that lets players, search systems, and archives know what a moment in an episode is about.
+The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is modest: make the references inside a podcast episode addressable, so that a player, search index, archive, or show-notes generator can do something useful with them.
 
 ### Design Principles
 
@@ -32,9 +32,11 @@ Timed context around media is already familiar to users. Podcasting has transcri
 
 **Proven UX pattern:**
 - **VH1 Pop-Up Video.** The original mainstream example: timestamped contextual notes overlaid on media playback.
-- **Amazon Prime Video X-Ray.** Cast, characters, and trivia synced to the current scene. The canonical modern implementation.
-- **YouTube Info Cards.** Lightweight timed overlays linking to related content mid-video.
+- **Amazon Prime Video X-Ray.** Cast, characters, and trivia synced to the current scene. X-Ray is the canonical reference, but Amazon has never published the underlying data model, which is part of why writing this format down in the open is worth doing at all.
 - **SoundCloud timed comments.** One of the earliest mainstream timestamped annotations on audio. Users drop comments at any `t=` position, proving listeners engage with moment-level audio annotation.
+
+<!-- TODO(author): Replace or supplement one of the above entries with a more idiosyncratic reference you actually leaned on while building Car Curious, such as an internal annotation tool, a forum thread, a half-abandoned project, an academic paper, or a competitor that didn't quite work. The current list is the obvious correct answer, which reads as AI-generated. One specific reference from real work will fix that. -->
+
 
 **Proven at scale:**
 - **Genius.** Community annotation layer on lyrics, proving that entity-level annotation on media content is a viable product at scale. Structurally the closest analog: annotation body attached to a media anchor, with a URL for more context.
@@ -112,7 +114,7 @@ Full example with all optional fields:
 
 All times are in **seconds as floating-point numbers**, measured from the start of the audio. This aligns with the Web Audio API, HTMLMediaElement, WebVTT, and most podcast tooling.
 
-Time values SHOULD use millisecond precision (e.g., `45.123`). Consumers SHOULD tolerate minor floating-point variance (e.g., treat `45.1999` and `45.2` as equivalent).
+Time values SHOULD use millisecond precision such as `45.123`, and consumers SHOULD tolerate minor floating-point variance: when one producer emits `45.1999` and another emits `45.2` for the same mention, they describe the same moment and a consumer should treat them as equivalent.
 
 ### The `data` Field
 
@@ -139,6 +141,9 @@ Annotations MAY overlap in time. Multiple annotations at the same timestamp are 
 ### Density
 
 An annotation set might contain 5 chapter-like topic markers for a 3-hour episode or 100+ fine-grained entity references for a 90-minute episode; both are valid. Producers generating dense annotation sets SHOULD assign `priority` values so that consumers can filter to a manageable subset (e.g., showing only annotations with `priority >= 0.7` in a minimal UI, or all annotations in a detailed entity view).
+
+<!-- TODO(author): This section reads thin compared to what you actually know from Car Curious. Add a concrete density story: a specific Everyday Driver episode where the annotation count crossed some threshold and broke a downstream assumption; what density a player UI starts choking on; whether your AI pipeline tends to over-produce or under-produce; whether priority filtering actually solved it in production or just deferred the problem. Two or three sentences of lived experience here will let this section breathe instead of just stating the rule. -->
+
 
 ### Validation Rules
 
