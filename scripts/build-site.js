@@ -542,7 +542,7 @@ const html = `<!DOCTYPE html>
 
     <section class="intro">
       <div>
-        <h1>A format for what a podcast moment is about.</h1>
+        <h1>Turn spoken moments into structured data.</h1>
         <p>Transcripts say what was said. An annotation set says what the moment means.</p>
         <p>The goal is straightforward. Give players, search systems, and archives a simple way to attach structure to spoken moments.</p>
         <div class="intro-actions">
