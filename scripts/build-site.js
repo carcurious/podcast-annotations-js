@@ -63,7 +63,10 @@ const demoMoments = selectDistributedMoments(demoCandidates, 3, featured.duratio
     endTime: annotation.endTime,
     title: annotation.title,
     type: annotation.type ?? 'unknown',
-    explanation: annotation.data?.explanation ?? annotation.data?.simplifiedExplanation ?? '',
+    explanation: annotation.data?.explanation ??
+      annotation.data?.simplifiedExplanation ??
+      annotation.quote ??
+      `This moment is about ${annotation.title}. The annotation gives a player the title, type, timing, and artwork for this reference.`,
     quote: annotation.quote ?? '',
     payload: {
       startTime: annotation.startTime,
@@ -395,13 +398,42 @@ const html = `<!DOCTYPE html>
     .demo-marker.is-active { color: var(--text); }
     .demo-marker.is-active .demo-marker-dot { background: var(--accent); }
     .demo-detail {
+      max-width: 760px;
+    }
+    .demo-card {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
-      gap: 18px;
-      align-items: start;
+      grid-template-columns: minmax(0, 1fr) minmax(160px, 220px);
+      gap: 20px;
+      align-items: stretch;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface-muted);
+      padding: 18px;
     }
     .demo-copy {
       min-width: 0;
+    }
+    .demo-art {
+      min-height: 150px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--code-bg);
+      overflow: hidden;
+    }
+    .demo-art img {
+      width: 100%;
+      height: 100%;
+      min-height: 150px;
+      object-fit: cover;
+      display: block;
+    }
+    .demo-art.is-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.8rem;
     }
     .demo-type {
       display: inline-block;
@@ -429,6 +461,19 @@ const html = `<!DOCTYPE html>
       font-style: italic;
     }
     .demo-quote[hidden] { display: none; }
+    .demo-payload {
+      margin-top: 14px;
+    }
+    .demo-payload summary {
+      cursor: pointer;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .demo-payload pre {
+      font-size: 0.82rem;
+      max-height: 260px;
+    }
     .demo-jump-label {
       margin-top: 18px;
       margin-bottom: 8px;
@@ -561,7 +606,7 @@ const html = `<!DOCTYPE html>
     }
     @media (max-width: 900px) {
       .intro,
-      .demo-detail {
+      .demo-card {
         grid-template-columns: 1fr;
       }
     }
@@ -621,7 +666,7 @@ const html = `<!DOCTYPE html>
 
     <section class="section" id="example">
       <h2>Small example</h2>
-      <p>Three real annotations from <code>${escapeHtml(featured.file)}</code>. Click a marker to see the structured payload for that moment.</p>
+      <p>Three real annotations from <code>${escapeHtml(featured.file)}</code>. Click a marker to see what a player could show at that moment.</p>
       <div class="demo">
         <div class="demo-head">
           <strong>${escapeHtml(displayText(featured.annotationSet.episode?.title ?? featured.slug))}</strong>
@@ -635,13 +680,22 @@ const html = `<!DOCTYPE html>
           <span>${formatTime(featured.duration)}</span>
         </div>
         <div class="demo-detail">
-          <div class="demo-copy">
-            <div class="demo-type" id="demo-type">${escapeHtml(demoInitial?.type ?? 'unknown')}</div>
-            <h3 id="demo-title">${escapeHtml(demoInitial?.title ?? 'Annotation')}</h3>
-            <p id="demo-explanation">${escapeHtml(demoInitial?.explanation ?? 'No explanation provided.')}</p>
-            <p class="demo-quote" id="demo-quote"${demoInitial?.quote ? '' : ' hidden'}>${demoInitial?.quote ? escapeHtml(`"${demoInitial.quote}"`) : ''}</p>
+          <div class="demo-card">
+            <div class="demo-copy">
+              <div class="demo-type" id="demo-type">${escapeHtml(demoInitial?.type ?? 'unknown')}</div>
+              <h3 id="demo-title">${escapeHtml(demoInitial?.title ?? 'Annotation')}</h3>
+              <p id="demo-explanation">${escapeHtml(demoInitial?.explanation ?? 'This annotation provides timed context for the current moment.')}</p>
+              <p class="demo-quote" id="demo-quote"${demoInitial?.quote ? '' : ' hidden'}>${demoInitial?.quote ? escapeHtml(`"${demoInitial.quote}"`) : ''}</p>
+            </div>
+            <div class="demo-art${demoInitial?.payload?.image ? '' : ' is-empty'}" id="demo-art">
+              <img id="demo-image" src="${escapeHtml(demoInitial?.payload?.image ?? '')}" alt="${escapeHtml(demoInitial?.title ?? '')}"${demoInitial?.payload?.image ? '' : ' hidden'}>
+              <span id="demo-image-fallback"${demoInitial?.payload?.image ? ' hidden' : ''}>No image</span>
+            </div>
           </div>
-          <pre id="demo-payload">${escapeHtml(JSON.stringify(demoInitial?.payload ?? {}, null, 2))}</pre>
+          <details class="demo-payload">
+            <summary>View annotation JSON</summary>
+            <pre id="demo-payload">${escapeHtml(JSON.stringify(demoInitial?.payload ?? {}, null, 2))}</pre>
+          </details>
         </div>
         <div class="demo-jump-label">Jump to moment</div>
         <div class="demo-chips">
@@ -689,6 +743,9 @@ ${body}
     const titleEl = document.getElementById('demo-title')
     const explanationEl = document.getElementById('demo-explanation')
     const quoteEl = document.getElementById('demo-quote')
+    const artEl = document.getElementById('demo-art')
+    const imageEl = document.getElementById('demo-image')
+    const imageFallbackEl = document.getElementById('demo-image-fallback')
     const payloadEl = document.getElementById('demo-payload')
 
     function selectDemo(index) {
@@ -699,9 +756,15 @@ ${body}
       markers.forEach((marker) => marker.classList.toggle('is-active', Number(marker.dataset.index) === index))
       typeEl.textContent = annotation.type || 'unknown'
       titleEl.textContent = annotation.title || 'Annotation'
-      explanationEl.textContent = annotation.explanation || 'No explanation provided.'
+      explanationEl.textContent = annotation.explanation || 'This annotation provides timed context for the current moment.'
       quoteEl.hidden = !annotation.quote
       quoteEl.textContent = annotation.quote ? '"' + annotation.quote + '"' : ''
+      const image = annotation.payload && annotation.payload.image
+      artEl.classList.toggle('is-empty', !image)
+      imageEl.hidden = !image
+      imageEl.src = image || ''
+      imageEl.alt = annotation.title || ''
+      imageFallbackEl.hidden = Boolean(image)
       payloadEl.textContent = JSON.stringify(annotation.payload || {}, null, 2)
     }
 
