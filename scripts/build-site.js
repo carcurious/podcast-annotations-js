@@ -628,7 +628,7 @@ ${body}
     </section>
 
     <footer>
-      Developed by <a href="https://getcarcurious.com">Car Curious</a>. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+      <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>
     </footer>
   </div>
 
