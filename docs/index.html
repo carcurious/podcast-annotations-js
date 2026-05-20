@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Podcast Annotation Format</title>
-  <meta name="description" content="Timestamped context for what podcast moments are about.">
+  <meta name="description" content="Open JSON spec for marking entities, topics, and references inside podcast episodes.">
   <meta property="og:title" content="Podcast Annotation Format">
-  <meta property="og:description" content="Transcripts say what was said. Annotations say what the moment is about.">
+  <meta property="og:description" content="A minimal sidecar file that pins entity and topic references to the seconds where they happen in an audio episode.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.podcastannotation.org">
   <link rel="canonical" href="https://www.podcastannotation.org">
@@ -464,7 +464,7 @@
     <section class="intro">
       <div>
         <h1>Timestamped context for podcast audio.</h1>
-        <p class="lede">Transcripts tell you what was said. Annotations add context to specific moments: what the reference means, when it happens, and where to go next.</p>
+        <p class="lede">An annotation file is a small JSON sidecar that lines up the references inside an episode, like a car at 24:33, a person at 47:26, or a place at 1:12:29, with the seconds where they are actually being discussed.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
           <a class="button-link" href="https://github.com/ryanwi/podcast-annotations-js">View on GitHub</a>
@@ -616,7 +616,7 @@
 <h2>Overview</h2>
 <p>WebVTT tells you what was said. Podcast annotations tell you what was said <em>about</em>.</p>
 <p>Transcripts give you words and timestamps. They usually do not tell an app that a host mentioned a 1969 Camaro at 0:45, switched to turbochargers at 2:00, or spent the next 30 seconds talking about Carroll Shelby. That meaning is present in the audio, but it is rarely available as structured data.</p>
-<p>The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is modest: a small file that lets players, search systems, and archives know what a moment in an episode is about.</p>
+<p>The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is modest: make the references inside a podcast episode addressable, so that a player, search index, archive, or show-notes generator can do something useful with them.</p>
 <h3>Design Principles</h3>
 <ul>
 <li><strong>Minimal.</strong> Only two required fields (<code>startTime</code>, <code>endTime</code>). Everything else is optional.</li>
@@ -636,11 +636,10 @@
 <p><strong>Proven UX pattern:</strong></p>
 <ul>
 <li><strong>VH1 Pop-Up Video.</strong> The original mainstream example: timestamped contextual notes overlaid on media playback.</li>
-<li><strong>Amazon Prime Video X-Ray.</strong> Cast, characters, and trivia synced to the current scene. The canonical modern implementation.</li>
-<li><strong>YouTube Info Cards.</strong> Lightweight timed overlays linking to related content mid-video.</li>
+<li><strong>Amazon Prime Video X-Ray.</strong> Cast, characters, and trivia synced to the current scene. X-Ray is the canonical reference, but Amazon has never published the underlying data model, which is part of why writing this format down in the open is worth doing at all.</li>
 <li><strong>SoundCloud timed comments.</strong> One of the earliest mainstream timestamped annotations on audio. Users drop comments at any <code>t=</code> position, proving listeners engage with moment-level audio annotation.</li>
 </ul>
-<p><strong>Proven at scale:</strong></p>
+<!-- TODO(author): Replace or supplement one of the above entries with a more idiosyncratic reference you actually leaned on while building Car Curious, such as an internal annotation tool, a forum thread, a half-abandoned project, an academic paper, or a competitor that didn't quite work. The current list is the obvious correct answer, which reads as AI-generated. One specific reference from real work will fix that. --><p><strong>Proven at scale:</strong></p>
 <ul>
 <li><strong>Genius.</strong> Community annotation layer on lyrics, proving that entity-level annotation on media content is a viable product at scale. Structurally the closest analog: annotation body attached to a media anchor, with a URL for more context.</li>
 <li><strong>BBC Linked Data.</strong> The BBC&#39;s public ontologies model &quot;Things&quot; such as people, places, organisations, themes, programmes, and web documents so content can be connected through shared topics. Podcast annotations address a smaller layer: when one of those things becomes relevant inside an audio episode.</li>
@@ -789,7 +788,7 @@
 </code></pre>
 <h3>Time Format</h3>
 <p>All times are in <strong>seconds as floating-point numbers</strong>, measured from the start of the audio. This aligns with the Web Audio API, HTMLMediaElement, WebVTT, and most podcast tooling.</p>
-<p>Time values SHOULD use millisecond precision (e.g., <code>45.123</code>). Consumers SHOULD tolerate minor floating-point variance (e.g., treat <code>45.1999</code> and <code>45.2</code> as equivalent).</p>
+<p>Time values SHOULD use millisecond precision such as <code>45.123</code>, and consumers SHOULD tolerate minor floating-point variance: when one producer emits <code>45.1999</code> and another emits <code>45.2</code> for the same mention, they describe the same moment and a consumer should treat them as equivalent.</p>
 <h3>The <code>data</code> Field</h3>
 <p>The <code>data</code> object is an open extension point. Producers can store any JSON-serializable metadata here. Consumers should ignore fields they don&#39;t recognize.</p>
 <p>Common uses:</p>
@@ -809,7 +808,7 @@
 <p>Annotations MAY overlap in time. Multiple annotations at the same timestamp are valid. A single moment might reference both a car and the person driving it. Implementations should define rendering behavior for overlapping annotations, such as stacking, prioritizing by type or confidence, or limiting simultaneous display.</p>
 <h3>Density</h3>
 <p>An annotation set might contain 5 chapter-like topic markers for a 3-hour episode or 100+ fine-grained entity references for a 90-minute episode; both are valid. Producers generating dense annotation sets SHOULD assign <code>priority</code> values so that consumers can filter to a manageable subset (e.g., showing only annotations with <code>priority &gt;= 0.7</code> in a minimal UI, or all annotations in a detailed entity view).</p>
-<h3>Validation Rules</h3>
+<!-- TODO(author): This section reads thin compared to what you actually know from Car Curious. Add a concrete density story: a specific Everyday Driver episode where the annotation count crossed some threshold and broke a downstream assumption; what density a player UI starts choking on; whether your AI pipeline tends to over-produce or under-produce; whether priority filtering actually solved it in production or just deferred the problem. Two or three sentences of lived experience here will let this section breathe instead of just stating the rule. --><h3>Validation Rules</h3>
 <ul>
 <li><code>startTime</code> MUST be &gt;= 0</li>
 <li><code>endTime</code> MUST be &gt;= <code>startTime</code></li>
