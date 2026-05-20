@@ -79,8 +79,6 @@ const demoMoments = selectDistributedMoments(demoCandidates, 3, featured.duratio
     }
   }))
 
-const totalAnnotations = exampleSets.reduce((sum, example) => sum + example.annotationCount, 0)
-
 function selectDistributedMoments(annotations, count, duration) {
   if (annotations.length <= count) return annotations
 
@@ -154,21 +152,6 @@ function formatTime(seconds) {
   const secs = total % 60
   if (hrs > 0) return `${hrs}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
   return `${mins}:${String(secs).padStart(2, '0')}`
-}
-
-function renderExampleRows(examples) {
-  return examples
-    .map((example) => {
-      return `<tr>
-        <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/${escapeHtml(example.file)}">${escapeHtml(example.slug)}</a></td>
-        <td>${escapeHtml(displayText(example.annotationSet.episode?.title))}</td>
-        <td>${escapeHtml(example.assembly)}</td>
-        <td>${example.annotationCount}</td>
-        <td>${example.densityPerMinute.toFixed(2)}</td>
-        <td>${formatTime(example.duration)}</td>
-      </tr>`
-    })
-    .join('')
 }
 
 function renderDemoMarkers(moments, duration) {
@@ -570,32 +553,6 @@ const html = `<!DOCTYPE html>
       border-color: var(--text);
       background: var(--surface-muted);
     }
-    .examples-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .examples-table th,
-    .examples-table td {
-      text-align: left;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-      font-size: 0.95rem;
-    }
-    .examples-table th {
-      font-size: 0.84rem;
-      text-transform: uppercase;
-      letter-spacing: 0;
-      color: var(--muted);
-      background: var(--surface-muted);
-    }
-    .examples-table tr:last-child td {
-      border-bottom: 0;
-    }
     .spec-wrap {
       margin-top: 40px;
       padding-top: 28px;
@@ -679,10 +636,6 @@ const html = `<!DOCTYPE html>
       .topbar nav {
         margin-top: 10px;
       }
-      .examples-table {
-        display: block;
-        overflow-x: auto;
-      }
       .demo-chip {
         min-width: 0;
         flex: 1 1 100%;
@@ -695,8 +648,8 @@ const html = `<!DOCTYPE html>
     <header class="topbar">
       <strong>Podcast Annotation Format</strong>
       <nav>
-        <a href="#example">Small example</a>
-        <a href="#examples">Example files</a>
+        <a href="#example">Example</a>
+        <a href="#standards">Standards</a>
         <a href="#spec">Specification</a>
         <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>
       </nav>
@@ -764,24 +717,10 @@ const html = `<!DOCTYPE html>
       </div>
     </section>
 
-    <section class="section" id="examples">
-      <h2>Example files</h2>
-      <p>${exampleSets.length} files, ${totalAnnotations} annotations, and a mix of sparse chapter-like sets and denser moment-by-moment sets.</p>
-      <table class="examples-table">
-        <thead>
-          <tr>
-            <th>File</th>
-            <th>Episode</th>
-            <th>Assembly</th>
-            <th>Annotations</th>
-            <th>Annotations/min</th>
-            <th>Duration</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${renderExampleRows(exampleSets)}
-        </tbody>
-      </table>
+    <section class="section" id="standards">
+      <h2>Where this fits</h2>
+      <p>Annotations are a timing layer. WebVTT and SRT carry the words; RSS and show notes describe the episode; BBC-style ontologies and Wikidata name the entities. This spec says <em>when</em> one of those entities or topics is relevant inside the audio. These are references for identifiers and related concepts, not dependencies — a producer can use any, all, or none of them.</p>
+      <p>Not a transcript format, not a chapter format, not a player, not a CMS. One small JSON file that points at moments.</p>
     </section>
 
     <section class="spec-wrap">
