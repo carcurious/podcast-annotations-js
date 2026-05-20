@@ -719,7 +719,7 @@ const html = `<!DOCTYPE html>
 
     <section class="section" id="standards">
       <h2>Where this fits</h2>
-      <p>Annotations are a timing layer. WebVTT and SRT carry the words; RSS and show notes describe the episode; BBC-style ontologies and Wikidata name the entities. This spec says <em>when</em> one of those entities or topics is relevant inside the audio. These are references for identifiers and related concepts, not dependencies — a producer can use any, all, or none of them.</p>
+      <p>Annotations are a timing layer. WebVTT and SRT carry the words; RSS and show notes describe the episode; BBC-style ontologies and Wikidata name the entities. This spec says <em>when</em> one of those entities or topics is relevant inside the audio. These are references for identifiers and related concepts, not dependencies. A producer can use any, all, or none of them.</p>
       <p>Not a transcript format, not a chapter format, not a player, not a CMS. One small JSON file that points at moments.</p>
     </section>
 
