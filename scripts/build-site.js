@@ -719,8 +719,9 @@ const html = `<!DOCTYPE html>
 
     <section class="section" id="standards">
       <h2>Where this fits</h2>
+      <p>This spec defines the annotation, not the transport. A sidecar JSON file is the simplest carrier today, but the same annotation model can be embedded in RSS, returned from an API, or delivered however a producer and consumer choose.</p>
       <p>WebVTT and SRT carry the words. RSS and show notes describe the episode. BBC-style ontologies and Wikidata name the entities. Annotations sit across those layers: each one pairs an entity or topic reference with the time range where it is being discussed, plus whatever extra context (title, link, image, quote, speaker, tags) a producer wants to attach. These are references for identifiers and related concepts, not dependencies. A producer can use any, all, or none of them.</p>
-      <p>Not a transcript format, not a chapter format, not a player, not a CMS. Just timestamped references, deliverable in whatever way fits: a sidecar JSON file today, an RSS extension or API response tomorrow.</p>
+      <p>Not a transcript format, not a chapter format, not a player, not a CMS. Just timestamped references on audio.</p>
     </section>
 
     <section class="spec-wrap">

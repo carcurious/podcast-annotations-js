@@ -12,6 +12,8 @@ Transcripts give you words and timestamps. They usually do not tell an app that 
 
 The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is modest: make the references inside a podcast episode addressable, so that a player, search index, archive, or show-notes generator can do something useful with them.
 
+This spec defines the annotation, not the transport. A sidecar JSON file is the simplest carrier today, but the same annotation model can be embedded in RSS, returned from an API, or delivered however a producer and consumer choose.
+
 ### Design Principles
 
 - **Minimal.** Only two required fields (`startTime`, `endTime`). Everything else is optional.
