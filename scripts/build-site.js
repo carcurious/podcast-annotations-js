@@ -658,7 +658,7 @@ const html = `<!DOCTYPE html>
     <section class="intro">
       <div>
         <h1>Timestamped context for podcast audio.</h1>
-        <p class="lede">A podcast annotation is a timestamped reference to something inside an episode, like a car at 24:33, a person at 47:26, or a place at 1:12:29, anchored to the seconds where it is actually being discussed. JSON is one way to carry them; the annotations are the point.</p>
+        <p class="lede">A podcast annotation is a timestamped reference to something inside an episode, like a car at 24:33, a person at 47:26, or a place at 1:12:29, anchored to the seconds where it is actually being discussed.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
           <a class="button-link" href="https://github.com/ryanwi/podcast-annotations-js">View on GitHub</a>
