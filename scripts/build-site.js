@@ -90,6 +90,7 @@ function renderExampleRows(examples) {
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/${escapeHtml(example.file)}">${escapeHtml(example.slug)}</a></td>
         <td>${escapeHtml(example.annotationSet.episode?.title ?? '')}</td>
         <td>${example.annotationCount}</td>
+        <td>${example.densityPerMinute.toFixed(2)}</td>
         <td>${formatTime(example.duration)}</td>
       </tr>`
     })
@@ -546,9 +547,8 @@ const html = `<!DOCTYPE html>
 
     <section class="intro">
       <div>
-        <h1>When a podcast mentions something you do not know, you should be able to understand it right there.</h1>
-        <p class="lede">Transcripts tell you what was said. An annotation set adds the missing context: what the moment is about, when it starts, when it ends, and where to send the listener next.</p>
-        <p>That lets a player show a brief explanation, link to a source, or index the moment for search without guessing from freeform show notes.</p>
+        <h1>Understand unfamiliar podcast moments right away.</h1>
+        <p class="lede">Transcripts tell you what was said. Annotations explain what the moment is about, when it happens, and where to go next, so a player can show context without guessing from freeform show notes.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
           <a class="button-link" href="#example">See an example</a>
@@ -597,6 +597,7 @@ const html = `<!DOCTYPE html>
             <th>File</th>
             <th>Episode</th>
             <th>Count</th>
+            <th>Annotations/min</th>
             <th>Duration</th>
           </tr>
         </thead>
