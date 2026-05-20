@@ -743,7 +743,7 @@
 <p><strong>Proven at scale:</strong></p>
 <ul>
 <li><strong>Genius.</strong> Community annotation layer on lyrics, proving that entity-level annotation on media content is a viable product at scale. Structurally the closest analog: annotation body attached to a media anchor, with a URL for more context.</li>
-<li><strong>BBC Linked Data.</strong> Around 2012-2016 the BBC built the most serious real-world deployment of entity annotation on broadcast content, tagging people, places, and topics against their audio and video archive using their <code>programmes</code> ontology. The closest institutional precedent.</li>
+<li><strong>BBC Linked Data.</strong> The BBC&#39;s public ontologies model &quot;Things&quot; such as people, places, organisations, themes, programmes, and web documents so content can be connected through shared topics. Podcast annotations address a smaller layer: when one of those things becomes relevant inside an audio episode.</li>
 </ul>
 <p><strong>Proven in podcasting:</strong></p>
 <ul>
@@ -1511,6 +1511,7 @@
 <p><strong>Podcasting 2.0 <code>&lt;podcast:person&gt;</code>.</strong> Tags people at the episode level (hosts, guests). Podcast annotations with <code>type: &quot;person&quot;</code> tag people at the moment level: when they&#39;re discussed, not just who&#39;s on the show.</p>
 <p><strong>RSS Distribution.</strong> An episode&#39;s annotation file MAY be referenced from the RSS feed or episode web page. A future <code>&lt;podcast:annotations&gt;</code> namespace element could formalize this. See the Podcasting 2.0 namespace for the proposal process.</p>
 <p><strong>Wikidata / DBpedia.</strong> The <code>url</code> field on annotations can reference Wikidata entities (e.g., <code>https://www.wikidata.org/wiki/Q5300</code>) for canonical, language-independent entity identification. This enables linked data use cases without adding complexity to the core format.</p>
+<p><strong>Linked Data Ontologies.</strong> Ontologies such as the BBC&#39;s Linked Data Platform describe entities, creative works, web documents, products, and provenance. Podcast annotations are compatible with that model, but solve a different problem: they say when an entity or topic is relevant inside an audio timeline. Implementations can store ontology identifiers in <code>canonicalId</code>, <code>url</code>, <code>tags</code>, or <code>data</code> while keeping the core timing format simple.</p>
 <h2>Reference Implementation</h2>
 <p><a href="https://github.com/ryanwi/podcast-annotations-js">podcast-annotations</a> is a framework-agnostic JavaScript library for rendering podcast annotations with audio players. It supports annotation overlays, transcript sync, timelines, chapters, and DAI alignment.</p>
 <p>This format was developed by <a href="https://getcarcurious.com">Car Curious</a>, a podcast annotation platform for automotive content, and is released as an open specification for the broader podcast ecosystem.</p>

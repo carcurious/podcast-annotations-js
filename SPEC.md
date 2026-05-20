@@ -38,7 +38,7 @@ Timed context around media is already familiar to users. Podcasting has transcri
 
 **Proven at scale:**
 - **Genius.** Community annotation layer on lyrics, proving that entity-level annotation on media content is a viable product at scale. Structurally the closest analog: annotation body attached to a media anchor, with a URL for more context.
-- **BBC Linked Data.** Around 2012-2016 the BBC built the most serious real-world deployment of entity annotation on broadcast content, tagging people, places, and topics against their audio and video archive using their `programmes` ontology. The closest institutional precedent.
+- **BBC Linked Data.** The BBC's public ontologies model "Things" such as people, places, organisations, themes, programmes, and web documents so content can be connected through shared topics. Podcast annotations address a smaller layer: when one of those things becomes relevant inside an audio episode.
 
 **Proven in podcasting:**
 - **Podcast chapters** (Podcasting 2.0, Podlove, MP4). Coarse timestamped metadata that podcast apps already implement, proving the ecosystem will adopt spec extensions that improve the listening experience.
@@ -532,6 +532,8 @@ Maps to this W3C Web Annotation:
 **RSS Distribution.** An episode's annotation file MAY be referenced from the RSS feed or episode web page. A future `<podcast:annotations>` namespace element could formalize this. See the Podcasting 2.0 namespace for the proposal process.
 
 **Wikidata / DBpedia.** The `url` field on annotations can reference Wikidata entities (e.g., `https://www.wikidata.org/wiki/Q5300`) for canonical, language-independent entity identification. This enables linked data use cases without adding complexity to the core format.
+
+**Linked Data Ontologies.** Ontologies such as the BBC's Linked Data Platform describe entities, creative works, web documents, products, and provenance. Podcast annotations are compatible with that model, but solve a different problem: they say when an entity or topic is relevant inside an audio timeline. Implementations can store ontology identifiers in `canonicalId`, `url`, `tags`, or `data` while keeping the core timing format simple.
 
 ## Reference Implementation
 
