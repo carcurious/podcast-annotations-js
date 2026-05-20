@@ -198,9 +198,9 @@ const html = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Podcast Annotation Format</title>
-  <meta name="description" content="Open JSON spec for marking entities, topics, and references inside podcast episodes.">
+  <meta name="description" content="An open format for timestamped entity and topic references inside podcast audio.">
   <meta property="og:title" content="Podcast Annotation Format">
-  <meta property="og:description" content="A minimal sidecar file that pins entity and topic references to the seconds where they happen in an audio episode.">
+  <meta property="og:description" content="Timestamped entity and topic references for podcast audio, anchored to the seconds where they are actually discussed.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.podcastannotation.org">
   <link rel="canonical" href="https://www.podcastannotation.org">
@@ -658,7 +658,7 @@ const html = `<!DOCTYPE html>
     <section class="intro">
       <div>
         <h1>Timestamped context for podcast audio.</h1>
-        <p class="lede">An annotation file is a small JSON sidecar that lines up the references inside an episode, like a car at 24:33, a person at 47:26, or a place at 1:12:29, with the seconds where they are actually being discussed.</p>
+        <p class="lede">A podcast annotation is a timestamped reference to something inside an episode, like a car at 24:33, a person at 47:26, or a place at 1:12:29, anchored to the seconds where it is actually being discussed. JSON is one way to carry them; the annotations are the point.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
           <a class="button-link" href="https://github.com/ryanwi/podcast-annotations-js">View on GitHub</a>
@@ -720,7 +720,7 @@ const html = `<!DOCTYPE html>
     <section class="section" id="standards">
       <h2>Where this fits</h2>
       <p>Annotations are a timing layer. WebVTT and SRT carry the words; RSS and show notes describe the episode; BBC-style ontologies and Wikidata name the entities. This spec says <em>when</em> one of those entities or topics is relevant inside the audio. These are references for identifiers and related concepts, not dependencies. A producer can use any, all, or none of them.</p>
-      <p>Not a transcript format, not a chapter format, not a player, not a CMS. One small JSON file that points at moments.</p>
+      <p>Not a transcript format, not a chapter format, not a player, not a CMS. Just timestamped references, deliverable in whatever way fits: a sidecar JSON file today, an RSS extension or API response tomorrow.</p>
     </section>
 
     <section class="spec-wrap">
