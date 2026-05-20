@@ -4,7 +4,19 @@ import { marked } from 'marked'
 
 const spec = readFileSync('SPEC.md', 'utf-8')
 const body = marked.parse(spec)
+const specVersion = spec.match(/\*\*Version ([^*]+)\*\*/)?.[1] ?? '1.0.0'
 const lastmod = execSync('git log -1 --format=%cI SPEC.md', { encoding: 'utf-8' }).trim().slice(0, 10)
+
+const assemblyBySlug = {
+  'everyday-driver-episode-1013': 'AI-generated from transcript',
+  'bat-podcast-just-back-from-japan': 'Converted from show notes',
+  'acquired-ferrari': 'Converted from show notes',
+  'lex-fridman-494-jensen-huang': 'Converted from show notes',
+  'science-vs-artemis-moon': 'Converted from show notes',
+  'science-vs-running': 'Converted from show notes',
+  'tim-ferriss-770-elizabeth-gilbert': 'Converted from show notes',
+  'higher-learning-coachella-bambaataa': 'Converted from show notes'
+}
 
 const exampleFiles = readdirSync('examples')
   .filter((file) => file.endsWith('.annotations.json'))
@@ -29,21 +41,22 @@ const exampleSets = exampleFiles.map((file) => {
     annotations,
     duration,
     annotationCount: annotations.length,
+    assembly: assemblyBySlug[file.replace('.annotations.json', '')] ?? 'Example file',
     typeCounts,
     densityPerMinute: duration > 0 ? annotations.length / (duration / 60) : 0
   }
 })
 
 const featured = exampleSets.find((example) => example.slug === 'everyday-driver-episode-1013') ?? exampleSets[0]
-const demoMoments = featured.annotations
+const demoCandidates = featured.annotations
   .filter((annotation) =>
     annotation.title &&
-    (annotation.data?.explanation || annotation.data?.simplifiedExplanation || annotation.quote) &&
     !/tesla/i.test(annotation.title) &&
     !/tesla/i.test(annotation.data?.explanation ?? '') &&
     !/tesla/i.test(annotation.data?.simplifiedExplanation ?? '')
   )
-  .slice(0, 3)
+
+const demoMoments = selectDistributedMoments(demoCandidates, 3, featured.duration)
   .map((annotation, index) => ({
     index,
     startTime: annotation.startTime,
@@ -65,6 +78,22 @@ const demoMoments = featured.annotations
 
 const totalAnnotations = exampleSets.reduce((sum, example) => sum + example.annotationCount, 0)
 
+function selectDistributedMoments(annotations, count, duration) {
+  if (annotations.length <= count) return annotations
+
+  const selected = []
+  const targets = Array.from({ length: count }, (_, index) => ((index + 1) / (count + 1)) * duration)
+
+  for (const target of targets) {
+    const nearest = annotations
+      .filter((annotation) => !selected.includes(annotation))
+      .sort((a, b) => Math.abs((a.startTime ?? 0) - target) - Math.abs((b.startTime ?? 0) - target))[0]
+    if (nearest) selected.push(nearest)
+  }
+
+  return selected.sort((a, b) => (a.startTime ?? 0) - (b.startTime ?? 0))
+}
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll('&', '&amp;')
@@ -72,6 +101,10 @@ function escapeHtml(value) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;')
+}
+
+function displayText(value) {
+  return String(value ?? '').replaceAll('\u2014', '-')
 }
 
 function formatTime(seconds) {
@@ -88,7 +121,8 @@ function renderExampleRows(examples) {
     .map((example) => {
       return `<tr>
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/${escapeHtml(example.file)}">${escapeHtml(example.slug)}</a></td>
-        <td>${escapeHtml(example.annotationSet.episode?.title ?? '')}</td>
+        <td>${escapeHtml(displayText(example.annotationSet.episode?.title))}</td>
+        <td>${escapeHtml(example.assembly)}</td>
         <td>${example.annotationCount}</td>
         <td>${example.densityPerMinute.toFixed(2)}</td>
         <td>${formatTime(example.duration)}</td>
@@ -97,11 +131,10 @@ function renderExampleRows(examples) {
     .join('')
 }
 
-function renderDemoMarkers(moments) {
-  const count = Math.max(moments.length - 1, 1)
+function renderDemoMarkers(moments, duration) {
   return moments
     .map((moment, index) => {
-      const left = count === 0 ? 0 : (index / count) * 100
+      const left = duration > 0 ? Math.min(100, Math.max(0, (moment.startTime / duration) * 100)) : 0
       return `<button class="demo-marker${index === 0 ? ' is-active' : ''}" type="button" data-index="${moment.index}" style="left:${left.toFixed(2)}%">
         <span class="demo-marker-dot"></span>
         <span class="demo-marker-time">${formatTime(moment.startTime)}</span>
@@ -129,6 +162,12 @@ function renderDemoButtons(moments) {
 }
 
 const demoInitial = demoMoments[0]
+const demoSnippet = {
+  startTime: demoInitial?.startTime ?? 0,
+  endTime: demoInitial?.endTime ?? 0,
+  type: demoInitial?.type ?? 'topic',
+  title: demoInitial?.title ?? 'Example topic'
+}
 
 const html = `<!DOCTYPE html>
 <html lang="en">
@@ -136,7 +175,7 @@ const html = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Podcast Annotation Format</title>
-  <meta name="description" content="A JSON format for timestamped topics, entities, and links in spoken audio.">
+  <meta name="description" content="Timestamped context for what podcast moments are about.">
   <meta property="og:title" content="Podcast Annotation Format">
   <meta property="og:description" content="Transcripts say what was said. Annotations say what the moment is about.">
   <meta property="og:type" content="website">
@@ -210,7 +249,7 @@ const html = `<!DOCTYPE html>
     }
     .topbar strong {
       font-size: 0.95rem;
-      letter-spacing: 0.04em;
+      letter-spacing: 0;
       text-transform: uppercase;
     }
     .topbar nav {
@@ -231,13 +270,13 @@ const html = `<!DOCTYPE html>
       margin: 0;
       font-weight: 600;
       line-height: 1.1;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
     }
     h1 {
       font-family: var(--serif);
       font-weight: 500;
-      font-size: clamp(2.4rem, 5.5vw, 3.6rem);
-      letter-spacing: -0.02em;
+      font-size: 3.2rem;
+      letter-spacing: 0;
       margin-bottom: 18px;
     }
     .intro p,
@@ -280,7 +319,7 @@ const html = `<!DOCTYPE html>
       font-family: var(--serif);
       font-weight: 500;
       font-size: 1.6rem;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
       margin-bottom: 12px;
     }
     .lede {
@@ -290,10 +329,11 @@ const html = `<!DOCTYPE html>
       color: var(--text);
       margin: 0 0 32px;
     }
-    .lede em {
-      font-style: normal;
-      color: var(--accent);
-      font-weight: 500;
+    .field-note {
+      grid-column: 1 / -1;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.95rem;
     }
     .demo {
       background: var(--surface);
@@ -316,9 +356,17 @@ const html = `<!DOCTYPE html>
     .demo-track {
       position: relative;
       height: 44px;
-      margin: 8px 0 20px;
+      margin: 8px 0 10px;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
+    }
+    .demo-track-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.78rem;
     }
     .demo-marker {
       position: absolute;
@@ -360,7 +408,7 @@ const html = `<!DOCTYPE html>
       font-family: var(--mono);
       font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0;
       color: var(--accent);
       margin-bottom: 10px;
     }
@@ -368,7 +416,7 @@ const html = `<!DOCTYPE html>
       font-family: var(--serif);
       font-weight: 500;
       font-size: 1.9rem;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
       margin-bottom: 10px;
     }
     .demo-copy p {
@@ -380,11 +428,17 @@ const html = `<!DOCTYPE html>
       border-left: 3px solid var(--border);
       font-style: italic;
     }
+    .demo-quote[hidden] { display: none; }
+    .demo-jump-label {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
     .demo-chips {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 18px;
     }
     .demo-chip {
       border: 1px solid var(--border);
@@ -434,7 +488,7 @@ const html = `<!DOCTYPE html>
     .examples-table th {
       font-size: 0.84rem;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0;
       color: var(--muted);
       background: var(--surface-muted);
     }
@@ -453,14 +507,14 @@ const html = `<!DOCTYPE html>
       font-family: var(--serif);
       font-weight: 500;
       font-size: 2.4rem;
-      letter-spacing: -0.02em;
+      letter-spacing: 0;
       margin-bottom: 0.5rem;
     }
     #spec h2 {
       font-family: var(--serif);
       font-weight: 500;
       font-size: 1.55rem;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
       margin-top: 2.5rem;
       margin-bottom: 0.8rem;
       padding-bottom: 0.35rem;
@@ -507,14 +561,16 @@ const html = `<!DOCTYPE html>
     }
     @media (max-width: 900px) {
       .intro,
-      .demo-detail,
-      .why-grid {
+      .demo-detail {
         grid-template-columns: 1fr;
       }
     }
     @media (max-width: 720px) {
       body {
         padding: 22px 14px 56px;
+      }
+      h1 {
+        font-size: 2.4rem;
       }
       .topbar {
         display: block;
@@ -547,19 +603,20 @@ const html = `<!DOCTYPE html>
 
     <section class="intro">
       <div>
-        <h1>Understand unfamiliar podcast moments right away.</h1>
-        <p class="lede">Transcripts tell you what was said. Annotations explain what the moment is about, when it happens, and where to go next, so a player can show context without guessing from freeform show notes.</p>
+        <h1>Show listeners what a podcast moment is about while it plays.</h1>
+        <p class="lede">Transcripts tell you what was said. Annotations explain the reference, when it happens, and where to go next, so a player can show context without guessing from freeform show notes.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
-          <a class="button-link" href="#example">See an example</a>
+          <a class="button-link" href="https://github.com/ryanwi/podcast-annotations-js">View on GitHub</a>
         </div>
       </div>
       <pre><code>{
-  "startTime": 154.8,
-  "endTime": 158.48,
-  "type": "car",
-  "title": "Chevrolet Corvette"
+  "startTime": ${demoSnippet.startTime},
+  "endTime": ${demoSnippet.endTime},
+  "type": "${escapeHtml(demoSnippet.type)}",
+  "title": "${escapeHtml(demoSnippet.title)}"
 }</code></pre>
+      <p class="field-note">Each annotation starts with <code>startTime</code> and <code>endTime</code>. Add optional fields like <code>type</code>, <code>title</code>, <code>url</code>, <code>quote</code>, and <code>data</code> when the player needs more context.</p>
     </section>
 
     <section class="section" id="example">
@@ -567,21 +624,26 @@ const html = `<!DOCTYPE html>
       <p>Three real annotations from <code>${escapeHtml(featured.file)}</code>. Click a marker to see the structured payload for that moment.</p>
       <div class="demo">
         <div class="demo-head">
-          <strong>${escapeHtml(featured.annotationSet.episode?.title ?? featured.slug)}</strong>
+          <strong>${escapeHtml(displayText(featured.annotationSet.episode?.title ?? featured.slug))}</strong>
           <p>${featured.annotationCount} annotations across ${formatTime(featured.duration)}</p>
         </div>
         <div class="demo-track">
-          ${renderDemoMarkers(demoMoments)}
+          ${renderDemoMarkers(demoMoments, featured.duration)}
+        </div>
+        <div class="demo-track-labels">
+          <span>0:00</span>
+          <span>${formatTime(featured.duration)}</span>
         </div>
         <div class="demo-detail">
           <div class="demo-copy">
             <div class="demo-type" id="demo-type">${escapeHtml(demoInitial?.type ?? 'unknown')}</div>
             <h3 id="demo-title">${escapeHtml(demoInitial?.title ?? 'Annotation')}</h3>
             <p id="demo-explanation">${escapeHtml(demoInitial?.explanation ?? 'No explanation provided.')}</p>
-            <p class="demo-quote" id="demo-quote">${demoInitial?.quote ? escapeHtml(`"${demoInitial.quote}"`) : 'This annotation uses timing and typed metadata without relying on a quoted transcript span.'}</p>
+            <p class="demo-quote" id="demo-quote"${demoInitial?.quote ? '' : ' hidden'}>${demoInitial?.quote ? escapeHtml(`"${demoInitial.quote}"`) : ''}</p>
           </div>
           <pre id="demo-payload">${escapeHtml(JSON.stringify(demoInitial?.payload ?? {}, null, 2))}</pre>
         </div>
+        <div class="demo-jump-label">Jump to moment</div>
         <div class="demo-chips">
           ${renderDemoButtons(demoMoments)}
         </div>
@@ -596,7 +658,8 @@ const html = `<!DOCTYPE html>
           <tr>
             <th>File</th>
             <th>Episode</th>
-            <th>Count</th>
+            <th>Assembly</th>
+            <th>Annotations</th>
             <th>Annotations/min</th>
             <th>Duration</th>
           </tr>
@@ -614,7 +677,7 @@ ${body}
     </section>
 
     <footer>
-      <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>
+      Version ${escapeHtml(specVersion)}. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated ${lastmod}. <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>.
     </footer>
   </div>
 
@@ -637,9 +700,8 @@ ${body}
       typeEl.textContent = annotation.type || 'unknown'
       titleEl.textContent = annotation.title || 'Annotation'
       explanationEl.textContent = annotation.explanation || 'No explanation provided.'
-      quoteEl.textContent = annotation.quote
-        ? '"' + annotation.quote + '"'
-        : 'This annotation uses timing and typed metadata without relying on a quoted transcript span.'
+      quoteEl.hidden = !annotation.quote
+      quoteEl.textContent = annotation.quote ? '"' + annotation.quote + '"' : ''
       payloadEl.textContent = JSON.stringify(annotation.payload || {}, null, 2)
     }
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Podcast Annotation Format</title>
-  <meta name="description" content="A JSON format for timestamped topics, entities, and links in spoken audio.">
+  <meta name="description" content="Timestamped context for what podcast moments are about.">
   <meta property="og:title" content="Podcast Annotation Format">
   <meta property="og:description" content="Transcripts say what was said. Annotations say what the moment is about.">
   <meta property="og:type" content="website">
@@ -78,7 +78,7 @@
     }
     .topbar strong {
       font-size: 0.95rem;
-      letter-spacing: 0.04em;
+      letter-spacing: 0;
       text-transform: uppercase;
     }
     .topbar nav {
@@ -99,13 +99,13 @@
       margin: 0;
       font-weight: 600;
       line-height: 1.1;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
     }
     h1 {
       font-family: var(--serif);
       font-weight: 500;
-      font-size: clamp(2.4rem, 5.5vw, 3.6rem);
-      letter-spacing: -0.02em;
+      font-size: 3.2rem;
+      letter-spacing: 0;
       margin-bottom: 18px;
     }
     .intro p,
@@ -148,7 +148,7 @@
       font-family: var(--serif);
       font-weight: 500;
       font-size: 1.6rem;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
       margin-bottom: 12px;
     }
     .lede {
@@ -158,10 +158,11 @@
       color: var(--text);
       margin: 0 0 32px;
     }
-    .lede em {
-      font-style: normal;
-      color: var(--accent);
-      font-weight: 500;
+    .field-note {
+      grid-column: 1 / -1;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.95rem;
     }
     .demo {
       background: var(--surface);
@@ -184,9 +185,17 @@
     .demo-track {
       position: relative;
       height: 44px;
-      margin: 8px 0 20px;
+      margin: 8px 0 10px;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
+    }
+    .demo-track-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.78rem;
     }
     .demo-marker {
       position: absolute;
@@ -228,7 +237,7 @@
       font-family: var(--mono);
       font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0;
       color: var(--accent);
       margin-bottom: 10px;
     }
@@ -236,7 +245,7 @@
       font-family: var(--serif);
       font-weight: 500;
       font-size: 1.9rem;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
       margin-bottom: 10px;
     }
     .demo-copy p {
@@ -248,11 +257,17 @@
       border-left: 3px solid var(--border);
       font-style: italic;
     }
+    .demo-quote[hidden] { display: none; }
+    .demo-jump-label {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
     .demo-chips {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 18px;
     }
     .demo-chip {
       border: 1px solid var(--border);
@@ -302,7 +317,7 @@
     .examples-table th {
       font-size: 0.84rem;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0;
       color: var(--muted);
       background: var(--surface-muted);
     }
@@ -321,14 +336,14 @@
       font-family: var(--serif);
       font-weight: 500;
       font-size: 2.4rem;
-      letter-spacing: -0.02em;
+      letter-spacing: 0;
       margin-bottom: 0.5rem;
     }
     #spec h2 {
       font-family: var(--serif);
       font-weight: 500;
       font-size: 1.55rem;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
       margin-top: 2.5rem;
       margin-bottom: 0.8rem;
       padding-bottom: 0.35rem;
@@ -375,14 +390,16 @@
     }
     @media (max-width: 900px) {
       .intro,
-      .demo-detail,
-      .why-grid {
+      .demo-detail {
         grid-template-columns: 1fr;
       }
     }
     @media (max-width: 720px) {
       body {
         padding: 22px 14px 56px;
+      }
+      h1 {
+        font-size: 2.4rem;
       }
       .topbar {
         display: block;
@@ -415,19 +432,20 @@
 
     <section class="intro">
       <div>
-        <h1>Understand unfamiliar podcast moments right away.</h1>
-        <p class="lede">Transcripts tell you what was said. Annotations explain what the moment is about, when it happens, and where to go next, so a player can show context without guessing from freeform show notes.</p>
+        <h1>Show listeners what a podcast moment is about while it plays.</h1>
+        <p class="lede">Transcripts tell you what was said. Annotations explain the reference, when it happens, and where to go next, so a player can show context without guessing from freeform show notes.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
-          <a class="button-link" href="#example">See an example</a>
+          <a class="button-link" href="https://github.com/ryanwi/podcast-annotations-js">View on GitHub</a>
         </div>
       </div>
       <pre><code>{
-  "startTime": 154.8,
-  "endTime": 158.48,
+  "startTime": 1473.36,
+  "endTime": 1477.68,
   "type": "car",
-  "title": "Chevrolet Corvette"
+  "title": "BMW M5"
 }</code></pre>
+      <p class="field-note">Each annotation starts with <code>startTime</code> and <code>endTime</code>. Add optional fields like <code>type</code>, <code>title</code>, <code>url</code>, <code>quote</code>, and <code>data</code> when the player needs more context.</p>
     </section>
 
     <section class="section" id="example">
@@ -439,101 +457,102 @@
           <p>113 annotations across 1:37:04</p>
         </div>
         <div class="demo-track">
-          <button class="demo-marker is-active" type="button" data-index="0" style="left:0.00%">
+          <button class="demo-marker is-active" type="button" data-index="0" style="left:25.30%">
         <span class="demo-marker-dot"></span>
-        <span class="demo-marker-time">2:34</span>
-      </button><button class="demo-marker" type="button" data-index="1" style="left:50.00%">
+        <span class="demo-marker-time">24:33</span>
+      </button><button class="demo-marker" type="button" data-index="1" style="left:48.86%">
         <span class="demo-marker-dot"></span>
-        <span class="demo-marker-time">5:15</span>
-      </button><button class="demo-marker" type="button" data-index="2" style="left:100.00%">
+        <span class="demo-marker-time">47:26</span>
+      </button><button class="demo-marker" type="button" data-index="2" style="left:74.68%">
         <span class="demo-marker-dot"></span>
-        <span class="demo-marker-time">5:42</span>
+        <span class="demo-marker-time">1:12:29</span>
       </button>
+        </div>
+        <div class="demo-track-labels">
+          <span>0:00</span>
+          <span>1:37:04</span>
         </div>
         <div class="demo-detail">
           <div class="demo-copy">
             <div class="demo-type" id="demo-type">car</div>
-            <h3 id="demo-title">Chevrolet Corvette</h3>
-            <p id="demo-explanation">The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup.</p>
-            <p class="demo-quote" id="demo-quote">This annotation uses timing and typed metadata without relying on a quoted transcript span.</p>
+            <h3 id="demo-title">BMW M5</h3>
+            <p id="demo-explanation">The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.</p>
+            <p class="demo-quote" id="demo-quote" hidden></p>
           </div>
           <pre id="demo-payload">{
-  &quot;startTime&quot;: 154.8,
-  &quot;endTime&quot;: 158.48,
+  &quot;startTime&quot;: 1473.36,
+  &quot;endTime&quot;: 1477.68,
   &quot;type&quot;: &quot;car&quot;,
-  &quot;title&quot;: &quot;Chevrolet Corvette&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg/1200px-Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg&quot;,
+  &quot;title&quot;: &quot;BMW M5&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/2018_BMW_M5_Automatic_4.4.jpg/1200px-2018_BMW_M5_Automatic_4.4.jpg&quot;,
   &quot;data&quot;: {
-    &quot;explanation&quot;: &quot;The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup.&quot;,
-    &quot;simplifiedExplanation&quot;: &quot;The Corvette C8 is a modern sports car from Chevrolet that has its engine located in the middle of the car, which helps with handling and speed. It&#39;s known for being very powerful and high-tech.&quot;,
-    &quot;imageAttribution&quot;: &quot;Matti Blume (CC BY-SA)&quot;
+    &quot;explanation&quot;: &quot;The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.&quot;,
+    &quot;simplifiedExplanation&quot;: &quot;The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology.&quot;,
+    &quot;imageAttribution&quot;: &quot;Vauxford (CC BY-SA 4.0)&quot;
   }
 }</pre>
         </div>
+        <div class="demo-jump-label">Jump to moment</div>
         <div class="demo-chips">
           <button class="demo-chip is-active" type="button"
         data-index="0"
-        data-title="Chevrolet Corvette"
+        data-title="BMW M5"
         data-type="car"
-        data-explanation="The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup."
+        data-explanation="The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance."
         data-quote=""
         data-payload="{
-  &quot;startTime&quot;: 154.8,
-  &quot;endTime&quot;: 158.48,
+  &quot;startTime&quot;: 1473.36,
+  &quot;endTime&quot;: 1477.68,
   &quot;type&quot;: &quot;car&quot;,
-  &quot;title&quot;: &quot;Chevrolet Corvette&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg/1200px-Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg&quot;,
+  &quot;title&quot;: &quot;BMW M5&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/2018_BMW_M5_Automatic_4.4.jpg/1200px-2018_BMW_M5_Automatic_4.4.jpg&quot;,
   &quot;data&quot;: {
-    &quot;explanation&quot;: &quot;The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup.&quot;,
-    &quot;simplifiedExplanation&quot;: &quot;The Corvette C8 is a modern sports car from Chevrolet that has its engine located in the middle of the car, which helps with handling and speed. It&#39;s known for being very powerful and high-tech.&quot;,
-    &quot;imageAttribution&quot;: &quot;Matti Blume (CC BY-SA)&quot;
+    &quot;explanation&quot;: &quot;The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.&quot;,
+    &quot;simplifiedExplanation&quot;: &quot;The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology.&quot;,
+    &quot;imageAttribution&quot;: &quot;Vauxford (CC BY-SA 4.0)&quot;
   }
 }"
-        data-start="154.8">
-        <span>2:34</span>
-        <strong>Chevrolet Corvette</strong>
+        data-start="1473.36">
+        <span>24:33</span>
+        <strong>BMW M5</strong>
       </button><button class="demo-chip" type="button"
         data-index="1"
-        data-title="Nissan GT-R"
+        data-title="Pontiac Solstice"
         data-type="car"
-        data-explanation="The Nissan GT-R is a high-performance sports car known for its advanced technology and impressive speed. It has a strong motorsport heritage and is often regarded as a benchmark in the supercar segment."
+        data-explanation=""
         data-quote=""
         data-payload="{
-  &quot;startTime&quot;: 315.5,
-  &quot;endTime&quot;: 319.76,
+  &quot;startTime&quot;: 2846,
+  &quot;endTime&quot;: 2848.88,
   &quot;type&quot;: &quot;car&quot;,
-  &quot;title&quot;: &quot;Nissan GT-R&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/f/ff/Nissan_4BA-R35_GT-R_NISMO_%2823092416543%29.jpg&quot;,
+  &quot;title&quot;: &quot;Pontiac Solstice&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg/1200px-06-09_Pontiac_Solstice_base_convertible.jpg&quot;,
   &quot;data&quot;: {
-    &quot;explanation&quot;: &quot;The Nissan GT-R is a high-performance sports car known for its advanced technology and impressive speed. It has a strong motorsport heritage and is often regarded as a benchmark in the supercar segment.&quot;,
-    &quot;simplifiedExplanation&quot;: &quot;The Nissan GT-R is a fast sports car that many people admire for its speed and technology. It&#39;s famous for being very powerful and is often compared to other supercars.&quot;,
-    &quot;imageAttribution&quot;: &quot;先従隗始 (CC0)&quot;
+    &quot;imageAttribution&quot;: &quot;MercurySable99 (CC BY-SA 4.0)&quot;
   }
 }"
-        data-start="315.5">
-        <span>5:15</span>
-        <strong>Nissan GT-R</strong>
+        data-start="2846">
+        <span>47:26</span>
+        <strong>Pontiac Solstice</strong>
       </button><button class="demo-chip" type="button"
         data-index="2"
-        data-title="Nissan Leaf"
+        data-title="Subaru Brz"
         data-type="car"
-        data-explanation="The Nissan Leaf is an all-electric hatchback that has been one of the best-selling electric vehicles globally, known for its practicality and affordability."
+        data-explanation=""
         data-quote=""
         data-payload="{
-  &quot;startTime&quot;: 342.48,
-  &quot;endTime&quot;: 346.72,
+  &quot;startTime&quot;: 4349.68,
+  &quot;endTime&quot;: 4353.92,
   &quot;type&quot;: &quot;car&quot;,
-  &quot;title&quot;: &quot;Nissan Leaf&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg/1200px-2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg&quot;,
+  &quot;title&quot;: &quot;Subaru Brz&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg/1200px-SUBARU_BRZ_%28ZD8%29_China.jpg&quot;,
   &quot;data&quot;: {
-    &quot;explanation&quot;: &quot;The Nissan Leaf is an all-electric hatchback that has been one of the best-selling electric vehicles globally, known for its practicality and affordability.&quot;,
-    &quot;simplifiedExplanation&quot;: &quot;The Nissan Leaf is an electric car that is popular for being affordable and practical for everyday use.&quot;,
-    &quot;imageAttribution&quot;: &quot;EurovisionNim (CC BY-SA 4.0)&quot;
+    &quot;imageAttribution&quot;: &quot;Dinkun Chen (CC BY-SA 4.0)&quot;
   }
 }"
-        data-start="342.48">
-        <span>5:42</span>
-        <strong>Nissan Leaf</strong>
+        data-start="4349.68">
+        <span>1:12:29</span>
+        <strong>Subaru Brz</strong>
       </button>
         </div>
       </div>
@@ -547,7 +566,8 @@
           <tr>
             <th>File</th>
             <th>Episode</th>
-            <th>Count</th>
+            <th>Assembly</th>
+            <th>Annotations</th>
             <th>Annotations/min</th>
             <th>Duration</th>
           </tr>
@@ -556,48 +576,56 @@
           <tr>
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/acquired-ferrari.annotations.json">acquired-ferrari</a></td>
         <td>Ferrari</td>
+        <td>Converted from show notes</td>
         <td>16</td>
         <td>0.07</td>
         <td>3:51:04</td>
       </tr><tr>
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/bat-podcast-just-back-from-japan.annotations.json">bat-podcast-just-back-from-japan</a></td>
         <td>Just Back from Japan and Watching our Watchlists</td>
+        <td>Converted from show notes</td>
         <td>21</td>
         <td>0.49</td>
         <td>42:54</td>
       </tr><tr>
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json">everyday-driver-episode-1013</a></td>
         <td>Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013</td>
+        <td>AI-generated from transcript</td>
         <td>113</td>
         <td>1.16</td>
         <td>1:37:04</td>
       </tr><tr>
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/higher-learning-coachella-bambaataa.annotations.json">higher-learning-coachella-bambaataa</a></td>
         <td>Coachella, Afrika Bambaataa, and Their Lord and Savior Donald Trump</td>
+        <td>Converted from show notes</td>
         <td>10</td>
         <td>0.08</td>
         <td>1:57:55</td>
       </tr><tr>
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/lex-fridman-494-jensen-huang.annotations.json">lex-fridman-494-jensen-huang</a></td>
         <td>#494 Jensen Huang: NVIDIA - The $4 Trillion Company &amp; the AI Revolution</td>
+        <td>Converted from show notes</td>
         <td>21</td>
         <td>0.15</td>
         <td>2:24:23</td>
       </tr><tr>
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-artemis-moon.annotations.json">science-vs-artemis-moon</a></td>
         <td>Artemis: Why Are We Really Going Back to the Moon?</td>
+        <td>Converted from show notes</td>
         <td>6</td>
         <td>0.21</td>
         <td>28:12</td>
       </tr><tr>
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-running.annotations.json">science-vs-running</a></td>
         <td>Running: Will It Wreck Your Body?</td>
+        <td>Converted from show notes</td>
         <td>5</td>
         <td>0.17</td>
         <td>29:58</td>
       </tr><tr>
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/tim-ferriss-770-elizabeth-gilbert.annotations.json">tim-ferriss-770-elizabeth-gilbert</a></td>
-        <td>#770: Elizabeth Gilbert — How to Set Strong Boundaries, Overcome Purpose Anxiety, and Find Your Deep Inner Voice</td>
+        <td>#770: Elizabeth Gilbert - How to Set Strong Boundaries, Overcome Purpose Anxiety, and Find Your Deep Inner Voice</td>
+        <td>Converted from show notes</td>
         <td>25</td>
         <td>0.22</td>
         <td>1:52:01</td>
@@ -1419,12 +1447,12 @@
     </section>
 
     <footer>
-      <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>
+      Version 1.0.0. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated 2026-05-19. <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>.
     </footer>
   </div>
 
   <script>
-    const demoMoments = [{"index":0,"startTime":154.8,"endTime":158.48,"title":"Chevrolet Corvette","type":"car","explanation":"The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup.","quote":"","payload":{"startTime":154.8,"endTime":158.48,"type":"car","title":"Chevrolet Corvette","image":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg/1200px-Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg","data":{"explanation":"The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup.","simplifiedExplanation":"The Corvette C8 is a modern sports car from Chevrolet that has its engine located in the middle of the car, which helps with handling and speed. It's known for being very powerful and high-tech.","imageAttribution":"Matti Blume (CC BY-SA)"}}},{"index":1,"startTime":315.5,"endTime":319.76,"title":"Nissan GT-R","type":"car","explanation":"The Nissan GT-R is a high-performance sports car known for its advanced technology and impressive speed. It has a strong motorsport heritage and is often regarded as a benchmark in the supercar segment.","quote":"","payload":{"startTime":315.5,"endTime":319.76,"type":"car","title":"Nissan GT-R","image":"https://upload.wikimedia.org/wikipedia/commons/f/ff/Nissan_4BA-R35_GT-R_NISMO_%2823092416543%29.jpg","data":{"explanation":"The Nissan GT-R is a high-performance sports car known for its advanced technology and impressive speed. It has a strong motorsport heritage and is often regarded as a benchmark in the supercar segment.","simplifiedExplanation":"The Nissan GT-R is a fast sports car that many people admire for its speed and technology. It's famous for being very powerful and is often compared to other supercars.","imageAttribution":"先従隗始 (CC0)"}}},{"index":2,"startTime":342.48,"endTime":346.72,"title":"Nissan Leaf","type":"car","explanation":"The Nissan Leaf is an all-electric hatchback that has been one of the best-selling electric vehicles globally, known for its practicality and affordability.","quote":"","payload":{"startTime":342.48,"endTime":346.72,"type":"car","title":"Nissan Leaf","image":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg/1200px-2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg","data":{"explanation":"The Nissan Leaf is an all-electric hatchback that has been one of the best-selling electric vehicles globally, known for its practicality and affordability.","simplifiedExplanation":"The Nissan Leaf is an electric car that is popular for being affordable and practical for everyday use.","imageAttribution":"EurovisionNim (CC BY-SA 4.0)"}}}]
+    const demoMoments = [{"index":0,"startTime":1473.36,"endTime":1477.68,"title":"BMW M5","type":"car","explanation":"The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.","quote":"","payload":{"startTime":1473.36,"endTime":1477.68,"type":"car","title":"BMW M5","image":"https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/2018_BMW_M5_Automatic_4.4.jpg/1200px-2018_BMW_M5_Automatic_4.4.jpg","data":{"explanation":"The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.","simplifiedExplanation":"The BMW M5 is a fast and powerful car that's part of the 5 Series lineup. It's designed for high performance and often features advanced technology.","imageAttribution":"Vauxford (CC BY-SA 4.0)"}}},{"index":1,"startTime":2846,"endTime":2848.88,"title":"Pontiac Solstice","type":"car","explanation":"","quote":"","payload":{"startTime":2846,"endTime":2848.88,"type":"car","title":"Pontiac Solstice","image":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg/1200px-06-09_Pontiac_Solstice_base_convertible.jpg","data":{"imageAttribution":"MercurySable99 (CC BY-SA 4.0)"}}},{"index":2,"startTime":4349.68,"endTime":4353.92,"title":"Subaru Brz","type":"car","explanation":"","quote":"","payload":{"startTime":4349.68,"endTime":4353.92,"type":"car","title":"Subaru Brz","image":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg/1200px-SUBARU_BRZ_%28ZD8%29_China.jpg","data":{"imageAttribution":"Dinkun Chen (CC BY-SA 4.0)"}}}]
     const chips = [...document.querySelectorAll('.demo-chip')]
     const markers = [...document.querySelectorAll('.demo-marker')]
     const typeEl = document.getElementById('demo-type')
@@ -1442,9 +1470,8 @@
       typeEl.textContent = annotation.type || 'unknown'
       titleEl.textContent = annotation.title || 'Annotation'
       explanationEl.textContent = annotation.explanation || 'No explanation provided.'
-      quoteEl.textContent = annotation.quote
-        ? '"' + annotation.quote + '"'
-        : 'This annotation uses timing and typed metadata without relying on a quoted transcript span.'
+      quoteEl.hidden = !annotation.quote
+      quoteEl.textContent = annotation.quote ? '"' + annotation.quote + '"' : ''
       payloadEl.textContent = JSON.stringify(annotation.payload || {}, null, 2)
     }
 
