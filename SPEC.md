@@ -17,7 +17,7 @@ The Podcast Annotation Format is a JSON spec for timestamped entity and topic an
 - **Minimal.** Only two required fields (`startTime`, `endTime`). Everything else is optional.
 - **Extensible.** The `data` object is an open extension point for app-specific metadata.
 - **Framework-agnostic.** Plain JSON. No JSON-LD, no XML, no runtime dependencies.
-- **Human-readable.** A developer should understand an annotation file without reading this spec.
+- **Human-readable.** A developer should understand an annotation set without reading this spec.
 
 ### Non-Goals
 
