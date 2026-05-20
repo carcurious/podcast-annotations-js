@@ -658,7 +658,7 @@ const html = `<!DOCTYPE html>
     <section class="intro">
       <div>
         <h1>Timestamped context for podcast audio.</h1>
-        <p class="lede">A podcast annotation is a timestamped reference to something inside an episode, like a car at 24:33, a person at 47:26, or a place at 1:12:29, anchored to the seconds where it is actually being discussed.</p>
+        <p class="lede">Annotations add context to what is being said, anchoring entities and topics to the seconds where they are actually discussed: a car at 24:33, a person at 47:26, a place at 1:12:29.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
           <a class="button-link" href="https://github.com/ryanwi/podcast-annotations-js">View on GitHub</a>
@@ -719,7 +719,7 @@ const html = `<!DOCTYPE html>
 
     <section class="section" id="standards">
       <h2>Where this fits</h2>
-      <p>An annotation pairs an entity or topic reference with the time range where it is being discussed, plus whatever extra context (title, link, image, quote, speaker, tags) a producer wants to attach. WebVTT and SRT carry the words; RSS and show notes describe the episode; BBC-style ontologies and Wikidata name the entities. Annotations sit across those layers, anchoring named things to specific moments inside the audio. These are references for identifiers and related concepts, not dependencies. A producer can use any, all, or none of them.</p>
+      <p>Annotations add context to what is being said. Each one pairs an entity or topic reference with the time range where it is being discussed, plus whatever extra context (title, link, image, quote, speaker, tags) a producer wants to attach. WebVTT and SRT carry the words; RSS and show notes describe the episode; BBC-style ontologies and Wikidata name the entities. Annotations sit across those layers, anchoring named things to specific moments inside the audio. These are references for identifiers and related concepts, not dependencies. A producer can use any, all, or none of them.</p>
       <p>Not a transcript format, not a chapter format, not a player, not a CMS. Just timestamped references, deliverable in whatever way fits: a sidecar JSON file today, an RSS extension or API response tomorrow.</p>
     </section>
 
