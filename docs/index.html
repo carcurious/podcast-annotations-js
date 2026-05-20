@@ -245,6 +245,7 @@
       border-radius: 4px;
       background: var(--code-bg);
       overflow: hidden;
+      position: relative;
     }
     .demo-art img {
       width: 100%;
@@ -253,13 +254,31 @@
       object-fit: cover;
       display: block;
     }
-    .demo-art.is-empty {
+    .demo-art-fallback {
+      min-height: 150px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: var(--muted);
+      gap: 8px;
+      color: var(--text);
       font-family: var(--mono);
-      font-size: 0.8rem;
+      text-align: center;
+      padding: 16px;
+    }
+    .demo-art-type {
+      color: var(--accent);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+    .demo-art-title {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      line-height: 1.1;
+    }
+    .demo-art-time {
+      color: var(--muted);
+      font-size: 0.82rem;
     }
     .demo-type {
       display: inline-block;
@@ -522,9 +541,13 @@
               <p id="demo-explanation">The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.</p>
               <p class="demo-quote" id="demo-quote" hidden></p>
             </div>
-            <div class="demo-art" id="demo-art">
-              <img id="demo-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/2018_BMW_M5_Automatic_4.4.jpg/1200px-2018_BMW_M5_Automatic_4.4.jpg" alt="BMW M5">
-              <span id="demo-image-fallback" hidden>No image</span>
+            <div class="demo-art">
+              <img id="demo-image" src="https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg" alt="BMW M5">
+              <div class="demo-art-fallback" id="demo-art-fallback" hidden>
+                <span class="demo-art-type" id="demo-art-type">car</span>
+                <strong class="demo-art-title" id="demo-art-title">BMW M5</strong>
+                <span class="demo-art-time" id="demo-art-time">24:33-24:37</span>
+              </div>
             </div>
           </div>
           <details class="demo-payload">
@@ -534,7 +557,7 @@
   &quot;endTime&quot;: 1477.68,
   &quot;type&quot;: &quot;car&quot;,
   &quot;title&quot;: &quot;BMW M5&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/2018_BMW_M5_Automatic_4.4.jpg/1200px-2018_BMW_M5_Automatic_4.4.jpg&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg&quot;,
   &quot;data&quot;: {
     &quot;explanation&quot;: &quot;The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.&quot;,
     &quot;simplifiedExplanation&quot;: &quot;The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology.&quot;,
@@ -556,7 +579,7 @@
   &quot;endTime&quot;: 1477.68,
   &quot;type&quot;: &quot;car&quot;,
   &quot;title&quot;: &quot;BMW M5&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/2018_BMW_M5_Automatic_4.4.jpg/1200px-2018_BMW_M5_Automatic_4.4.jpg&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg&quot;,
   &quot;data&quot;: {
     &quot;explanation&quot;: &quot;The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.&quot;,
     &quot;simplifiedExplanation&quot;: &quot;The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology.&quot;,
@@ -577,7 +600,7 @@
   &quot;endTime&quot;: 2848.88,
   &quot;type&quot;: &quot;car&quot;,
   &quot;title&quot;: &quot;Pontiac Solstice&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg/1200px-06-09_Pontiac_Solstice_base_convertible.jpg&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg&quot;,
   &quot;data&quot;: {
     &quot;imageAttribution&quot;: &quot;MercurySable99 (CC BY-SA 4.0)&quot;
   }
@@ -596,7 +619,7 @@
   &quot;endTime&quot;: 4353.92,
   &quot;type&quot;: &quot;car&quot;,
   &quot;title&quot;: &quot;Subaru Brz&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg/1200px-SUBARU_BRZ_%28ZD8%29_China.jpg&quot;,
+  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg&quot;,
   &quot;data&quot;: {
     &quot;imageAttribution&quot;: &quot;Dinkun Chen (CC BY-SA 4.0)&quot;
   }
@@ -1503,16 +1526,27 @@
   </div>
 
   <script>
-    const demoMoments = [{"index":0,"startTime":1473.36,"endTime":1477.68,"title":"BMW M5","type":"car","explanation":"The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.","quote":"","payload":{"startTime":1473.36,"endTime":1477.68,"type":"car","title":"BMW M5","image":"https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/2018_BMW_M5_Automatic_4.4.jpg/1200px-2018_BMW_M5_Automatic_4.4.jpg","data":{"explanation":"The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.","simplifiedExplanation":"The BMW M5 is a fast and powerful car that's part of the 5 Series lineup. It's designed for high performance and often features advanced technology.","imageAttribution":"Vauxford (CC BY-SA 4.0)"}}},{"index":1,"startTime":2846,"endTime":2848.88,"title":"Pontiac Solstice","type":"car","explanation":"This moment is about Pontiac Solstice. The annotation gives a player the title, type, timing, and artwork for this reference.","quote":"","payload":{"startTime":2846,"endTime":2848.88,"type":"car","title":"Pontiac Solstice","image":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg/1200px-06-09_Pontiac_Solstice_base_convertible.jpg","data":{"imageAttribution":"MercurySable99 (CC BY-SA 4.0)"}}},{"index":2,"startTime":4349.68,"endTime":4353.92,"title":"Subaru Brz","type":"car","explanation":"This moment is about Subaru Brz. The annotation gives a player the title, type, timing, and artwork for this reference.","quote":"","payload":{"startTime":4349.68,"endTime":4353.92,"type":"car","title":"Subaru Brz","image":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg/1200px-SUBARU_BRZ_%28ZD8%29_China.jpg","data":{"imageAttribution":"Dinkun Chen (CC BY-SA 4.0)"}}}]
+    function formatTime(totalSeconds) {
+      const total = Math.max(0, Math.floor(totalSeconds))
+      const hours = Math.floor(total / 3600)
+      const minutes = Math.floor((total % 3600) / 60)
+      const seconds = total % 60
+      if (hours > 0) return hours + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0')
+      return minutes + ':' + String(seconds).padStart(2, '0')
+    }
+
+    const demoMoments = [{"index":0,"startTime":1473.36,"endTime":1477.68,"title":"BMW M5","type":"car","explanation":"The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.","quote":"","payload":{"startTime":1473.36,"endTime":1477.68,"type":"car","title":"BMW M5","image":"https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg","data":{"explanation":"The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.","simplifiedExplanation":"The BMW M5 is a fast and powerful car that's part of the 5 Series lineup. It's designed for high performance and often features advanced technology.","imageAttribution":"Vauxford (CC BY-SA 4.0)"}}},{"index":1,"startTime":2846,"endTime":2848.88,"title":"Pontiac Solstice","type":"car","explanation":"This moment is about Pontiac Solstice. The annotation gives a player the title, type, timing, and artwork for this reference.","quote":"","payload":{"startTime":2846,"endTime":2848.88,"type":"car","title":"Pontiac Solstice","image":"https://upload.wikimedia.org/wikipedia/commons/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg","data":{"imageAttribution":"MercurySable99 (CC BY-SA 4.0)"}}},{"index":2,"startTime":4349.68,"endTime":4353.92,"title":"Subaru Brz","type":"car","explanation":"This moment is about Subaru Brz. The annotation gives a player the title, type, timing, and artwork for this reference.","quote":"","payload":{"startTime":4349.68,"endTime":4353.92,"type":"car","title":"Subaru Brz","image":"https://upload.wikimedia.org/wikipedia/commons/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg","data":{"imageAttribution":"Dinkun Chen (CC BY-SA 4.0)"}}}]
     const chips = [...document.querySelectorAll('.demo-chip')]
     const markers = [...document.querySelectorAll('.demo-marker')]
     const typeEl = document.getElementById('demo-type')
     const titleEl = document.getElementById('demo-title')
     const explanationEl = document.getElementById('demo-explanation')
     const quoteEl = document.getElementById('demo-quote')
-    const artEl = document.getElementById('demo-art')
     const imageEl = document.getElementById('demo-image')
-    const imageFallbackEl = document.getElementById('demo-image-fallback')
+    const artFallbackEl = document.getElementById('demo-art-fallback')
+    const artTypeEl = document.getElementById('demo-art-type')
+    const artTitleEl = document.getElementById('demo-art-title')
+    const artTimeEl = document.getElementById('demo-art-time')
     const payloadEl = document.getElementById('demo-payload')
 
     function selectDemo(index) {
@@ -1527,13 +1561,20 @@
       quoteEl.hidden = !annotation.quote
       quoteEl.textContent = annotation.quote ? '"' + annotation.quote + '"' : ''
       const image = annotation.payload && annotation.payload.image
-      artEl.classList.toggle('is-empty', !image)
       imageEl.hidden = !image
       imageEl.src = image || ''
       imageEl.alt = annotation.title || ''
-      imageFallbackEl.hidden = Boolean(image)
+      artFallbackEl.hidden = Boolean(image)
+      artTypeEl.textContent = annotation.type || 'unknown'
+      artTitleEl.textContent = annotation.title || 'Annotation'
+      artTimeEl.textContent = formatTime(annotation.startTime || 0) + '-' + formatTime(annotation.endTime || annotation.startTime || 0)
       payloadEl.textContent = JSON.stringify(annotation.payload || {}, null, 2)
     }
+
+    imageEl.addEventListener('error', () => {
+      imageEl.hidden = true
+      artFallbackEl.hidden = false
+    })
 
     chips.forEach((chip) => {
       chip.addEventListener('click', () => selectDemo(Number(chip.dataset.index)))

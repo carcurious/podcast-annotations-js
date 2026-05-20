@@ -73,7 +73,7 @@ const demoMoments = selectDistributedMoments(demoCandidates, 3, featured.duratio
       endTime: annotation.endTime,
       type: annotation.type ?? 'unknown',
       title: annotation.title,
-      image: annotation.image,
+      image: normalizeExternalImageUrl(annotation.image),
       quote: annotation.quote,
       data: annotation.data ?? {}
     }
@@ -108,6 +108,43 @@ function escapeHtml(value) {
 
 function displayText(value) {
   return String(value ?? '').replaceAll('\u2014', '-')
+}
+
+function collapsePercentEncoding(path) {
+  let previous = path
+
+  while (true) {
+    const current = previous.replace(/%25([0-9A-Fa-f]{2})/g, '%$1')
+    if (current === previous) return current
+    previous = current
+  }
+}
+
+function normalizeExternalImageUrl(url) {
+  if (!url) return url
+
+  try {
+    const parsed = new URL(url)
+    if (parsed.hostname !== 'upload.wikimedia.org') return url
+
+    const segments = parsed.pathname.split('/').filter(Boolean)
+    const isWikimediaThumb =
+      segments[0] === 'wikipedia' &&
+      segments[1] === 'commons' &&
+      segments[2] === 'thumb' &&
+      segments.length >= 7
+
+    if (!isWikimediaThumb) {
+      parsed.pathname = collapsePercentEncoding(parsed.pathname)
+      return parsed.toString()
+    }
+
+    const originalFilename = segments[5]
+    parsed.pathname = collapsePercentEncoding(`/wikipedia/commons/${segments[3]}/${segments[4]}/${originalFilename}`)
+    return parsed.toString()
+  } catch {
+    return url
+  }
 }
 
 function formatTime(seconds) {
@@ -419,6 +456,7 @@ const html = `<!DOCTYPE html>
       border-radius: 4px;
       background: var(--code-bg);
       overflow: hidden;
+      position: relative;
     }
     .demo-art img {
       width: 100%;
@@ -427,13 +465,31 @@ const html = `<!DOCTYPE html>
       object-fit: cover;
       display: block;
     }
-    .demo-art.is-empty {
+    .demo-art-fallback {
+      min-height: 150px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: var(--muted);
+      gap: 8px;
+      color: var(--text);
       font-family: var(--mono);
-      font-size: 0.8rem;
+      text-align: center;
+      padding: 16px;
+    }
+    .demo-art-type {
+      color: var(--accent);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+    .demo-art-title {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      line-height: 1.1;
+    }
+    .demo-art-time {
+      color: var(--muted);
+      font-size: 0.82rem;
     }
     .demo-type {
       display: inline-block;
@@ -687,9 +743,13 @@ const html = `<!DOCTYPE html>
               <p id="demo-explanation">${escapeHtml(demoInitial?.explanation ?? 'This annotation provides timed context for the current moment.')}</p>
               <p class="demo-quote" id="demo-quote"${demoInitial?.quote ? '' : ' hidden'}>${demoInitial?.quote ? escapeHtml(`"${demoInitial.quote}"`) : ''}</p>
             </div>
-            <div class="demo-art${demoInitial?.payload?.image ? '' : ' is-empty'}" id="demo-art">
+            <div class="demo-art">
               <img id="demo-image" src="${escapeHtml(demoInitial?.payload?.image ?? '')}" alt="${escapeHtml(demoInitial?.title ?? '')}"${demoInitial?.payload?.image ? '' : ' hidden'}>
-              <span id="demo-image-fallback"${demoInitial?.payload?.image ? ' hidden' : ''}>No image</span>
+              <div class="demo-art-fallback" id="demo-art-fallback"${demoInitial?.payload?.image ? ' hidden' : ''}>
+                <span class="demo-art-type" id="demo-art-type">${escapeHtml(demoInitial?.type ?? 'unknown')}</span>
+                <strong class="demo-art-title" id="demo-art-title">${escapeHtml(demoInitial?.title ?? 'Annotation')}</strong>
+                <span class="demo-art-time" id="demo-art-time">${formatTime(demoInitial?.startTime ?? 0)}-${formatTime(demoInitial?.endTime ?? demoInitial?.startTime ?? 0)}</span>
+              </div>
             </div>
           </div>
           <details class="demo-payload">
@@ -736,6 +796,15 @@ ${body}
   </div>
 
   <script>
+    function formatTime(totalSeconds) {
+      const total = Math.max(0, Math.floor(totalSeconds))
+      const hours = Math.floor(total / 3600)
+      const minutes = Math.floor((total % 3600) / 60)
+      const seconds = total % 60
+      if (hours > 0) return hours + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0')
+      return minutes + ':' + String(seconds).padStart(2, '0')
+    }
+
     const demoMoments = ${JSON.stringify(demoMoments)}
     const chips = [...document.querySelectorAll('.demo-chip')]
     const markers = [...document.querySelectorAll('.demo-marker')]
@@ -743,9 +812,11 @@ ${body}
     const titleEl = document.getElementById('demo-title')
     const explanationEl = document.getElementById('demo-explanation')
     const quoteEl = document.getElementById('demo-quote')
-    const artEl = document.getElementById('demo-art')
     const imageEl = document.getElementById('demo-image')
-    const imageFallbackEl = document.getElementById('demo-image-fallback')
+    const artFallbackEl = document.getElementById('demo-art-fallback')
+    const artTypeEl = document.getElementById('demo-art-type')
+    const artTitleEl = document.getElementById('demo-art-title')
+    const artTimeEl = document.getElementById('demo-art-time')
     const payloadEl = document.getElementById('demo-payload')
 
     function selectDemo(index) {
@@ -760,13 +831,20 @@ ${body}
       quoteEl.hidden = !annotation.quote
       quoteEl.textContent = annotation.quote ? '"' + annotation.quote + '"' : ''
       const image = annotation.payload && annotation.payload.image
-      artEl.classList.toggle('is-empty', !image)
       imageEl.hidden = !image
       imageEl.src = image || ''
       imageEl.alt = annotation.title || ''
-      imageFallbackEl.hidden = Boolean(image)
+      artFallbackEl.hidden = Boolean(image)
+      artTypeEl.textContent = annotation.type || 'unknown'
+      artTitleEl.textContent = annotation.title || 'Annotation'
+      artTimeEl.textContent = formatTime(annotation.startTime || 0) + '-' + formatTime(annotation.endTime || annotation.startTime || 0)
       payloadEl.textContent = JSON.stringify(annotation.payload || {}, null, 2)
     }
+
+    imageEl.addEventListener('error', () => {
+      imageEl.hidden = true
+      artFallbackEl.hidden = false
+    })
 
     chips.forEach((chip) => {
       chip.addEventListener('click', () => selectDemo(Number(chip.dataset.index)))
