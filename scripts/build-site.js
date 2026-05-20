@@ -86,13 +86,11 @@ function formatTime(seconds) {
 function renderExampleRows(examples) {
   return examples
     .map((example) => {
-      const topTypes = example.typeCounts.slice(0, 3).map(([type, count]) => `${type} (${count})`).join(', ')
       return `<tr>
         <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/${escapeHtml(example.file)}">${escapeHtml(example.slug)}</a></td>
         <td>${escapeHtml(example.annotationSet.episode?.title ?? '')}</td>
         <td>${example.annotationCount}</td>
-        <td>${example.densityPerMinute.toFixed(2)}/min</td>
-        <td>${escapeHtml(topTypes)}</td>
+        <td>${formatTime(example.duration)}</td>
       </tr>`
     })
     .join('')
@@ -145,18 +143,20 @@ const html = `<!DOCTYPE html>
   <link rel="canonical" href="https://www.podcastannotation.org">
   <style>
     :root {
-      --bg: #f8f8f3;
+      --bg: #fbf8f1;
       --surface: #ffffff;
-      --surface-muted: #f1f4f1;
-      --text: #1f2823;
-      --muted: #5f6c65;
-      --border: #d6ddd7;
-      --accent: #2f6f62;
-      --accent-soft: #e4f0ec;
-      --code-bg: #f3f5f2;
-      --shadow: 0 1px 2px rgba(16, 24, 20, 0.04);
-      --max-page: 1080px;
-      --max-spec: 760px;
+      --surface-muted: #f3efe5;
+      --text: #161513;
+      --muted: #6b665d;
+      --border: #d8d2c2;
+      --accent: #8a3a1a;
+      --accent-soft: #f0e3d9;
+      --code-bg: #f4efe3;
+      --shadow: none;
+      --max-page: 1040px;
+      --max-spec: 720px;
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; }
@@ -165,7 +165,7 @@ const html = `<!DOCTYPE html>
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: var(--sans);
       line-height: 1.6;
       padding: 32px 18px 72px;
     }
@@ -190,7 +190,7 @@ const html = `<!DOCTYPE html>
       overflow-wrap: anywhere;
       background: var(--code-bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 4px;
       padding: 16px;
       overflow: auto;
     }
@@ -228,13 +228,16 @@ const html = `<!DOCTYPE html>
     }
     h1, h2, h3 {
       margin: 0;
-      font-weight: 650;
-      line-height: 1.15;
-      letter-spacing: 0;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
     }
     h1 {
-      font-size: clamp(2rem, 4vw, 3rem);
-      margin-bottom: 14px;
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(2.4rem, 5.5vw, 3.6rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
     }
     .intro p,
     .section p {
@@ -254,54 +257,48 @@ const html = `<!DOCTYPE html>
       align-items: center;
       justify-content: center;
       min-height: 40px;
-      padding: 0 14px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--surface);
+      padding: 0 16px;
+      border-radius: 4px;
+      border: 1px solid var(--text);
+      background: transparent;
       color: var(--text);
-      font-weight: 600;
+      font-weight: 500;
       text-decoration: none;
-      box-shadow: var(--shadow);
     }
+    .button-link:hover { text-decoration: none; background: var(--surface-muted); }
     .button-link.primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #ffffff;
+      background: var(--text);
+      border-color: var(--text);
+      color: var(--bg);
     }
+    .button-link.primary:hover { background: #000; }
     .section {
-      margin-bottom: 32px;
+      margin-bottom: 40px;
     }
     .section h2 {
-      font-size: 1.35rem;
-      margin-bottom: 10px;
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 1.6rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
     }
-    .why-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
+    .lede {
+      max-width: 64ch;
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--text);
+      margin: 0 0 32px;
     }
-    .why-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px;
-      box-shadow: var(--shadow);
-    }
-    .why-item strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 0.95rem;
-    }
-    .why-item p {
-      margin: 0;
-      font-size: 0.95rem;
+    .lede em {
+      font-style: normal;
+      color: var(--accent);
+      font-weight: 500;
     }
     .demo {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 18px;
-      box-shadow: var(--shadow);
+      border-radius: 4px;
+      padding: 20px;
     }
     .demo-head {
       display: flex;
@@ -335,12 +332,11 @@ const html = `<!DOCTYPE html>
     }
     .demo-marker-dot {
       display: block;
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       margin: 0 auto 6px;
       border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 0 4px var(--accent-soft);
+      background: var(--border);
     }
     .demo-marker-time {
       display: block;
@@ -348,7 +344,7 @@ const html = `<!DOCTYPE html>
       font-size: 0.78rem;
     }
     .demo-marker.is-active { color: var(--text); }
-    .demo-marker.is-active .demo-marker-dot { background: #1e4a41; }
+    .demo-marker.is-active .demo-marker-dot { background: var(--accent); }
     .demo-detail {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
@@ -360,17 +356,18 @@ const html = `<!DOCTYPE html>
     }
     .demo-type {
       display: inline-block;
-      font-size: 0.8rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.08em;
       color: var(--accent);
-      background: var(--accent-soft);
-      padding: 4px 8px;
-      border-radius: 999px;
       margin-bottom: 10px;
     }
     .demo-copy h3 {
+      font-family: var(--serif);
+      font-weight: 500;
       font-size: 1.9rem;
+      letter-spacing: -0.01em;
       margin-bottom: 10px;
     }
     .demo-copy p {
@@ -390,14 +387,15 @@ const html = `<!DOCTYPE html>
     }
     .demo-chip {
       border: 1px solid var(--border);
-      background: var(--surface);
-      border-radius: 6px;
+      background: transparent;
+      border-radius: 4px;
       padding: 10px 12px;
       text-align: left;
       cursor: pointer;
       min-width: 170px;
-      box-shadow: var(--shadow);
+      font-family: inherit;
     }
+    .demo-chip:hover { background: var(--surface-muted); }
     .demo-chip span,
     .demo-chip strong {
       display: block;
@@ -413,17 +411,16 @@ const html = `<!DOCTYPE html>
       color: var(--text);
     }
     .demo-chip.is-active {
-      border-color: var(--accent);
-      background: var(--accent-soft);
+      border-color: var(--text);
+      background: var(--surface-muted);
     }
     .examples-table {
       width: 100%;
       border-collapse: collapse;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 4px;
       overflow: hidden;
-      box-shadow: var(--shadow);
     }
     .examples-table th,
     .examples-table td {
@@ -452,18 +449,25 @@ const html = `<!DOCTYPE html>
       max-width: var(--max-spec);
     }
     #spec h1 {
-      font-size: 2.2rem;
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 2.4rem;
+      letter-spacing: -0.02em;
       margin-bottom: 0.5rem;
     }
     #spec h2 {
-      font-size: 1.45rem;
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 1.55rem;
+      letter-spacing: -0.01em;
       margin-top: 2.5rem;
       margin-bottom: 0.8rem;
       padding-bottom: 0.35rem;
       border-bottom: 1px solid var(--border);
     }
     #spec h3 {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
+      font-weight: 600;
       margin-top: 1.7rem;
       margin-bottom: 0.55rem;
     }
@@ -533,21 +537,21 @@ const html = `<!DOCTYPE html>
     <header class="topbar">
       <strong>Podcast Annotation Format</strong>
       <nav>
-        <a href="#example">Example</a>
-        <a href="#examples">Examples</a>
-        <a href="#spec">Spec</a>
+        <a href="#example">Small example</a>
+        <a href="#examples">Example files</a>
+        <a href="#spec">Specification</a>
         <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>
       </nav>
     </header>
 
     <section class="intro">
       <div>
-        <h1>Turn spoken moments into structured data.</h1>
-        <p>Transcripts say what was said. An annotation set says what the moment means.</p>
-        <p>The goal is straightforward. Give players, search systems, and archives a simple way to attach structure to spoken moments.</p>
+        <h1>When a podcast mentions something you do not know, you should be able to understand it right there.</h1>
+        <p class="lede">Transcripts tell you what was said. An annotation set adds the missing context: what the moment is about, when it starts, when it ends, and where to send the listener next.</p>
+        <p>That lets a player show a brief explanation, link to a source, or index the moment for search without guessing from freeform show notes.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
-          <a class="button-link" href="#example">See a small example</a>
+          <a class="button-link" href="#example">See an example</a>
         </div>
       </div>
       <pre><code>{
@@ -558,27 +562,9 @@ const html = `<!DOCTYPE html>
 }</code></pre>
     </section>
 
-    <section class="section">
-      <h2>Why this exists</h2>
-      <div class="why-grid">
-        <div class="why-item">
-          <strong>Transcripts are not enough</strong>
-          <p>A transcript gives you words and timestamps, but not the structure needed to know what the discussion is about.</p>
-        </div>
-        <div class="why-item">
-          <strong>Show notes are useful but loose</strong>
-          <p>Most podcasts already publish the right information in prose. This format gives that information stable timing and structure.</p>
-        </div>
-        <div class="why-item">
-          <strong>The file stays small</strong>
-          <p>Only <code>startTime</code> and <code>endTime</code> are required. Everything else is optional and easy to extend.</p>
-        </div>
-      </div>
-    </section>
-
     <section class="section" id="example">
       <h2>Small example</h2>
-      <p>This uses three real annotations from <code>${escapeHtml(featured.file)}</code>. It is enough to show the format without turning the page into a product demo.</p>
+      <p>Three real annotations from <code>${escapeHtml(featured.file)}</code>. Click a marker to see the structured payload for that moment.</p>
       <div class="demo">
         <div class="demo-head">
           <strong>${escapeHtml(featured.annotationSet.episode?.title ?? featured.slug)}</strong>
@@ -604,15 +590,14 @@ const html = `<!DOCTYPE html>
 
     <section class="section" id="examples">
       <h2>Example files</h2>
-      <p>The repository currently includes ${exampleSets.length} example files and ${totalAnnotations} annotations across several genres and production styles.</p>
+      <p>${exampleSets.length} files, ${totalAnnotations} annotations, and a mix of sparse chapter-like sets and denser moment-by-moment sets.</p>
       <table class="examples-table">
         <thead>
           <tr>
             <th>File</th>
             <th>Episode</th>
             <th>Count</th>
-            <th>Density</th>
-            <th>Top types</th>
+            <th>Duration</th>
           </tr>
         </thead>
         <tbody>
