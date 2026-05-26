@@ -60,12 +60,14 @@ export function upcomingAnnotations(
   currentTime: number,
   limit: number = 3
 ): EnrichedAnnotation[] {
-  // Binary search for first annotation with startTime > currentTime
+  // Binary search for first annotation whose display window hasn't started yet.
+  // Compare against triggerStartTime (not startTime) so an annotation that is
+  // already active (triggerStartTime <= currentTime) is not also listed as upcoming.
   let lo = 0
   let hi = annotations.length
   while (lo < hi) {
     const mid = (lo + hi) >>> 1
-    if (annotations[mid].startTime <= currentTime) lo = mid + 1
+    if (annotations[mid].triggerStartTime <= currentTime) lo = mid + 1
     else hi = mid
   }
   return annotations.slice(lo, lo + limit)

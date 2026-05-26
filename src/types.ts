@@ -10,8 +10,8 @@ export interface Speaker {
 /** A transcript file reference. */
 export interface Transcript {
   url: string
-  /** File format: "vtt", "srt", or "json". */
-  format: string
+  /** MIME type of the transcript (e.g., "text/vtt", "application/x-subrip", "application/json"). */
+  type: string
   /** BCP 47 language tag (e.g., "en", "es"). */
   language?: string
 }
@@ -29,10 +29,20 @@ export interface AdBreak {
 /** Episode metadata within an annotation set. */
 export interface Episode {
   title?: string
+  /** Globally unique identifier for the episode (from RSS <guid>). */
+  guid?: string
   url?: string
   audioUrl?: string
   /** Episode summary or show notes (plain text). */
   description?: string
+  /** Publication date in RFC 2822 format. */
+  pubDate?: string
+  /** Episode duration in seconds. */
+  duration?: number
+  /** Season number. */
+  season?: number
+  /** Episode number within the season or series. */
+  episodeNumber?: number
 }
 
 /** Container format for a collection of annotations. */

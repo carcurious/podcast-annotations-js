@@ -208,6 +208,7 @@ export class TranscriptSync {
   setGaps(gaps: AlignmentGap[]): void {
     this._gaps = [...gaps].sort((a, b) => a.variantStart - b.variantStart)
     this._inGap = false
+    this.activeSegmentIndex = -1
   }
 
   /** Whether the current playback position is inside a gap. */

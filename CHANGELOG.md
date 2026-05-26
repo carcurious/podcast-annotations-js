@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.7.0 (2026-05-26)
+
+### Changed
+- **Breaking:** `Transcript.format` renamed to `Transcript.type` and now takes MIME type strings (`"text/vtt"`, `"application/x-subrip"`, `"application/json"`, etc.) instead of shorthand strings (`"vtt"`, `"srt"`, `"json"`). Aligns with the `<podcast:transcript>` element in the PSP-1 RSS specification so RSS feeds and annotation files can reference the same transcript resources without type translation.
+- `SPEC.md` transcript section updated with MIME type table and PSP-1 alignment note.
+- `SPEC.md` episode container fields table updated with PSP-1 alignment note for `guid`, `pubDate`, `duration`.
+- `SPEC.md` RSS Distribution section now includes a concrete `<podcast:annotations url="..." type="application/json" />` example modeled on `<podcast:transcript>`.
+
+### Added
+- `Episode.guid` — globally unique identifier for the episode (from RSS `<guid>`).
+- `Episode.pubDate` — publication date in RFC 2822 format (aligns with RSS `<pubDate>`).
+- `Episode.duration` — episode duration in seconds (aligns with `<itunes:duration>`).
+- `Episode.season` — season number (aligns with `<itunes:season>`).
+- `Episode.episodeNumber` — episode number within the season or series (aligns with `<itunes:episode>`).
+
+### Fixed
+- `upcomingAnnotations` no longer returns an annotation that is already active. Previously compared against `startTime`; now compares against `triggerStartTime` (which is 2s earlier by default), so an annotation in its lead window doesn't appear in both the current and upcoming lists simultaneously.
+- `TranscriptSync.setGaps()` now resets `activeSegmentIndex` so a stale `active` CSS class is cleared on the next `timeupdate` after gaps are updated mid-playback.
+- `formatTime` uses `isNaN` instead of falsy check, fixing incorrect `"0:00"` return for `triggerStartTime` values that are negative.
+
 ## 0.6.1 (2026-04-29)
 
 ### Added

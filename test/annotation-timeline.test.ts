@@ -40,8 +40,7 @@ describe('AnnotationTimeline', () => {
         { startTime: 25, endTime: 50, data: { type: 'car' } },
         { startTime: 75, endTime: 90, data: { type: 'term' } }
       ],
-      duration: 100,
-      typeColors: { car: '#60a5fa', term: '#c084fc' }
+      duration: 100
     })
 
     const markers = container.querySelectorAll('.pa-timeline-marker')

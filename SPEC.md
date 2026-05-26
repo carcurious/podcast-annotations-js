@@ -208,15 +208,22 @@ An annotation set is the container format for a collection of annotations associ
 | `version` | `string` | **Yes** | Spec version (semver, currently `"1.0.0"`) |
 | `episode` | `object` | No | Episode metadata |
 | `episode.title` | `string` | No | Episode title |
+| `episode.guid` | `string` | No | Globally unique identifier for the episode (from RSS `<guid>`) |
 | `episode.url` | `string` | No | Episode web page |
 | `episode.audioUrl` | `string` | No | URL to the audio file |
 | `episode.description` | `string` | No | Episode summary or show notes (plain text) |
+| `episode.pubDate` | `string` | No | Publication date in RFC 2822 format (e.g., `"Fri, 26 Feb 2021 00:00:00 -0500"`) |
+| `episode.duration` | `number` | No | Episode duration in seconds |
+| `episode.season` | `number` | No | Season number (non-zero integer) |
+| `episode.episodeNumber` | `number` | No | Episode number within the season or series (non-zero integer) |
 | `transcripts` | `array` | No | Transcript files (see [Transcripts](#transcripts)) |
 | `speakers` | `array` | No | Speaker definitions (see [Speakers](#speakers)) |
 | `adBreaks` | `array` | No | Ad/insertion break ranges (see [Ad Breaks](#ad-breaks)) |
 | `annotations` | `array` | **Yes** | Array of annotation objects |
 
-The `episode` object is optional. When annotations are delivered alongside audio (e.g., via RSS or an API), episode metadata may be redundant. Short episode summaries or show notes can be included directly via `episode.description`. The recommended format is plain text. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support. For richer episode-level metadata (publication date, series info, licensing), see Schema.org `PodcastEpisode`.
+The `episode` object is optional. When annotations are delivered alongside audio (e.g., via RSS or an API), episode metadata may be redundant. Including `episode.guid`, `episode.pubDate`, and `episode.duration` makes an annotation file self-contained — a consumer can identify and play the episode without fetching the RSS feed. These fields align with the corresponding RSS item elements (`<guid>`, `<pubDate>`, `<itunes:duration>`) defined in the [PSP-1 RSS specification](https://github.com/Podcast-Standards-Project/PSP-1-Podcast-RSS-Specification).
+
+Short episode summaries or show notes can be included directly via `episode.description`. The recommended format is plain text. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support. For richer episode-level metadata (licensing, series info), see Schema.org `PodcastEpisode`.
 
 ## Transcripts
 
@@ -225,14 +232,26 @@ The `transcripts` array links to transcript files associated with the audio. Mul
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `url` | `string` | **Yes** | URL to the transcript file |
-| `format` | `string` | **Yes** | File format: `"vtt"`, `"srt"`, or `"json"` |
+| `type` | `string` | **Yes** | MIME type of the transcript file (see below) |
 | `language` | `string` | No | BCP 47 language tag (e.g., `"en"`, `"es"`) |
+
+**Supported MIME types:**
+
+| MIME type | Format |
+|-----------|--------|
+| `text/vtt` | WebVTT |
+| `application/x-subrip` | SRT |
+| `application/json` | JSON transcript |
+| `text/html` | HTML transcript |
+| `text/plain` | Plain text |
+
+These values align with the `<podcast:transcript>` element defined in the [PSP-1 RSS specification](https://github.com/Podcast-Standards-Project/PSP-1-Podcast-RSS-Specification), allowing RSS feeds and annotation files to reference the same transcript resources without type translation.
 
 ```json
 {
   "transcripts": [
-    { "url": "https://example.com/ep42.vtt", "format": "vtt", "language": "en" },
-    { "url": "https://example.com/ep42.srt", "format": "srt", "language": "en" }
+    { "url": "https://example.com/ep42.vtt", "type": "text/vtt", "language": "en" },
+    { "url": "https://example.com/ep42.srt", "type": "application/x-subrip", "language": "en" }
   ]
 }
 ```
@@ -536,7 +555,13 @@ Maps to this W3C Web Annotation:
 
 **Podcasting 2.0 `<podcast:person>`.** Tags people at the episode level (hosts, guests). Podcast annotations with `type: "person"` tag people at the moment level: when they're discussed, not just who's on the show.
 
-**RSS Distribution.** An episode's annotation file MAY be referenced from the RSS feed or episode web page. A future `<podcast:annotations>` namespace element could formalize this. See the Podcasting 2.0 namespace for the proposal process.
+**RSS Distribution.** An episode's annotation file MAY be referenced from the RSS feed or episode web page. The `<podcast:transcript>` element defined in PSP-1 provides a clear model: a `url` attribute and a `type` attribute. A `<podcast:annotations>` element would follow the same pattern:
+
+```xml
+<podcast:annotations url="https://example.com/episode1.annotations.json" type="application/json" />
+```
+
+This element would live inside `<item>`, alongside `<podcast:transcript>`. See the [Podcasting 2.0 namespace](https://podcastindex.org/namespace/1.0) for the proposal process.
 
 **Wikidata / DBpedia.** The `url` field on annotations can reference Wikidata entities (e.g., `https://www.wikidata.org/wiki/Q5300`) for canonical, language-independent entity identification. This enables linked data use cases without adding complexity to the core format.
 
