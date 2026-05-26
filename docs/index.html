@@ -886,6 +886,12 @@
 <td>Episode title</td>
 </tr>
 <tr>
+<td><code>episode.guid</code></td>
+<td><code>string</code></td>
+<td>No</td>
+<td>Globally unique identifier for the episode (from RSS <code>&lt;guid&gt;</code>)</td>
+</tr>
+<tr>
 <td><code>episode.url</code></td>
 <td><code>string</code></td>
 <td>No</td>
@@ -902,6 +908,30 @@
 <td><code>string</code></td>
 <td>No</td>
 <td>Episode summary or show notes (plain text)</td>
+</tr>
+<tr>
+<td><code>episode.pubDate</code></td>
+<td><code>string</code></td>
+<td>No</td>
+<td>Publication date in RFC 2822 format (e.g., <code>&quot;Fri, 26 Feb 2021 00:00:00 -0500&quot;</code>)</td>
+</tr>
+<tr>
+<td><code>episode.duration</code></td>
+<td><code>number</code></td>
+<td>No</td>
+<td>Episode duration in seconds</td>
+</tr>
+<tr>
+<td><code>episode.season</code></td>
+<td><code>number</code></td>
+<td>No</td>
+<td>Season number (non-zero integer)</td>
+</tr>
+<tr>
+<td><code>episode.episodeNumber</code></td>
+<td><code>number</code></td>
+<td>No</td>
+<td>Episode number within the season or series (non-zero integer)</td>
 </tr>
 <tr>
 <td><code>transcripts</code></td>
@@ -928,7 +958,8 @@
 <td>Array of annotation objects</td>
 </tr>
 </tbody></table>
-<p>The <code>episode</code> object is optional. When annotations are delivered alongside audio (e.g., via RSS or an API), episode metadata may be redundant. Short episode summaries or show notes can be included directly via <code>episode.description</code>. The recommended format is plain text. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support. For richer episode-level metadata (publication date, series info, licensing), see Schema.org <code>PodcastEpisode</code>.</p>
+<p>The <code>episode</code> object is optional. When annotations are delivered alongside audio (e.g., via RSS or an API), episode metadata may be redundant. Including <code>episode.guid</code>, <code>episode.pubDate</code>, and <code>episode.duration</code> makes an annotation file self-contained — a consumer can identify and play the episode without fetching the RSS feed. These fields align with the corresponding RSS item elements (<code>&lt;guid&gt;</code>, <code>&lt;pubDate&gt;</code>, <code>&lt;itunes:duration&gt;</code>) defined in the <a href="https://github.com/Podcast-Standards-Project/PSP-1-Podcast-RSS-Specification">PSP-1 RSS specification</a>.</p>
+<p>Short episode summaries or show notes can be included directly via <code>episode.description</code>. The recommended format is plain text. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support. For richer episode-level metadata (licensing, series info), see Schema.org <code>PodcastEpisode</code>.</p>
 <h2>Transcripts</h2>
 <p>The <code>transcripts</code> array links to transcript files associated with the audio. Multiple formats can be provided.</p>
 <table>
@@ -947,10 +978,10 @@
 <td>URL to the transcript file</td>
 </tr>
 <tr>
-<td><code>format</code></td>
+<td><code>type</code></td>
 <td><code>string</code></td>
 <td><strong>Yes</strong></td>
-<td>File format: <code>&quot;vtt&quot;</code>, <code>&quot;srt&quot;</code>, or <code>&quot;json&quot;</code></td>
+<td>MIME type of the transcript file (see below)</td>
 </tr>
 <tr>
 <td><code>language</code></td>
@@ -959,10 +990,40 @@
 <td>BCP 47 language tag (e.g., <code>&quot;en&quot;</code>, <code>&quot;es&quot;</code>)</td>
 </tr>
 </tbody></table>
+<p><strong>Supported MIME types:</strong></p>
+<table>
+<thead>
+<tr>
+<th>MIME type</th>
+<th>Format</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>text/vtt</code></td>
+<td>WebVTT</td>
+</tr>
+<tr>
+<td><code>application/x-subrip</code></td>
+<td>SRT</td>
+</tr>
+<tr>
+<td><code>application/json</code></td>
+<td>JSON transcript</td>
+</tr>
+<tr>
+<td><code>text/html</code></td>
+<td>HTML transcript</td>
+</tr>
+<tr>
+<td><code>text/plain</code></td>
+<td>Plain text</td>
+</tr>
+</tbody></table>
+<p>These values align with the <code>&lt;podcast:transcript&gt;</code> element defined in the <a href="https://github.com/Podcast-Standards-Project/PSP-1-Podcast-RSS-Specification">PSP-1 RSS specification</a>, allowing RSS feeds and annotation files to reference the same transcript resources without type translation.</p>
 <pre><code class="language-json">{
   &quot;transcripts&quot;: [
-    { &quot;url&quot;: &quot;https://example.com/ep42.vtt&quot;, &quot;format&quot;: &quot;vtt&quot;, &quot;language&quot;: &quot;en&quot; },
-    { &quot;url&quot;: &quot;https://example.com/ep42.srt&quot;, &quot;format&quot;: &quot;srt&quot;, &quot;language&quot;: &quot;en&quot; }
+    { &quot;url&quot;: &quot;https://example.com/ep42.vtt&quot;, &quot;type&quot;: &quot;text/vtt&quot;, &quot;language&quot;: &quot;en&quot; },
+    { &quot;url&quot;: &quot;https://example.com/ep42.srt&quot;, &quot;type&quot;: &quot;application/x-subrip&quot;, &quot;language&quot;: &quot;en&quot; }
   ]
 }
 </code></pre>
@@ -1410,7 +1471,10 @@
 <p><strong>Schema.org PodcastEpisode.</strong> Schema.org defines episode-level metadata for search engines. This spec defines within-episode annotations. A <code>PodcastEpisode</code> might link to an <code>.annotations.json</code> file via a custom property.</p>
 <p><strong>Show Notes.</strong> Show notes are the most common form of podcast annotation today: episode summaries, timestamps, guest info, and links published as freeform prose via RSS <code>&lt;description&gt;</code> or <code>&lt;content:encoded&gt;</code>. An annotation set is a structured, machine-readable representation of the same information. Show notes describe what was discussed; annotations make it addressable, linkable, and renderable in sync with playback. Producers can use annotation sets to generate show notes, or use existing show notes as a starting point for annotation.</p>
 <p><strong>Podcasting 2.0 <code>&lt;podcast:person&gt;</code>.</strong> Tags people at the episode level (hosts, guests). Podcast annotations with <code>type: &quot;person&quot;</code> tag people at the moment level: when they&#39;re discussed, not just who&#39;s on the show.</p>
-<p><strong>RSS Distribution.</strong> An episode&#39;s annotation file MAY be referenced from the RSS feed or episode web page. A future <code>&lt;podcast:annotations&gt;</code> namespace element could formalize this. See the Podcasting 2.0 namespace for the proposal process.</p>
+<p><strong>RSS Distribution.</strong> An episode&#39;s annotation file MAY be referenced from the RSS feed or episode web page. The <code>&lt;podcast:transcript&gt;</code> element defined in PSP-1 provides a clear model: a <code>url</code> attribute and a <code>type</code> attribute. A <code>&lt;podcast:annotations&gt;</code> element would follow the same pattern:</p>
+<pre><code class="language-xml">&lt;podcast:annotations url=&quot;https://example.com/episode1.annotations.json&quot; type=&quot;application/json&quot; /&gt;
+</code></pre>
+<p>This element would live inside <code>&lt;item&gt;</code>, alongside <code>&lt;podcast:transcript&gt;</code>. See the <a href="https://podcastindex.org/namespace/1.0">Podcasting 2.0 namespace</a> for the proposal process.</p>
 <p><strong>Wikidata / DBpedia.</strong> The <code>url</code> field on annotations can reference Wikidata entities (e.g., <code>https://www.wikidata.org/wiki/Q5300</code>) for canonical, language-independent entity identification. This enables linked data use cases without adding complexity to the core format.</p>
 <p><strong>Linked Data Ontologies.</strong> Ontologies such as the BBC&#39;s Linked Data Platform describe entities, creative works, web documents, products, and provenance. Podcast annotations are compatible with that model, but solve a different problem: they say when an entity or topic is relevant inside an audio timeline. Implementations can store ontology identifiers in <code>canonicalId</code>, <code>url</code>, <code>tags</code>, or <code>data</code> while keeping the core timing format simple.</p>
 <h2>Reference Implementation</h2>
@@ -1423,7 +1487,7 @@
     </section>
 
     <footer>
-      Version 1.0.0. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated 2026-05-20. <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>.
+      Version 1.0.0. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated 2026-05-26. <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>.
     </footer>
   </div>
 
