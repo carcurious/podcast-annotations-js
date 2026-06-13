@@ -8,9 +8,9 @@ A minimal JSON format for timestamped entity annotations on podcast and spoken m
 
 WebVTT tells you what was said. Podcast annotations tell you what was said *about*.
 
-Transcripts give you words and timestamps. They usually do not tell an app that a host mentioned a 1969 Camaro at 0:45, switched to turbochargers at 2:00, or spent the next 30 seconds talking about Carroll Shelby. That meaning is present in the audio, but it is rarely available as structured data.
+Transcripts give you words and timestamps. They do not tell an app that a host mentioned a 1969 Camaro at 0:45, switched to turbochargers at 2:00, or spent the next 30 seconds talking about Carroll Shelby. That meaning is present in the audio, but it is rarely available as structured data.
 
-The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is modest: make the references inside a podcast episode addressable, so that a player, search index, archive, or show-notes generator can do something useful with them.
+The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is to make the references inside a podcast episode addressable, so that a player, search index, archive, or show-notes generator can do something useful with them.
 
 This spec defines the annotation, not the transport. A sidecar JSON file is the simplest carrier today, but the same annotation model can be embedded in RSS, returned from an API, or delivered however a producer and consumer choose.
 
@@ -30,14 +30,14 @@ This spec defines the annotation, not the transport. A sidecar JSON file is the 
 
 ## Prior Art & Inspiration
 
-Timed context around media is already familiar to users. Podcasting has transcripts, chapters, and show notes, but it usually lacks a compact file for within-episode references.
+Timed context around media is familiar to users. Podcasting has transcripts, chapters, and show notes, but it lacks a compact file for within-episode references.
 
 **Proven UX pattern:**
 - **VH1 Pop-Up Video.** The original mainstream example: timestamped contextual notes overlaid on media playback.
-- **Amazon Prime Video X-Ray.** Cast, characters, and trivia synced to the current scene. X-Ray is the canonical reference, but Amazon has never published the underlying data model, which is part of why writing this format down in the open is worth doing at all.
+- **Amazon Prime Video X-Ray.** Cast, characters, and trivia synced to the current scene. X-Ray is the canonical reference, but Amazon has never published the underlying data model, which is part of why writing this format down in the open is worth doing.
 - **SoundCloud timed comments.** One of the earliest mainstream timestamped annotations on audio. Users drop comments at any `t=` position, proving listeners engage with moment-level audio annotation.
 
-<!-- TODO(author): Replace or supplement one of the above entries with a more idiosyncratic reference you actually leaned on while building Car Curious, such as an internal annotation tool, a forum thread, a half-abandoned project, an academic paper, or a competitor that didn't quite work. The current list is the obvious correct answer, which reads as AI-generated. One specific reference from real work will fix that. -->
+<!-- TODO(author): Replace or supplement one of the above entries with a reference you actually leaned on while building Car Curious, such as an internal annotation tool, a forum thread, a half-abandoned project, an academic paper, or a competitor that did not quite work. One specific reference from real work would make this section feel more grounded. -->
 
 
 **Proven at scale:**
@@ -47,13 +47,13 @@ Timed context around media is already familiar to users. Podcasting has transcri
 **Proven in podcasting:**
 - **Podcast chapters** (Podcasting 2.0, Podlove, MP4). Coarse timestamped metadata that podcast apps already implement, proving the ecosystem will adopt spec extensions that improve the listening experience.
 - **Overcast.** Podcast-native precedent for structured metadata (Smart Speed, chapters, transcript sync) improving UX. Marco Arment's public discussion of DAI transcript synchronization informed this spec's approach to ad break alignment.
-- **Snipd.** A podcast app that lets listeners highlight and annotate moments for personal note-taking. Listener-side annotation on podcast audio, already in production. This spec makes the same capability possible as an open, shared layer rather than a closed, personal tool.
+- **Snipd.** A podcast app that lets listeners highlight and annotate moments for personal note-taking. Listener-side annotation on podcast audio, already in production. This spec makes the same capability possible as an open, shared layer instead of a closed personal tool.
 
-Podcast audio already contains this information. This spec defines one way to represent it as structured data. While annotations can be derived from transcripts, precomputed annotations allow better timing, better entity resolution, and more consistent behavior across players and archives.
+Podcast audio already contains this information. This spec defines one way to represent it as structured data. Annotations can be derived from transcripts, but precomputed annotations allow better timing, better entity resolution, and more consistent behavior across players and archives.
 
 ## Annotation Object
 
-An annotation represents a single entity mention or topic reference in audio. An annotation's time range represents the duration over which the entity is actively discussed or relevant, not just the exact moment it is first mentioned.
+An annotation represents a single entity mention or topic reference in audio. An annotation's time range represents the duration over which the entity is actively discussed or relevant, not only the exact moment it is first mentioned.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -116,7 +116,7 @@ Full example with all optional fields:
 
 All times are in **seconds as floating-point numbers**, measured from the start of the audio. This aligns with the Web Audio API, HTMLMediaElement, WebVTT, and most podcast tooling.
 
-Time values SHOULD use millisecond precision such as `45.123`, and consumers SHOULD tolerate minor floating-point variance: when one producer emits `45.1999` and another emits `45.2` for the same mention, they describe the same moment and a consumer should treat them as equivalent.
+Time values SHOULD use millisecond precision such as `45.123`. Consumers SHOULD tolerate minor floating-point variance: when one producer emits `45.1999` and another emits `45.2` for the same mention, they describe the same moment and a consumer should treat them as equivalent.
 
 ### The `data` Field
 
@@ -144,7 +144,7 @@ Annotations MAY overlap in time. Multiple annotations at the same timestamp are 
 
 An annotation set might contain 5 chapter-like topic markers for a 3-hour episode or 100+ fine-grained entity references for a 90-minute episode; both are valid. Producers generating dense annotation sets SHOULD assign `priority` values so that consumers can filter to a manageable subset (e.g., showing only annotations with `priority >= 0.7` in a minimal UI, or all annotations in a detailed entity view).
 
-<!-- TODO(author): This section reads thin compared to what you actually know from Car Curious. Add a concrete density story: a specific Everyday Driver episode where the annotation count crossed some threshold and broke a downstream assumption; what density a player UI starts choking on; whether your AI pipeline tends to over-produce or under-produce; whether priority filtering actually solved it in production or just deferred the problem. Two or three sentences of lived experience here will let this section breathe instead of just stating the rule. -->
+<!-- TODO(author): Add a concrete density story from Car Curious here: a specific Everyday Driver episode where the annotation count crossed a threshold and broke a downstream assumption; what density starts to overwhelm a player UI; whether the AI pipeline tends to over-produce or under-produce; and whether priority filtering solved the problem or only deferred it. Two or three sentences from lived experience would strengthen this section. -->
 
 
 ### Validation Rules
@@ -221,7 +221,7 @@ An annotation set is the container format for a collection of annotations associ
 | `adBreaks` | `array` | No | Ad/insertion break ranges (see [Ad Breaks](#ad-breaks)) |
 | `annotations` | `array` | **Yes** | Array of annotation objects |
 
-The `episode` object is optional. When annotations are delivered alongside audio (e.g., via RSS or an API), episode metadata may be redundant. Including `episode.guid`, `episode.pubDate`, and `episode.duration` makes an annotation file self-contained — a consumer can identify and play the episode without fetching the RSS feed. These fields align with the corresponding RSS item elements (`<guid>`, `<pubDate>`, `<itunes:duration>`) defined in the [PSP-1 RSS specification](https://github.com/Podcast-Standards-Project/PSP-1-Podcast-RSS-Specification).
+The `episode` object is optional. When annotations are delivered alongside audio (e.g., via RSS or an API), episode metadata may be redundant. Including `episode.guid`, `episode.pubDate`, and `episode.duration` makes an annotation file self-contained: a consumer can identify and play the episode without fetching the RSS feed. These fields align with the corresponding RSS item elements (`<guid>`, `<pubDate>`, `<itunes:duration>`) defined in the [PSP-1 RSS specification](https://github.com/Podcast-Standards-Project/PSP-1-Podcast-RSS-Specification).
 
 Short episode summaries or show notes can be included directly via `episode.description`. The recommended format is plain text. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support. For richer episode-level metadata (licensing, series info), see Schema.org `PodcastEpisode`.
 
@@ -322,7 +322,7 @@ The following types are proven in production and recommended for interoperabilit
 
 ### Disambiguating `company` vs `brand`
 
-The `company` and `brand` types overlap in practice: most brands belong to a company, and many companies are referred to by their brand name. The following guidance is non-normative. Producers MAY disregard it. It is offered as a consistency tool to keep annotator judgment from drifting between coin flips, particularly for automated producers.
+The `company` and `brand` types overlap in practice: most brands belong to a company, and many companies are referred to by their brand name. The following guidance is non-normative. Producers MAY disregard it. It is offered as a consistency tool to keep annotator judgment from drifting between coin flips, for automated producers in particular.
 
 The rule is a *role test*, not an *ontology test*. Tag based on how the name is being used in the surrounding utterance, not on what the entity ontologically is.
 
@@ -529,7 +529,7 @@ Maps to this W3C Web Annotation:
 ### Mapping Rules
 
 | Podcast Annotation Field | W3C Web Annotation |
-|-----------|--------------------|
+|-----------|--------------------
 | `startTime`, `endTime` | `target.selector.value` as `t=start,end` |
 | `title` | `body.value` |
 | `type` | Custom `body.type` or encoded within `body.purpose`, depending on implementation |
@@ -545,7 +545,7 @@ Maps to this W3C Web Annotation:
 
 ## Relationship to Other Standards
 
-**Podcasting 2.0 Chapters.** Chapters define coarse segments (intro, topic, outro) with titles and artwork. Podcast annotations are fine-grained entity references within those segments. They're complementary: an episode might have 5 chapters and 40 annotations.
+**Podcasting 2.0 Chapters.** Chapters define coarse segments (intro, topic, outro) with titles and artwork. Podcast annotations are fine-grained entity references within those segments. They are complementary: an episode might have 5 chapters and 40 annotations.
 
 **WebVTT / SRT.** Subtitle formats carry the transcript text. This spec carries the entities and topics referenced in that text. A player might use WebVTT for the transcript and podcast annotations for contextual overlays.
 
@@ -553,7 +553,7 @@ Maps to this W3C Web Annotation:
 
 **Show Notes.** Show notes are the most common form of podcast annotation today: episode summaries, timestamps, guest info, and links published as freeform prose via RSS `<description>` or `<content:encoded>`. An annotation set is a structured, machine-readable representation of the same information. Show notes describe what was discussed; annotations make it addressable, linkable, and renderable in sync with playback. Producers can use annotation sets to generate show notes, or use existing show notes as a starting point for annotation.
 
-**Podcasting 2.0 `<podcast:person>`.** Tags people at the episode level (hosts, guests). Podcast annotations with `type: "person"` tag people at the moment level: when they're discussed, not just who's on the show.
+**Podcasting 2.0 `<podcast:person>`.** Tags people at the episode level (hosts, guests). Podcast annotations with `type: "person"` tag people at the moment level: when they are discussed, not only who is on the show.
 
 **RSS Distribution.** An episode's annotation file MAY be referenced from the RSS feed or episode web page. The `<podcast:transcript>` element defined in PSP-1 provides a clear model: a `url` attribute and a `type` attribute. A `<podcast:annotations>` element would follow the same pattern:
 
