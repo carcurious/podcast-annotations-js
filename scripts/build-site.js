@@ -191,6 +191,10 @@ const demoSnippet = {
   type: demoInitial?.type ?? 'topic',
   title: demoInitial?.title ?? 'Example topic'
 }
+const demoFilename = `${(demoSnippet.title || 'annotation')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/(^-|-$)/g, '') || 'annotation'}.annotation.json`
 
 const html = `<!DOCTYPE html>
 <html lang="en">
@@ -205,22 +209,31 @@ const html = `<!DOCTYPE html>
   <meta property="og:url" content="https://www.podcastannotation.org">
   <link rel="canonical" href="https://www.podcastannotation.org">
   <style>
+    @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/fraunces-400.woff2") format("woff2"); }
+    @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/fraunces-500.woff2") format("woff2"); }
+    @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/fraunces-600.woff2") format("woff2"); }
+    @font-face { font-family: "Plex Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/plex-sans-400.woff2") format("woff2"); }
+    @font-face { font-family: "Plex Sans"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/plex-sans-500.woff2") format("woff2"); }
+    @font-face { font-family: "Plex Sans"; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/plex-sans-600.woff2") format("woff2"); }
+    @font-face { font-family: "Plex Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/plex-mono-400.woff2") format("woff2"); }
+    @font-face { font-family: "Plex Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/plex-mono-500.woff2") format("woff2"); }
     :root {
-      --bg: #fbf8f1;
+      --bg: #FCFCFB;
       --surface: #ffffff;
-      --surface-muted: #f3efe5;
-      --text: #161513;
-      --muted: #6b665d;
-      --border: #d8d2c2;
-      --accent: #8a3a1a;
-      --accent-soft: #f0e3d9;
-      --code-bg: #f4efe3;
+      --surface-muted: #F4F4F1;
+      --text: #0B0B0C;
+      --muted: #54565B;
+      --border: #E4E4E1;
+      --border-strong: #CFCFCB;
+      --accent: #E5341F;
+      --accent-soft: #FBE7E3;
+      --code-bg: #F6F6F4;
       --shadow: none;
       --max-page: 1040px;
       --max-spec: 720px;
-      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-      --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --serif: "Fraunces", Georgia, "Times New Roman", serif;
+      --sans: "Plex Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -233,10 +246,13 @@ const html = `<!DOCTYPE html>
       padding: 32px 18px 72px;
     }
     a {
-      color: var(--accent);
-      text-decoration: none;
+      color: var(--text);
+      text-decoration: underline;
+      text-decoration-color: var(--border-strong);
+      text-underline-offset: 2px;
+      transition: color 0.15s, text-decoration-color 0.15s;
     }
-    a:hover { text-decoration: underline; }
+    a:hover { color: var(--accent); text-decoration-color: var(--accent); }
     code {
       font-family: var(--mono);
       background: var(--code-bg);
@@ -265,23 +281,38 @@ const html = `<!DOCTYPE html>
       display: flex;
       justify-content: space-between;
       gap: 16px;
-      align-items: baseline;
-      margin-bottom: 28px;
-      padding-bottom: 12px;
+      align-items: center;
+      margin-bottom: 44px;
+      padding-bottom: 14px;
       border-bottom: 1px solid var(--border);
     }
     .topbar strong {
-      font-size: 0.95rem;
-      letter-spacing: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
+    }
+    .topbar strong::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 1px;
+      background: var(--accent);
     }
     .topbar nav {
       display: flex;
-      gap: 16px;
+      gap: 20px;
       flex-wrap: wrap;
-      color: var(--muted);
-      font-size: 0.95rem;
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      letter-spacing: 0.02em;
     }
+    .topbar nav a { color: var(--muted); text-decoration: none; }
+    .topbar nav a:hover { color: var(--accent); }
     .intro {
       display: grid;
       grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
@@ -297,10 +328,11 @@ const html = `<!DOCTYPE html>
     }
     h1 {
       font-family: var(--serif);
-      font-weight: 500;
-      font-size: 3.2rem;
-      letter-spacing: 0;
-      margin-bottom: 18px;
+      font-weight: 400;
+      font-size: 3.5rem;
+      line-height: 1.04;
+      letter-spacing: -0.015em;
+      margin-bottom: 20px;
     }
     .intro p,
     .section p {
@@ -341,16 +373,81 @@ const html = `<!DOCTYPE html>
     .section h2 {
       font-family: var(--serif);
       font-weight: 500;
-      font-size: 1.6rem;
-      letter-spacing: 0;
-      margin-bottom: 12px;
+      font-size: 1.85rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 14px;
     }
     .lede {
-      max-width: 64ch;
-      font-size: 1.05rem;
-      line-height: 1.65;
+      max-width: 60ch;
+      font-size: 1.18rem;
+      line-height: 1.55;
       color: var(--text);
-      margin: 0 0 32px;
+      margin: 0 0 26px;
+    }
+    .spec-meta {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      margin: 24px 0 0;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .spec-meta > span {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 13px;
+      border-right: 1px solid var(--border);
+    }
+    .spec-meta > span:last-child { border-right: 0; }
+    .spec-meta .spec-meta-status { color: var(--text); }
+    .rec-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 8px;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .rec-dot { animation: recpulse 2.6s ease-in-out infinite; }
+    }
+    @keyframes recpulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(229, 52, 31, 0.35); }
+      50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(229, 52, 31, 0); }
+    }
+    .code-card {
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      overflow: hidden;
+      background: var(--code-bg);
+    }
+    .code-card-tab {
+      display: flex;
+      align-items: center;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+    .code-card-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-strong);
+      box-shadow: 13px 0 0 var(--border-strong), 26px 0 0 var(--border-strong);
+      margin-right: 34px;
+    }
+    .code-card pre {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
     }
     .field-note {
       grid-column: 1 / -1;
@@ -378,23 +475,34 @@ const html = `<!DOCTYPE html>
     }
     .demo-track {
       position: relative;
-      height: 44px;
-      margin: 8px 0 10px;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
+      height: 54px;
+      margin: 16px 0 4px;
+    }
+    .demo-track::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 15px;
+      height: 2px;
+      background: var(--border-strong);
     }
     .demo-track-labels {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
       color: var(--muted);
       font-family: var(--mono);
-      font-size: 0.78rem;
+      font-size: 0.74rem;
     }
     .demo-marker {
       position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      top: 9px;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 11px;
       border: 0;
       background: transparent;
       padding: 0;
@@ -403,20 +511,27 @@ const html = `<!DOCTYPE html>
       text-align: center;
     }
     .demo-marker-dot {
-      display: block;
-      width: 10px;
-      height: 10px;
-      margin: 0 auto 6px;
+      width: 13px;
+      height: 13px;
       border-radius: 50%;
-      background: var(--border);
+      background: var(--bg);
+      border: 2px solid var(--border-strong);
+      box-sizing: border-box;
+      transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
     }
+    .demo-marker:hover .demo-marker-dot { border-color: var(--text); }
     .demo-marker-time {
       display: block;
       font-family: var(--mono);
-      font-size: 0.78rem;
+      font-size: 0.74rem;
+      transition: color 0.18s;
     }
     .demo-marker.is-active { color: var(--text); }
-    .demo-marker.is-active .demo-marker-dot { background: var(--accent); }
+    .demo-marker.is-active .demo-marker-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(229, 52, 31, 0.14);
+    }
     .demo-detail {
       max-width: 760px;
     }
@@ -461,8 +576,10 @@ const html = `<!DOCTYPE html>
       padding: 16px;
     }
     .demo-art-type {
-      color: var(--accent);
-      font-size: 0.78rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
     }
     .demo-art-title {
@@ -475,13 +592,22 @@ const html = `<!DOCTYPE html>
       font-size: 0.82rem;
     }
     .demo-type {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
       font-family: var(--mono);
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       text-transform: uppercase;
-      letter-spacing: 0;
-      color: var(--accent);
-      margin-bottom: 10px;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .demo-type::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 1px;
+      background: var(--accent);
     }
     .demo-copy h3 {
       font-family: var(--serif);
@@ -542,9 +668,10 @@ const html = `<!DOCTYPE html>
     .demo-chip span {
       font-family: var(--mono);
       font-size: 0.78rem;
-      color: var(--accent);
+      color: var(--muted);
       margin-bottom: 4px;
     }
+    .demo-chip.is-active span { color: var(--accent); }
     .demo-chip strong {
       font-size: 0.95rem;
       color: var(--text);
@@ -554,28 +681,38 @@ const html = `<!DOCTYPE html>
       background: var(--surface-muted);
     }
     .spec-wrap {
-      margin-top: 40px;
-      padding-top: 28px;
-      border-top: 1px solid var(--border);
+      position: relative;
+      margin-top: 48px;
+      padding-top: 36px;
+      border-top: 1px solid var(--border-strong);
+    }
+    .spec-wrap::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: 0;
+      width: 40px;
+      height: 4px;
+      background: var(--accent);
     }
     #spec {
       max-width: var(--max-spec);
     }
     #spec h1 {
       font-family: var(--serif);
-      font-weight: 500;
-      font-size: 2.4rem;
-      letter-spacing: 0;
+      font-weight: 400;
+      font-size: 2.6rem;
+      letter-spacing: -0.015em;
       margin-bottom: 0.5rem;
     }
     #spec h2 {
       font-family: var(--serif);
       font-weight: 500;
-      font-size: 1.55rem;
-      letter-spacing: 0;
-      margin-top: 2.5rem;
-      margin-bottom: 0.8rem;
-      padding-bottom: 0.35rem;
+      font-size: 1.7rem;
+      letter-spacing: -0.01em;
+      margin-top: 2.8rem;
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.4rem;
       border-bottom: 1px solid var(--border);
     }
     #spec h3 {
@@ -600,10 +737,20 @@ const html = `<!DOCTYPE html>
     }
     #spec th, #spec td {
       text-align: left;
-      padding: 0.55rem 0.7rem;
+      padding: 0.6rem 0.8rem;
       border-bottom: 1px solid var(--border);
       vertical-align: top;
     }
+    #spec thead th {
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border-strong);
+    }
+    #spec tbody tr:hover { background: var(--code-bg); }
     #spec blockquote {
       margin-left: 0;
       padding-left: 1rem;
@@ -663,13 +810,22 @@ const html = `<!DOCTYPE html>
           <a class="button-link primary" href="#spec">Read the spec</a>
           <a class="button-link" href="https://github.com/ryanwi/podcast-annotations-js">View on GitHub</a>
         </div>
+        <div class="spec-meta">
+          <span class="spec-meta-status"><span class="rec-dot"></span>Stable</span>
+          <span>v${escapeHtml(specVersion)}</span>
+          <span>CC BY 4.0</span>
+          <span>Updated ${lastmod}</span>
+        </div>
       </div>
-      <pre><code>{
+      <div class="code-card">
+        <div class="code-card-tab"><span class="code-card-dot"></span>${escapeHtml(demoFilename)}</div>
+        <pre><code>{
   "startTime": ${demoSnippet.startTime},
   "endTime": ${demoSnippet.endTime},
   "type": "${escapeHtml(demoSnippet.type)}",
   "title": "${escapeHtml(demoSnippet.title)}"
 }</code></pre>
+      </div>
       <p class="field-note">Each annotation starts with <code>startTime</code> and <code>endTime</code>. Add optional fields like <code>type</code>, <code>title</code>, <code>url</code>, <code>quote</code>, and <code>data</code> when a player, search index, archive, or show-notes workflow needs more context.</p>
     </section>
 
