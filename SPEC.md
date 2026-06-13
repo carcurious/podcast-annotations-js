@@ -306,19 +306,23 @@ Players can use ad breaks to skip or realign annotations around dynamic ad inser
 
 ## Recommended Entity Types
 
-The following types are proven in production and recommended for interoperability. This list is not exhaustive; producers may use any string value for `type`.
+### Core types
+
+The following types are genre-neutral and recommended for interoperability across all kinds of podcasts. This list is not exhaustive; producers may use any string value for `type`.
 
 | Type | Description | Example |
 |------|-------------|---------|
 | `topic` | A discussion segment or subject | "Coachella recap", "Setting boundaries" |
-| `concept` | A broader topic or idea | "Carbon capture", "IPO", "Electrification" |
+| `concept` | A broader topic or idea | "Carbon capture", "Dollar-cost averaging" |
 | `person` | A person referenced in the content | "Jensen Huang", "Enzo Ferrari" |
-| `place` | A location or venue | "Nurburgring", "Cape Canaveral" |
-| `company` | A company or organization | "NVIDIA", "General Motors" |
-| `brand` | A brand name | "Brembo", "Michelin" |
+| `place` | A location or venue | "Nürburgring", "Cape Canaveral" |
+| `organization` | A company, team, institution, or group | "NASA", "General Motors" |
+| `company` | An organization acting as a corporate or market actor | "NVIDIA", "Stellantis" |
+| `brand` | A consumer-facing product or marque identity | "Brembo", "Michelin" |
+| `product` | A specific commercial product or model | "iPhone 15", "1967 Ford Mustang" |
+| `work` | A creative work (book, film, album, song, paper) | "Big Magic", "Blade Runner" |
+| `event` | A scheduled or historical happening | "Super Bowl LVIII", "Battle of Hastings" |
 | `term` | A technical or domain-specific term | "Helium-3", "Oversteer" |
-| `car` | A specific car, truck, or vehicle | "1967 Ford Mustang" |
-| `part` | A vehicle or mechanical component | "Turbocharger", "LS3 crate engine" |
 
 ### Disambiguating `company` vs `brand`
 
@@ -339,6 +343,29 @@ Examples:
 - "Stellantis raised prices across the portfolio" - `company` (market actor)
 
 When both senses apply in the same mention, producers SHOULD prefer `brand`; consumer-facing podcast audio is more often product-focused than market-actor-focused. If the role cannot be decided from a 2-3 sentence window, default to `brand`.
+
+Use `organization` as the broader umbrella when neither the corporate-actor (`company`) nor the consumer-brand (`brand`) role is what's being invoked, such as a sports team, a government agency, a university, or a nonprofit.
+
+### Domain-specific types
+
+The core types cover most podcasts, but many genres have natural entity types of their own. The following are illustrative, not normative; they show how the format extends to specific niches. Producers invent types freely, and consumers MUST ignore types they don't recognize (see [Ordering and Overlaps](#ordering-and-overlaps) and the `data` field for how unknown values are handled).
+
+| Type | Genre | Example |
+|------|-------|---------|
+| `car` | Automotive | "1967 Ford Mustang" |
+| `part` | Automotive | "Turbocharger", "LS3 crate engine" |
+| `recipe` | Cooking | "Beef Wellington" |
+| `ingredient` | Cooking | "San Marzano tomatoes" |
+| `technique` | Cooking | "Sous vide" |
+| `plant` | Gardening | "Brandywine tomato" |
+| `athlete` | Sports | "Patrick Mahomes" |
+| `team` | Sports | "Kansas City Chiefs" |
+| `case` | True crime | "The Golden State Killer case" |
+| `ticker` | Finance | "NVDA" |
+| `tool` | Software | "PostgreSQL" |
+| `library` | Software | "React" |
+
+A domain-specific type often pairs with domain-specific `data` fields (e.g. a `recipe` with `data.servings`, a `plant` with `data.scientificName`). See [Cross-Genre Annotation Examples](#cross-genre-annotation-examples).
 
 All type values use **lowercase**. Producers SHOULD use recommended types when applicable to maximize interoperability. Single words are preferred for common types. Custom types SHOULD be hyphenated (e.g., `"race-series"`, `"engine-code"`).
 
@@ -435,6 +462,67 @@ Real-world annotation sets from published podcast episodes, showing the format a
 | [`science-vs-running`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-running.annotations.json) | Health/fitness | 5 | Converted from timestamped show notes |
 | [`tim-ferriss-770-elizabeth-gilbert`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/tim-ferriss-770-elizabeth-gilbert.annotations.json) | Creativity/self-help | 25 | Converted from timestamped show notes |
 | [`higher-learning-coachella-bambaataa`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/higher-learning-coachella-bambaataa.annotations.json) | Culture/politics | 10 | Converted from timestamped show notes |
+
+### Cross-Genre Annotation Examples
+
+The format is genre-neutral: the same timing-plus-entity model that annotates a car in an automotive show annotates a recipe in a cooking show, a plant in a gardening show, or a stock in a finance show. What changes between genres is the `type` value and the domain-specific fields inside `data`, not the structure.
+
+The table below maps common podcast genres to the types and references they tend to produce:
+
+| Genre | Typical types | What gets annotated |
+|-------|---------------|---------------------|
+| Cooking | `recipe`, `ingredient`, `technique` | Dishes made, key ingredients, methods (e.g. "sous vide") |
+| Gardening | `plant`, `term` | Plant IDs (species/cultivar), pests, soil and zone terms |
+| True crime | `case`, `person`, `place` | The case, victims and suspects, locations, evidence |
+| Sports | `athlete`, `team`, `event` | Players, teams, specific games and matches, records |
+| History | `event`, `person`, `place` | Battles, treaties, figures, dates, sites |
+| Personal finance | `ticker`, `company`, `concept` | Stocks and tickers, firms, strategies (e.g. "FIRE") |
+| Software engineering | `tool`, `library`, `term` | Languages, frameworks, services, patterns |
+| Books / literature | `work`, `person` | Books discussed, authors, characters |
+| Travel | `place`, `term` | Destinations, attractions, lodging, transit |
+| Music | `work`, `person` | Songs and albums, artists, venues, genres |
+
+Two worked annotations show how domain-specific detail lives in `data`. (These are illustrative, like the [Minimal Interview Example](#minimal-interview-example) below; the published annotation sets in [`examples/`](https://github.com/ryanwi/podcast-annotations-js/tree/main/examples) are all real episodes.)
+
+**Cooking — a recipe mentioned in a food podcast:**
+
+```json
+{
+  "startTime": 612.0,
+  "endTime": 705.0,
+  "type": "recipe",
+  "title": "Beef Wellington",
+  "url": "https://example.com/recipes/beef-wellington",
+  "quote": "you sear the tenderloin, then wrap it in mushroom duxelles and pastry",
+  "data": {
+    "cuisine": "British",
+    "servings": 6,
+    "prepTimeMinutes": 90,
+    "ingredients": ["beef tenderloin", "mushroom duxelles", "puff pastry", "prosciutto"],
+    "difficulty": "advanced"
+  }
+}
+```
+
+**Gardening — a plant identified in a gardening podcast:**
+
+```json
+{
+  "startTime": 240.0,
+  "endTime": 288.0,
+  "type": "plant",
+  "title": "Brandywine Tomato",
+  "image": "https://example.com/plants/brandywine.jpg",
+  "quote": "the Brandywine is the heirloom everyone asks me about",
+  "data": {
+    "scientificName": "Solanum lycopersicum 'Brandywine'",
+    "commonNames": ["Brandywine tomato", "beefsteak heirloom"],
+    "hardinessZone": "3-9",
+    "sunExposure": "full sun",
+    "nativeRegion": "United States (heirloom cultivar)"
+  }
+}
+```
 
 ### Minimal Interview Example
 

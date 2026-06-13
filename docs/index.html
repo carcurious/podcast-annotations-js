@@ -1270,7 +1270,8 @@
 <p>Players can use ad breaks to skip or realign annotations around dynamic ad insertion. When the audio variant differs from the canonical recording (different ads stitched in at different times), the ad break ranges describe where the inserted content lives.</p>
 <p><strong>Overlapping annotations:</strong> When an annotation&#39;s time range overlaps with an ad break, behavior is player-defined. A player might pause the annotation during the ad and resume after, skip the annotation entirely, or extend it past the break. This spec does not mandate a specific behavior. Implementations should document their approach.</p>
 <h2>Recommended Entity Types</h2>
-<p>The following types are proven in production and recommended for interoperability. This list is not exhaustive; producers may use any string value for <code>type</code>.</p>
+<h3>Core types</h3>
+<p>The following types are genre-neutral and recommended for interoperability across all kinds of podcasts. This list is not exhaustive; producers may use any string value for <code>type</code>.</p>
 <table>
 <thead>
 <tr>
@@ -1287,7 +1288,7 @@
 <tr>
 <td><code>concept</code></td>
 <td>A broader topic or idea</td>
-<td>&quot;Carbon capture&quot;, &quot;IPO&quot;, &quot;Electrification&quot;</td>
+<td>&quot;Carbon capture&quot;, &quot;Dollar-cost averaging&quot;</td>
 </tr>
 <tr>
 <td><code>person</code></td>
@@ -1297,32 +1298,42 @@
 <tr>
 <td><code>place</code></td>
 <td>A location or venue</td>
-<td>&quot;Nurburgring&quot;, &quot;Cape Canaveral&quot;</td>
+<td>&quot;Nürburgring&quot;, &quot;Cape Canaveral&quot;</td>
+</tr>
+<tr>
+<td><code>organization</code></td>
+<td>A company, team, institution, or group</td>
+<td>&quot;NASA&quot;, &quot;General Motors&quot;</td>
 </tr>
 <tr>
 <td><code>company</code></td>
-<td>A company or organization</td>
-<td>&quot;NVIDIA&quot;, &quot;General Motors&quot;</td>
+<td>An organization acting as a corporate or market actor</td>
+<td>&quot;NVIDIA&quot;, &quot;Stellantis&quot;</td>
 </tr>
 <tr>
 <td><code>brand</code></td>
-<td>A brand name</td>
+<td>A consumer-facing product or marque identity</td>
 <td>&quot;Brembo&quot;, &quot;Michelin&quot;</td>
+</tr>
+<tr>
+<td><code>product</code></td>
+<td>A specific commercial product or model</td>
+<td>&quot;iPhone 15&quot;, &quot;1967 Ford Mustang&quot;</td>
+</tr>
+<tr>
+<td><code>work</code></td>
+<td>A creative work (book, film, album, song, paper)</td>
+<td>&quot;Big Magic&quot;, &quot;Blade Runner&quot;</td>
+</tr>
+<tr>
+<td><code>event</code></td>
+<td>A scheduled or historical happening</td>
+<td>&quot;Super Bowl LVIII&quot;, &quot;Battle of Hastings&quot;</td>
 </tr>
 <tr>
 <td><code>term</code></td>
 <td>A technical or domain-specific term</td>
 <td>&quot;Helium-3&quot;, &quot;Oversteer&quot;</td>
-</tr>
-<tr>
-<td><code>car</code></td>
-<td>A specific car, truck, or vehicle</td>
-<td>&quot;1967 Ford Mustang&quot;</td>
-</tr>
-<tr>
-<td><code>part</code></td>
-<td>A vehicle or mechanical component</td>
-<td>&quot;Turbocharger&quot;, &quot;LS3 crate engine&quot;</td>
 </tr>
 </tbody></table>
 <h3>Disambiguating <code>company</code> vs <code>brand</code></h3>
@@ -1342,6 +1353,79 @@
 <li>&quot;Stellantis raised prices across the portfolio&quot; - <code>company</code> (market actor)</li>
 </ul>
 <p>When both senses apply in the same mention, producers SHOULD prefer <code>brand</code>; consumer-facing podcast audio is more often product-focused than market-actor-focused. If the role cannot be decided from a 2-3 sentence window, default to <code>brand</code>.</p>
+<p>Use <code>organization</code> as the broader umbrella when neither the corporate-actor (<code>company</code>) nor the consumer-brand (<code>brand</code>) role is what&#39;s being invoked, such as a sports team, a government agency, a university, or a nonprofit.</p>
+<h3>Domain-specific types</h3>
+<p>The core types cover most podcasts, but many genres have natural entity types of their own. The following are illustrative, not normative; they show how the format extends to specific niches. Producers invent types freely, and consumers MUST ignore types they don&#39;t recognize (see <a href="#ordering-and-overlaps">Ordering and Overlaps</a> and the <code>data</code> field for how unknown values are handled).</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Genre</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>car</code></td>
+<td>Automotive</td>
+<td>&quot;1967 Ford Mustang&quot;</td>
+</tr>
+<tr>
+<td><code>part</code></td>
+<td>Automotive</td>
+<td>&quot;Turbocharger&quot;, &quot;LS3 crate engine&quot;</td>
+</tr>
+<tr>
+<td><code>recipe</code></td>
+<td>Cooking</td>
+<td>&quot;Beef Wellington&quot;</td>
+</tr>
+<tr>
+<td><code>ingredient</code></td>
+<td>Cooking</td>
+<td>&quot;San Marzano tomatoes&quot;</td>
+</tr>
+<tr>
+<td><code>technique</code></td>
+<td>Cooking</td>
+<td>&quot;Sous vide&quot;</td>
+</tr>
+<tr>
+<td><code>plant</code></td>
+<td>Gardening</td>
+<td>&quot;Brandywine tomato&quot;</td>
+</tr>
+<tr>
+<td><code>athlete</code></td>
+<td>Sports</td>
+<td>&quot;Patrick Mahomes&quot;</td>
+</tr>
+<tr>
+<td><code>team</code></td>
+<td>Sports</td>
+<td>&quot;Kansas City Chiefs&quot;</td>
+</tr>
+<tr>
+<td><code>case</code></td>
+<td>True crime</td>
+<td>&quot;The Golden State Killer case&quot;</td>
+</tr>
+<tr>
+<td><code>ticker</code></td>
+<td>Finance</td>
+<td>&quot;NVDA&quot;</td>
+</tr>
+<tr>
+<td><code>tool</code></td>
+<td>Software</td>
+<td>&quot;PostgreSQL&quot;</td>
+</tr>
+<tr>
+<td><code>library</code></td>
+<td>Software</td>
+<td>&quot;React&quot;</td>
+</tr>
+</tbody></table>
+<p>A domain-specific type often pairs with domain-specific <code>data</code> fields (e.g. a <code>recipe</code> with <code>data.servings</code>, a <code>plant</code> with <code>data.scientificName</code>). See <a href="#cross-genre-annotation-examples">Cross-Genre Annotation Examples</a>.</p>
 <p>All type values use <strong>lowercase</strong>. Producers SHOULD use recommended types when applicable to maximize interoperability. Single words are preferred for common types. Custom types SHOULD be hyphenated (e.g., <code>&quot;race-series&quot;</code>, <code>&quot;engine-code&quot;</code>).</p>
 <h2>File Extension and MIME Type</h2>
 <table>
@@ -1486,6 +1570,103 @@
 <td>Converted from timestamped show notes</td>
 </tr>
 </tbody></table>
+<h3>Cross-Genre Annotation Examples</h3>
+<p>The format is genre-neutral: the same timing-plus-entity model that annotates a car in an automotive show annotates a recipe in a cooking show, a plant in a gardening show, or a stock in a finance show. What changes between genres is the <code>type</code> value and the domain-specific fields inside <code>data</code>, not the structure.</p>
+<p>The table below maps common podcast genres to the types and references they tend to produce:</p>
+<table>
+<thead>
+<tr>
+<th>Genre</th>
+<th>Typical types</th>
+<th>What gets annotated</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cooking</td>
+<td><code>recipe</code>, <code>ingredient</code>, <code>technique</code></td>
+<td>Dishes made, key ingredients, methods (e.g. &quot;sous vide&quot;)</td>
+</tr>
+<tr>
+<td>Gardening</td>
+<td><code>plant</code>, <code>term</code></td>
+<td>Plant IDs (species/cultivar), pests, soil and zone terms</td>
+</tr>
+<tr>
+<td>True crime</td>
+<td><code>case</code>, <code>person</code>, <code>place</code></td>
+<td>The case, victims and suspects, locations, evidence</td>
+</tr>
+<tr>
+<td>Sports</td>
+<td><code>athlete</code>, <code>team</code>, <code>event</code></td>
+<td>Players, teams, specific games and matches, records</td>
+</tr>
+<tr>
+<td>History</td>
+<td><code>event</code>, <code>person</code>, <code>place</code></td>
+<td>Battles, treaties, figures, dates, sites</td>
+</tr>
+<tr>
+<td>Personal finance</td>
+<td><code>ticker</code>, <code>company</code>, <code>concept</code></td>
+<td>Stocks and tickers, firms, strategies (e.g. &quot;FIRE&quot;)</td>
+</tr>
+<tr>
+<td>Software engineering</td>
+<td><code>tool</code>, <code>library</code>, <code>term</code></td>
+<td>Languages, frameworks, services, patterns</td>
+</tr>
+<tr>
+<td>Books / literature</td>
+<td><code>work</code>, <code>person</code></td>
+<td>Books discussed, authors, characters</td>
+</tr>
+<tr>
+<td>Travel</td>
+<td><code>place</code>, <code>term</code></td>
+<td>Destinations, attractions, lodging, transit</td>
+</tr>
+<tr>
+<td>Music</td>
+<td><code>work</code>, <code>person</code></td>
+<td>Songs and albums, artists, venues, genres</td>
+</tr>
+</tbody></table>
+<p>Two worked annotations show how domain-specific detail lives in <code>data</code>. (These are illustrative, like the <a href="#minimal-interview-example">Minimal Interview Example</a> below; the published annotation sets in <a href="https://github.com/ryanwi/podcast-annotations-js/tree/main/examples"><code>examples/</code></a> are all real episodes.)</p>
+<p><strong>Cooking — a recipe mentioned in a food podcast:</strong></p>
+<pre><code class="language-json">{
+  &quot;startTime&quot;: 612.0,
+  &quot;endTime&quot;: 705.0,
+  &quot;type&quot;: &quot;recipe&quot;,
+  &quot;title&quot;: &quot;Beef Wellington&quot;,
+  &quot;url&quot;: &quot;https://example.com/recipes/beef-wellington&quot;,
+  &quot;quote&quot;: &quot;you sear the tenderloin, then wrap it in mushroom duxelles and pastry&quot;,
+  &quot;data&quot;: {
+    &quot;cuisine&quot;: &quot;British&quot;,
+    &quot;servings&quot;: 6,
+    &quot;prepTimeMinutes&quot;: 90,
+    &quot;ingredients&quot;: [&quot;beef tenderloin&quot;, &quot;mushroom duxelles&quot;, &quot;puff pastry&quot;, &quot;prosciutto&quot;],
+    &quot;difficulty&quot;: &quot;advanced&quot;
+  }
+}
+</code></pre>
+<p><strong>Gardening — a plant identified in a gardening podcast:</strong></p>
+<pre><code class="language-json">{
+  &quot;startTime&quot;: 240.0,
+  &quot;endTime&quot;: 288.0,
+  &quot;type&quot;: &quot;plant&quot;,
+  &quot;title&quot;: &quot;Brandywine Tomato&quot;,
+  &quot;image&quot;: &quot;https://example.com/plants/brandywine.jpg&quot;,
+  &quot;quote&quot;: &quot;the Brandywine is the heirloom everyone asks me about&quot;,
+  &quot;data&quot;: {
+    &quot;scientificName&quot;: &quot;Solanum lycopersicum &#39;Brandywine&#39;&quot;,
+    &quot;commonNames&quot;: [&quot;Brandywine tomato&quot;, &quot;beefsteak heirloom&quot;],
+    &quot;hardinessZone&quot;: &quot;3-9&quot;,
+    &quot;sunExposure&quot;: &quot;full sun&quot;,
+    &quot;nativeRegion&quot;: &quot;United States (heirloom cultivar)&quot;
+  }
+}
+</code></pre>
 <h3>Minimal Interview Example</h3>
 <pre><code class="language-json">{
   &quot;version&quot;: &quot;1.0.0&quot;,
