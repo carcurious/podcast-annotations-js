@@ -344,11 +344,11 @@ Examples:
 
 When both senses apply in the same mention, producers SHOULD prefer `brand`; consumer-facing podcast audio is more often product-focused than market-actor-focused. If the role cannot be decided from a 2-3 sentence window, default to `brand`.
 
-Use `organization` as the broader umbrella when neither the corporate-actor (`company`) nor the consumer-brand (`brand`) role is what's being invoked, such as a sports team, a government agency, a university, or a nonprofit.
+Use `organization` as the broader umbrella when the mention invokes neither the corporate-actor (`company`) nor the consumer-brand (`brand`) role, such as a sports team, a government agency, a university, or a nonprofit.
 
 ### Domain-specific types
 
-The core types cover most podcasts, but many genres have natural entity types of their own. The following are illustrative, not normative; they show how the format extends to specific niches. Producers invent types freely, and consumers MUST ignore types they don't recognize (see [Ordering and Overlaps](#ordering-and-overlaps) and the `data` field for how unknown values are handled).
+The core types cover most podcasts, but many genres have natural entity types of their own. These examples are non-normative; they show how the format extends to specific niches. Producers invent types freely, and consumers MUST ignore types they don't recognize (see [Ordering and Overlaps](#ordering-and-overlaps) and the `data` field for how unknown values are handled).
 
 | Type | Genre | Example |
 |------|-------|---------|
@@ -465,7 +465,7 @@ Real-world annotation sets from published podcast episodes, showing the format a
 
 ### Cross-Genre Annotation Examples
 
-The format is genre-neutral: the same timing-plus-entity model that annotates a car in an automotive show annotates a recipe in a cooking show, a plant in a gardening show, or a stock in a finance show. What changes between genres is the `type` value and the domain-specific fields inside `data`, not the structure.
+The format is genre-neutral. You annotate a car in an automotive show, a recipe in a cooking show, a plant in a gardening show, and a stock in a finance show with the same timing-plus-entity model. Only the `type` value and the domain-specific fields inside `data` change from genre to genre; the structure stays the same.
 
 The table below maps common podcast genres to the types and references they tend to produce:
 
@@ -484,7 +484,7 @@ The table below maps common podcast genres to the types and references they tend
 
 Two worked annotations show how domain-specific detail lives in `data`. (These are illustrative, like the [Minimal Interview Example](#minimal-interview-example) below; the published annotation sets in [`examples/`](https://github.com/ryanwi/podcast-annotations-js/tree/main/examples) are all real episodes.)
 
-**Cooking — a recipe mentioned in a food podcast:**
+**Cooking, a recipe mentioned in a food podcast:**
 
 ```json
 {
@@ -504,7 +504,7 @@ Two worked annotations show how domain-specific detail lives in `data`. (These a
 }
 ```
 
-**Gardening — a plant identified in a gardening podcast:**
+**Gardening, a plant identified in a gardening podcast:**
 
 ```json
 {
