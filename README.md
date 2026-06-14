@@ -1,6 +1,6 @@
 # podcast-annotations
 
-Every podcast episode is full of references (cars, people, places, concepts) that exist only as sound. Transcripts capture the words, but not the structure. There's no way for apps or tools to know *what's being talked about* at any given moment.
+Podcast episodes are full of references (cars, people, places, concepts) that exist only as sound. Transcripts capture the words, but not the structure, so an app has no way to know *what's being talked about* at any given moment.
 
 **podcast-annotations** is the reference implementation of the [Podcast Annotation Format](SPEC.md), an open spec for timestamped, typed entity annotations on audio. Think X-Ray for podcasts, but open and format-level instead of locked inside one platform.
 
@@ -17,11 +17,12 @@ All synced to playback. Framework-agnostic vanilla JavaScript with zero dependen
 - **Annotation Overlay**: Auto-trigger contextual content at specific moments during audio playback
 - **Transcript Sync**: Highlight the active transcript segment with auto-scroll and user-interrupt detection
 - **Annotation Timeline**: Visual markers showing where annotations appear, with a playhead and click-to-seek
+- **Chapter Sync**: Track Podcasting 2.0 JSON chapters with audio, render a clickable chapter list, and fire change events
 - **DAI Alignment**: Remap canonical transcripts to variant audio with dynamic ad insertion, with gap-aware sync that pauses during ad breaks
 
-Each module works independently. Use one, two, or all three.
+Each module works independently. Use one, a few, or all of them.
 
-Handling timing, overlaps, ad insertion gaps, and transcript sync correctly is surprisingly tricky. This library provides a minimal, battle-tested implementation so you don't have to rebuild it.
+Timing, overlaps, ad insertion gaps, and transcript sync are easy to get wrong. This library handles them so you don't have to rebuild the logic yourself.
 
 ## Install
 
