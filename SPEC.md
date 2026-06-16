@@ -65,7 +65,7 @@ An annotation represents a single entity mention or topic reference in audio. An
 | `url` | `string` | No | URL to more information about the entity |
 | `image` | `string` | No | URL to an image representing the entity |
 | `speaker` | `string` | No | Speaker ID (references an entry in `speakers`) |
-| `participation` | `string` | No | For `type: "person"` only: how the person figures in this moment: present as a `"guest"`/`"host"`, or only `"mentioned"` (see [Participation](#participation)). Omission means unspecified, not `"mentioned"`; ignored on other types. |
+| `participation` | `string` | No | For `type: "person"` only: how the person figures in this moment: present as a `"guest"`/`"host"`, or only `"mentioned"` (see [Participation](#participation)). Omission means unspecified, not `"mentioned"`; consumers SHOULD ignore it on other types. |
 | `quote` | `string` | No | The exact words from the transcript that triggered this annotation |
 | `tags` | `array of strings` | No | Freeform labels for search, clustering, and filtering |
 | `priority` | `number` | No | Editorial importance from 0.0 to 1.0, for UI display ordering |
@@ -118,6 +118,8 @@ Full example with all optional fields:
 All times are in **seconds as floating-point numbers**, measured from the start of the audio. This aligns with the Web Audio API, HTMLMediaElement, WebVTT, and most podcast tooling.
 
 Time values SHOULD use millisecond precision such as `45.123`. Consumers SHOULD tolerate minor floating-point variance: when one producer emits `45.1999` and another emits `45.2` for the same mention, they describe the same moment and a consumer should treat them as equivalent.
+
+An annotation MAY set `endTime` equal to `startTime` to mark a point in time rather than a span, such as the `solenoid handles` entry in the [automotive example](#automotive-podcast) below. Consumers SHOULD render point annotations with a nonzero display window.
 
 ### The `data` Field
 
@@ -173,7 +175,9 @@ Producers MAY also use external identifiers such as Wikidata QIDs (e.g., `wikida
 
 ### Participation
 
-`participation` records how a person figures in a single annotation: `"guest"` (present on the show), `"host"`, or `"mentioned"` (referenced but not present). Omission means unspecified, not `"mentioned"`. A producer who does not track participation, or an annotation written before the field existed, makes no claim either way, so consumers building guest graphs SHOULD treat only explicit values as signal. It is orthogonal to `speaker` and the `speakers` array: `speaker` says who is talking during the annotation, the `speakers` array assigns episode-level roles, and `participation` describes the annotated person's role at that one moment. With explicit values, a consumer can separate "the guest was introduced here" from "the guest was named in passing" without a second extraction pass. The same person can carry different `participation` values across an episode.
+`participation` records how a person figures in a single annotation: `"guest"` (present on the show), `"host"`, or `"mentioned"` (referenced but not present). Omission means unspecified, not `"mentioned"`. A producer who does not track participation, or an annotation written before the field existed, makes no claim either way, so consumers building guest graphs SHOULD treat only explicit values as signal.
+
+It is orthogonal to `speaker` and the `speakers` array: `speaker` says who is talking during the annotation, the `speakers` array assigns episode-level roles, and `participation` describes the annotated person's role at that one moment. With explicit values, a consumer can separate "the guest was introduced here" from "the guest was named in passing" without a second extraction pass. The same person can carry different `participation` values across an episode.
 
 ```json
 [

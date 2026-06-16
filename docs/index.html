@@ -868,7 +868,7 @@
 <td><code>participation</code></td>
 <td><code>string</code></td>
 <td>No</td>
-<td>For <code>type: &quot;person&quot;</code> only: how the person figures in this moment: present as a <code>&quot;guest&quot;</code>/<code>&quot;host&quot;</code>, or only <code>&quot;mentioned&quot;</code> (see <a href="#participation">Participation</a>). Omission means unspecified, not <code>&quot;mentioned&quot;</code>; ignored on other types.</td>
+<td>For <code>type: &quot;person&quot;</code> only: how the person figures in this moment: present as a <code>&quot;guest&quot;</code>/<code>&quot;host&quot;</code>, or only <code>&quot;mentioned&quot;</code> (see <a href="#participation">Participation</a>). Omission means unspecified, not <code>&quot;mentioned&quot;</code>; consumers SHOULD ignore it on other types.</td>
 </tr>
 <tr>
 <td><code>quote</code></td>
@@ -949,6 +949,7 @@
 <h3>Time Format</h3>
 <p>All times are in <strong>seconds as floating-point numbers</strong>, measured from the start of the audio. This aligns with the Web Audio API, HTMLMediaElement, WebVTT, and most podcast tooling.</p>
 <p>Time values SHOULD use millisecond precision such as <code>45.123</code>. Consumers SHOULD tolerate minor floating-point variance: when one producer emits <code>45.1999</code> and another emits <code>45.2</code> for the same mention, they describe the same moment and a consumer should treat them as equivalent.</p>
+<p>An annotation MAY set <code>endTime</code> equal to <code>startTime</code> to mark a point in time rather than a span, such as the <code>solenoid handles</code> entry in the <a href="#automotive-podcast">automotive example</a> below. Consumers SHOULD render point annotations with a nonzero display window.</p>
 <h3>The <code>data</code> Field</h3>
 <p>The <code>data</code> object is an open extension point. Producers can store any JSON-serializable metadata here. Consumers should ignore fields they don&#39;t recognize.</p>
 <p>Common uses:</p>
@@ -989,7 +990,8 @@
 </ul>
 <p>Producers MAY also use external identifiers such as Wikidata QIDs (e.g., <code>wikidata:Q332448</code>).</p>
 <h3>Participation</h3>
-<p><code>participation</code> records how a person figures in a single annotation: <code>&quot;guest&quot;</code> (present on the show), <code>&quot;host&quot;</code>, or <code>&quot;mentioned&quot;</code> (referenced but not present). Omission means unspecified, not <code>&quot;mentioned&quot;</code>. A producer who does not track participation, or an annotation written before the field existed, makes no claim either way, so consumers building guest graphs SHOULD treat only explicit values as signal. It is orthogonal to <code>speaker</code> and the <code>speakers</code> array: <code>speaker</code> says who is talking during the annotation, the <code>speakers</code> array assigns episode-level roles, and <code>participation</code> describes the annotated person&#39;s role at that one moment. With explicit values, a consumer can separate &quot;the guest was introduced here&quot; from &quot;the guest was named in passing&quot; without a second extraction pass. The same person can carry different <code>participation</code> values across an episode.</p>
+<p><code>participation</code> records how a person figures in a single annotation: <code>&quot;guest&quot;</code> (present on the show), <code>&quot;host&quot;</code>, or <code>&quot;mentioned&quot;</code> (referenced but not present). Omission means unspecified, not <code>&quot;mentioned&quot;</code>. A producer who does not track participation, or an annotation written before the field existed, makes no claim either way, so consumers building guest graphs SHOULD treat only explicit values as signal.</p>
+<p>It is orthogonal to <code>speaker</code> and the <code>speakers</code> array: <code>speaker</code> says who is talking during the annotation, the <code>speakers</code> array assigns episode-level roles, and <code>participation</code> describes the annotated person&#39;s role at that one moment. With explicit values, a consumer can separate &quot;the guest was introduced here&quot; from &quot;the guest was named in passing&quot; without a second extraction pass. The same person can carry different <code>participation</code> values across an episode.</p>
 <pre><code class="language-json">[
   {
     &quot;startTime&quot;: 30.0,
