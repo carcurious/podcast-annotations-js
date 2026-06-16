@@ -65,7 +65,7 @@ An annotation represents a single entity mention or topic reference in audio. An
 | `url` | `string` | No | URL to more information about the entity |
 | `image` | `string` | No | URL to an image representing the entity |
 | `speaker` | `string` | No | Speaker ID (references an entry in `speakers`) |
-| `participation` | `string` | No | For `type: "person"` only: the person's role in this moment (see [Participation](#participation)). Omission means unspecified, not `"mentioned"`; ignored on other types. |
+| `participation` | `string` | No | For `type: "person"` only: how the person figures in this moment: present as a `"guest"`/`"host"`, or only `"mentioned"` (see [Participation](#participation)). Omission means unspecified, not `"mentioned"`; ignored on other types. |
 | `quote` | `string` | No | The exact words from the transcript that triggered this annotation |
 | `tags` | `array of strings` | No | Freeform labels for search, clustering, and filtering |
 | `priority` | `number` | No | Editorial importance from 0.0 to 1.0, for UI display ordering |
@@ -673,7 +673,7 @@ Maps to this W3C Web Annotation:
 
 **Show Notes.** Show notes are the most common form of podcast annotation today: episode summaries, timestamps, guest info, and links published as freeform prose via RSS `<description>` or `<content:encoded>`. An annotation set is a structured, machine-readable representation of the same information. Show notes describe what was discussed; annotations make it addressable, linkable, and renderable in sync with playback. Producers can use annotation sets to generate show notes, or use existing show notes as a starting point for annotation.
 
-**Podcasting 2.0 `<podcast:person>`.** Tags people at the episode level (hosts, guests). Podcast annotations with `type: "person"` tag people at the moment level: when they are discussed, not only who is on the show. The optional `participation` field is the moment-level complement to that episode-level tagging: it marks whether a person is a `"guest"`, `"host"`, or merely `"mentioned"` at a given point in the timeline.
+**Podcasting 2.0 `<podcast:person>`.** Tags people at the episode level (hosts, guests). Podcast annotations with `type: "person"` tag people at the moment level: when they are discussed, not only who is on the show. The optional `participation` field is the moment-level complement to that episode-level tagging: it marks whether a person is a `"guest"`, `"host"`, or merely `"mentioned"` at a given point in the timeline. The mapping is partial: `participation` values of `"guest"` and `"host"` correspond to `<podcast:person role="…">`, but `"mentioned"` has no `<podcast:person>` equivalent. It encodes presence versus reference, which that tag does not model.
 
 **RSS Distribution.** An episode's annotation file MAY be referenced from the RSS feed or episode web page. The `<podcast:transcript>` element defined in PSP-1 provides a clear model: a `url` attribute and a `type` attribute. A `<podcast:annotations>` element would follow the same pattern:
 
