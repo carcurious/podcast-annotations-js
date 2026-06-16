@@ -616,7 +616,7 @@
           <span class="spec-meta-status"><span class="rec-dot"></span>Stable</span>
           <span>v1.0.0</span>
           <span>CC BY 4.0</span>
-          <span>Updated 2026-06-12</span>
+          <span>Updated 2026-06-15</span>
         </div>
       </div>
       <div class="code-card">
@@ -865,6 +865,12 @@
 <td>Speaker ID (references an entry in <code>speakers</code>)</td>
 </tr>
 <tr>
+<td><code>participation</code></td>
+<td><code>string</code></td>
+<td>No</td>
+<td>For <code>type: &quot;person&quot;</code> only: the person&#39;s role in this moment (see <a href="#participation">Participation</a>). Omission means unspecified, not <code>&quot;mentioned&quot;</code>; ignored on other types.</td>
+</tr>
+<tr>
 <td><code>quote</code></td>
 <td><code>string</code></td>
 <td>No</td>
@@ -969,6 +975,8 @@
 <li><code>confidence</code>, if provided, MUST be &gt;= 0.0 and &lt;= 1.0. This reflects extraction certainty: how sure the producer is that this annotation is correct.</li>
 <li><code>priority</code>, if provided, MUST be &gt;= 0.0 and &lt;= 1.0. This reflects editorial importance: how prominently this annotation should be displayed. A high-confidence annotation may still have low priority if it&#39;s tangential.</li>
 <li><code>speaker</code>, if provided, MUST reference a valid <code>id</code> in the <code>speakers</code> array</li>
+<li><code>participation</code>, if provided, SHOULD be one of <code>&quot;guest&quot;</code>, <code>&quot;host&quot;</code>, or <code>&quot;mentioned&quot;</code>. Custom values are allowed but reduce interoperability. It applies only when <code>type</code> is <code>&quot;person&quot;</code>; consumers SHOULD ignore it on other types.</li>
+<li>An omitted <code>participation</code> is unspecified, not <code>&quot;mentioned&quot;</code>. Consumers MUST NOT treat absence as a claim: an annotation predating this field, or one whose producer did not set it, carries no participation assertion. Only an explicit <code>&quot;mentioned&quot;</code> asserts that the person was referenced but not present.</li>
 <li>Time values SHOULD be within the duration of the associated audio</li>
 </ul>
 <h3>Canonical IDs</h3>
@@ -980,6 +988,30 @@
 <li><code>place:nurburgring</code></li>
 </ul>
 <p>Producers MAY also use external identifiers such as Wikidata QIDs (e.g., <code>wikidata:Q332448</code>).</p>
+<h3>Participation</h3>
+<p><code>participation</code> records how a person figures in a single annotation: <code>&quot;guest&quot;</code> (present on the show), <code>&quot;host&quot;</code>, or <code>&quot;mentioned&quot;</code> (referenced but not present). Omission means unspecified, not <code>&quot;mentioned&quot;</code>. A producer who does not track participation, or an annotation written before the field existed, makes no claim either way, so consumers building guest graphs SHOULD treat only explicit values as signal. It is orthogonal to <code>speaker</code> and the <code>speakers</code> array: <code>speaker</code> says who is talking during the annotation, the <code>speakers</code> array assigns episode-level roles, and <code>participation</code> describes the annotated person&#39;s role at that one moment. With explicit values, a consumer can separate &quot;the guest was introduced here&quot; from &quot;the guest was named in passing&quot; without a second extraction pass. The same person can carry different <code>participation</code> values across an episode.</p>
+<pre><code class="language-json">[
+  {
+    &quot;startTime&quot;: 30.0,
+    &quot;endTime&quot;: 55.0,
+    &quot;type&quot;: &quot;person&quot;,
+    &quot;title&quot;: &quot;Dr. Sarah Chen&quot;,
+    &quot;participation&quot;: &quot;guest&quot;,
+    &quot;canonicalId&quot;: &quot;person:sarah-chen&quot;,
+    &quot;url&quot;: &quot;https://example.com/guests/sarah-chen&quot;
+  },
+  {
+    &quot;startTime&quot;: 1820.0,
+    &quot;endTime&quot;: 1827.0,
+    &quot;type&quot;: &quot;person&quot;,
+    &quot;title&quot;: &quot;Dr. Sarah Chen&quot;,
+    &quot;participation&quot;: &quot;mentioned&quot;,
+    &quot;canonicalId&quot;: &quot;person:sarah-chen&quot;,
+    &quot;speaker&quot;: &quot;host&quot;,
+    &quot;quote&quot;: &quot;like Sarah said earlier about direct air capture&quot;
+  }
+]
+</code></pre>
 <h2>Annotation Set</h2>
 <p>An annotation set is the container format for a collection of annotations associated with a single episode or audio file.</p>
 <pre><code class="language-json">{
@@ -1542,8 +1574,8 @@
 <tr>
 <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/lex-fridman-494-jensen-huang.annotations.json"><code>lex-fridman-494-jensen-huang</code></a></td>
 <td>Tech/AI interview</td>
-<td>21</td>
-<td>Converted from timestamped show notes</td>
+<td>23</td>
+<td>Show notes plus <code>participation</code>-tagged people</td>
 </tr>
 <tr>
 <td><a href="https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-artemis-moon.annotations.json"><code>science-vs-artemis-moon</code></a></td>
@@ -1783,6 +1815,10 @@
 <td>May be represented via <code>creator</code> or external metadata in W3C systems</td>
 </tr>
 <tr>
+<td><code>participation</code></td>
+<td>Not mapped (application-specific)</td>
+</tr>
+<tr>
 <td><code>confidence</code></td>
 <td>Not mapped (application-specific)</td>
 </tr>
@@ -1803,7 +1839,7 @@
 <p><strong>WebVTT / SRT.</strong> Subtitle formats carry the transcript text. This spec carries the entities and topics referenced in that text. A player might use WebVTT for the transcript and podcast annotations for contextual overlays.</p>
 <p><strong>Schema.org PodcastEpisode.</strong> Schema.org defines episode-level metadata for search engines. This spec defines within-episode annotations. A <code>PodcastEpisode</code> might link to an <code>.annotations.json</code> file via a custom property.</p>
 <p><strong>Show Notes.</strong> Show notes are the most common form of podcast annotation today: episode summaries, timestamps, guest info, and links published as freeform prose via RSS <code>&lt;description&gt;</code> or <code>&lt;content:encoded&gt;</code>. An annotation set is a structured, machine-readable representation of the same information. Show notes describe what was discussed; annotations make it addressable, linkable, and renderable in sync with playback. Producers can use annotation sets to generate show notes, or use existing show notes as a starting point for annotation.</p>
-<p><strong>Podcasting 2.0 <code>&lt;podcast:person&gt;</code>.</strong> Tags people at the episode level (hosts, guests). Podcast annotations with <code>type: &quot;person&quot;</code> tag people at the moment level: when they are discussed, not only who is on the show.</p>
+<p><strong>Podcasting 2.0 <code>&lt;podcast:person&gt;</code>.</strong> Tags people at the episode level (hosts, guests). Podcast annotations with <code>type: &quot;person&quot;</code> tag people at the moment level: when they are discussed, not only who is on the show. The optional <code>participation</code> field is the moment-level complement to that episode-level tagging: it marks whether a person is a <code>&quot;guest&quot;</code>, <code>&quot;host&quot;</code>, or merely <code>&quot;mentioned&quot;</code> at a given point in the timeline.</p>
 <p><strong>RSS Distribution.</strong> An episode&#39;s annotation file MAY be referenced from the RSS feed or episode web page. The <code>&lt;podcast:transcript&gt;</code> element defined in PSP-1 provides a clear model: a <code>url</code> attribute and a <code>type</code> attribute. A <code>&lt;podcast:annotations&gt;</code> element would follow the same pattern:</p>
 <pre><code class="language-xml">&lt;podcast:annotations url=&quot;https://example.com/episode1.annotations.json&quot; type=&quot;application/json&quot; /&gt;
 </code></pre>
@@ -1820,7 +1856,7 @@
     </section>
 
     <footer>
-      Version 1.0.0. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated 2026-06-12. <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>.
+      Version 1.0.0. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated 2026-06-15. <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>.
     </footer>
   </div>
 

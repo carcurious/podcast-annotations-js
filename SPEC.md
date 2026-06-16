@@ -65,6 +65,7 @@ An annotation represents a single entity mention or topic reference in audio. An
 | `url` | `string` | No | URL to more information about the entity |
 | `image` | `string` | No | URL to an image representing the entity |
 | `speaker` | `string` | No | Speaker ID (references an entry in `speakers`) |
+| `participation` | `string` | No | For `type: "person"` only: the person's role in this moment (see [Participation](#participation)). Omission means unspecified, not `"mentioned"`; ignored on other types. |
 | `quote` | `string` | No | The exact words from the transcript that triggered this annotation |
 | `tags` | `array of strings` | No | Freeform labels for search, clustering, and filtering |
 | `priority` | `number` | No | Editorial importance from 0.0 to 1.0, for UI display ordering |
@@ -154,6 +155,8 @@ An annotation set might contain 5 chapter-like topic markers for a 3-hour episod
 - `confidence`, if provided, MUST be >= 0.0 and <= 1.0. This reflects extraction certainty: how sure the producer is that this annotation is correct.
 - `priority`, if provided, MUST be >= 0.0 and <= 1.0. This reflects editorial importance: how prominently this annotation should be displayed. A high-confidence annotation may still have low priority if it's tangential.
 - `speaker`, if provided, MUST reference a valid `id` in the `speakers` array
+- `participation`, if provided, SHOULD be one of `"guest"`, `"host"`, or `"mentioned"`. Custom values are allowed but reduce interoperability. It applies only when `type` is `"person"`; consumers SHOULD ignore it on other types.
+- An omitted `participation` is unspecified, not `"mentioned"`. Consumers MUST NOT treat absence as a claim: an annotation predating this field, or one whose producer did not set it, carries no participation assertion. Only an explicit `"mentioned"` asserts that the person was referenced but not present.
 - Time values SHOULD be within the duration of the associated audio
 
 ### Canonical IDs
@@ -167,6 +170,34 @@ There is no required format, but a namespaced convention is recommended:
 - `place:nurburgring`
 
 Producers MAY also use external identifiers such as Wikidata QIDs (e.g., `wikidata:Q332448`).
+
+### Participation
+
+`participation` records how a person figures in a single annotation: `"guest"` (present on the show), `"host"`, or `"mentioned"` (referenced but not present). Omission means unspecified, not `"mentioned"`. A producer who does not track participation, or an annotation written before the field existed, makes no claim either way, so consumers building guest graphs SHOULD treat only explicit values as signal. It is orthogonal to `speaker` and the `speakers` array: `speaker` says who is talking during the annotation, the `speakers` array assigns episode-level roles, and `participation` describes the annotated person's role at that one moment. With explicit values, a consumer can separate "the guest was introduced here" from "the guest was named in passing" without a second extraction pass. The same person can carry different `participation` values across an episode.
+
+```json
+[
+  {
+    "startTime": 30.0,
+    "endTime": 55.0,
+    "type": "person",
+    "title": "Dr. Sarah Chen",
+    "participation": "guest",
+    "canonicalId": "person:sarah-chen",
+    "url": "https://example.com/guests/sarah-chen"
+  },
+  {
+    "startTime": 1820.0,
+    "endTime": 1827.0,
+    "type": "person",
+    "title": "Dr. Sarah Chen",
+    "participation": "mentioned",
+    "canonicalId": "person:sarah-chen",
+    "speaker": "host",
+    "quote": "like Sarah said earlier about direct air capture"
+  }
+]
+```
 
 ## Annotation Set
 
@@ -457,7 +488,7 @@ Real-world annotation sets from published podcast episodes, showing the format a
 | [`everyday-driver-episode-1013`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json) | Automotive review | 113 | AI-generated from transcript |
 | [`bat-podcast-just-back-from-japan`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/bat-podcast-just-back-from-japan.annotations.json) | Automotive auction | 21 | Converted from timestamped show notes |
 | [`acquired-ferrari`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/acquired-ferrari.annotations.json) | Business history | 16 | Converted from timestamped show notes |
-| [`lex-fridman-494-jensen-huang`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/lex-fridman-494-jensen-huang.annotations.json) | Tech/AI interview | 21 | Converted from timestamped show notes |
+| [`lex-fridman-494-jensen-huang`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/lex-fridman-494-jensen-huang.annotations.json) | Tech/AI interview | 23 | Show notes plus `participation`-tagged people |
 | [`science-vs-artemis-moon`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-artemis-moon.annotations.json) | Science journalism | 6 | Converted from timestamped show notes |
 | [`science-vs-running`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-running.annotations.json) | Health/fitness | 5 | Converted from timestamped show notes |
 | [`tim-ferriss-770-elizabeth-gilbert`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/tim-ferriss-770-elizabeth-gilbert.annotations.json) | Creativity/self-help | 25 | Converted from timestamped show notes |
@@ -625,6 +656,7 @@ Maps to this W3C Web Annotation:
 | `image` | Additional `body` with `purpose: "depicting"` |
 | `quote` | `body[1]` with `purpose: "quoting"` |
 | `speaker` | May be represented via `creator` or external metadata in W3C systems |
+| `participation` | Not mapped (application-specific) |
 | `confidence` | Not mapped (application-specific) |
 | `data` | Not mapped (application-specific) |
 | `episode.audioUrl` | `target.source` |
@@ -641,7 +673,7 @@ Maps to this W3C Web Annotation:
 
 **Show Notes.** Show notes are the most common form of podcast annotation today: episode summaries, timestamps, guest info, and links published as freeform prose via RSS `<description>` or `<content:encoded>`. An annotation set is a structured, machine-readable representation of the same information. Show notes describe what was discussed; annotations make it addressable, linkable, and renderable in sync with playback. Producers can use annotation sets to generate show notes, or use existing show notes as a starting point for annotation.
 
-**Podcasting 2.0 `<podcast:person>`.** Tags people at the episode level (hosts, guests). Podcast annotations with `type: "person"` tag people at the moment level: when they are discussed, not only who is on the show.
+**Podcasting 2.0 `<podcast:person>`.** Tags people at the episode level (hosts, guests). Podcast annotations with `type: "person"` tag people at the moment level: when they are discussed, not only who is on the show. The optional `participation` field is the moment-level complement to that episode-level tagging: it marks whether a person is a `"guest"`, `"host"`, or merely `"mentioned"` at a given point in the timeline.
 
 **RSS Distribution.** An episode's annotation file MAY be referenced from the RSS feed or episode web page. The `<podcast:transcript>` element defined in PSP-1 provides a clear model: a `url` attribute and a `type` attribute. A `<podcast:annotations>` element would follow the same pattern:
 

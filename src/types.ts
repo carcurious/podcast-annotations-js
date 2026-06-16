@@ -70,6 +70,12 @@ export interface Annotation {
   image?: string
   /** Speaker ID (references a Speaker.id). */
   speaker?: string
+  /**
+   * For `type: "person"` only: the person's role in this moment.
+   * Recommended values: "guest", "host", "mentioned". Omission means unspecified, not "mentioned".
+   * Typed as a loose union so IDEs autocomplete the recommended values while still allowing custom strings.
+   */
+  participation?: 'guest' | 'host' | 'mentioned' | (string & {})
   /** Exact words from the transcript that triggered this annotation. */
   quote?: string
   /** Freeform labels for search, clustering, and filtering. */

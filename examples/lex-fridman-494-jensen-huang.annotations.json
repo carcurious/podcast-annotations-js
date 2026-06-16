@@ -30,6 +30,14 @@
       }
     },
     {
+      "startTime": 5.0,
+      "endTime": 26.0,
+      "type": "person",
+      "title": "Jensen Huang",
+      "participation": "guest",
+      "canonicalId": "person:jensen-huang"
+    },
+    {
       "startTime": 394.0,
       "endTime": 560.0,
       "type": "concept",
@@ -109,6 +117,14 @@
         "endTimeEstimated": true,
         "showNotesText": "(58:45) Elon and Colossus"
       }
+    },
+    {
+      "startTime": 3525.0,
+      "endTime": 3733.0,
+      "type": "person",
+      "title": "Elon Musk",
+      "participation": "mentioned",
+      "canonicalId": "person:elon-musk"
     },
     {
       "startTime": 3733.0,
