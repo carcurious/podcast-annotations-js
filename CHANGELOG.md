@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.0 (2026-06-15)
+
+### Added
+- `Annotation.participation`: optional moment-level role for `type: "person"` annotations. Recommended values are `"guest"`, `"host"`, and `"mentioned"`. Omission means unspecified, not `"mentioned"`, so a legacy or untagged annotation is never read as not-present. Typed as a loose union (`'guest' | 'host' | 'mentioned' | (string & {})`) so IDEs autocomplete the recommended values while custom strings stay valid. Additive and backward compatible; spec version remains `1.0.0`.
+
+### Changed
+- `SPEC.md`: added a Participation section with a worked guest/mentioned example, validation rules, a W3C mapping row (application-specific), and a `<podcast:person>` note framing `participation` as the moment-level complement to episode-level person tagging.
+- `SPEC.md` Time Format: documented that `endTime` equal to `startTime` marks a point in time, and that consumers render point annotations with a nonzero display window.
+- `examples/lex-fridman-494-jensen-huang.annotations.json`: added a `"guest"` and a `"mentioned"` `person` annotation to demonstrate the field.
+
 ## 0.7.0 (2026-05-26)
 
 ### Changed
