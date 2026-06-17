@@ -14,7 +14,7 @@ const exampleFiles = readdirSync(examplesDir)
 
 describe.each(exampleFiles)('Example: $name', ({ data }) => {
   it('has valid top-level structure', () => {
-    expect(data.version).toBe('1.0.0')
+    expect(data.version).toBe('1.1.0')
     expect(data.episode).toBeDefined()
     expect(data.episode!.title).toBeTruthy()
     expect(data.annotations).toBeInstanceOf(Array)

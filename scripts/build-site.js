@@ -4,7 +4,7 @@ import { marked } from 'marked'
 
 const spec = readFileSync('SPEC.md', 'utf-8')
 const body = marked.parse(spec)
-const specVersion = spec.match(/\*\*Version ([^*]+)\*\*/)?.[1] ?? '1.0.0'
+const specVersion = spec.match(/\*\*Version ([^*]+)\*\*/)?.[1] ?? '1.1.0'
 const lastmod = execSync('git log -1 --format=%cI SPEC.md', { encoding: 'utf-8' }).trim().slice(0, 10)
 
 const assemblyBySlug = {

@@ -1,6 +1,6 @@
 # Podcast Annotation Format
 
-**Version 1.0.0**
+**Version 1.1.0**
 
 A minimal JSON format for timestamped entity annotations on podcast and spoken media content.
 
@@ -12,7 +12,9 @@ Transcripts give you words and timestamps. They do not tell an app that a host m
 
 The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is to make the references inside a podcast episode addressable, so that a player, search index, archive, or show-notes generator can do something useful with them.
 
-This spec defines the annotation, not the transport. A sidecar JSON file is the simplest carrier today, but the same annotation model can be embedded in RSS, returned from an API, or delivered however a producer and consumer choose.
+Annotations pay off two ways. The first is in the moment: a player renders an overlay, timeline, or side panel synced to playback. The second compounds across a catalog: once entities carry stable identifiers (see [Canonical IDs](#canonical-ids)), a single episode's annotations join a corpus-wide index. "Every episode that discusses the 2JZ engine" becomes a query, and an AI agent can answer it over a back catalog without re-listening or re-transcribing. The per-episode file is the unit of production; the cross-episode entity graph is where the value accrues.
+
+This spec defines the annotation, not the transport. A sidecar JSON file is the simplest carrier today, but the same annotation model can be embedded in RSS, returned from an API, or delivered however a producer and consumer choose. Because annotations live beside the audio rather than inside it, a producer can add, correct, or remove them without re-encoding or re-publishing the episode, and several producers can annotate the same audio independently (see [Layers](#layers)).
 
 ### Design Principles
 
@@ -209,7 +211,7 @@ An annotation set is the container format for a collection of annotations associ
 
 ```json
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "episode": {
     "title": "Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013",
     "url": "https://getcarcurious.com/episodes/cars-that-need-a-comeback-a-m-the-fourth-car-minivan-peer-pressure-episode-1-013",
@@ -240,7 +242,9 @@ An annotation set is the container format for a collection of annotations associ
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `version` | `string` | **Yes** | Spec version (semver, currently `"1.0.0"`) |
+| `version` | `string` | **Yes** | Spec version (semver, currently `"1.1.0"`) |
+| `layer` | `string` | No | Name of this annotation layer, used to distinguish concurrent sets for the same audio (see [Layers](#layers)) |
+| `producer` | `string` | No | Identifier for who or what produced this set (e.g., `"everyday-driver-official"`, `"acme-ai-enrichment"`) |
 | `episode` | `object` | No | Episode metadata |
 | `episode.title` | `string` | No | Episode title |
 | `episode.guid` | `string` | No | Globally unique identifier for the episode (from RSS `<guid>`) |
@@ -259,6 +263,25 @@ An annotation set is the container format for a collection of annotations associ
 The `episode` object is optional. When annotations are delivered alongside audio (e.g., via RSS or an API), episode metadata may be redundant. Including `episode.guid`, `episode.pubDate`, and `episode.duration` makes an annotation file self-contained: a consumer can identify and play the episode without fetching the RSS feed. These fields align with the corresponding RSS item elements (`<guid>`, `<pubDate>`, `<itunes:duration>`) defined in the [PSP-1 RSS specification](https://github.com/Podcast-Standards-Project/PSP-1-Podcast-RSS-Specification).
 
 Short episode summaries or show notes can be included directly via `episode.description`. The recommended format is plain text. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support. For richer episode-level metadata (licensing, series info), see Schema.org `PodcastEpisode`.
+
+### Layers
+
+The same audio can carry annotations from more than one producer: a show's official set, a third-party AI enrichment pass, and a community contribution layer can all describe the same episode without coordinating. Rather than merging these into one file at the source, each producer publishes its own self-contained annotation set and consumers combine them as needed.
+
+The optional `layer` and `producer` fields let a set identify itself so a consumer can fetch, diff, replace, or filter layers independently. `layer` names the role of the set (e.g., `"official"`, `"community"`); `producer` names who generated it. A consumer might show only the official layer by default and let the listener opt into others, or attribute each annotation to its producer in the UI.
+
+For diff and replacement to be unambiguous, the `(producer, layer)` pair SHOULD be stable and unique for a given episode or audio file: stable so a later revision of the same layer replaces the earlier one rather than appearing as a new layer, and unique so two distinct sets do not collide. `layer` SHOULD be a slug-like string — lowercase, no spaces, hyphenated if needed (e.g., `"official"`, `"community"`, `"ai-enrichment"`) — so that `"community"` and `"Community"` are not treated as different layers. `producer` SHOULD be a stable identifier for the producing party (e.g., a reverse-DNS or namespaced handle like `"fm.getcarcurious"` or `"acme-ai-enrichment"`) rather than a display name that may change. When either field is omitted, a consumer cannot reliably diff or replace that set and SHOULD treat it as an anonymous, standalone layer.
+
+```json
+{
+  "version": "1.1.0",
+  "layer": "community",
+  "producer": "acme-ai-enrichment",
+  "annotations": [ ]
+}
+```
+
+This spec does not define merge semantics across layers. When a consumer combines layers, deduplication and conflict resolution are consumer-defined. `canonicalId` identifies the underlying entity, not the timeline occurrence (see [Canonical IDs](#canonical-ids)), so it collapses cleanly in an *entity index* ("which layers mention the LS engine"). It is not sufficient on its own to dedupe *timeline annotations*: two layers may annotate the same entity at different moments, and those are distinct occurrences that should not merge. A consumer deduping annotations for a timeline SHOULD also require time-range overlap, treating same `canonicalId` plus overlapping `[startTime, endTime]` as the same occurrence. In RSS, each layer is carried by its own `<podcast:annotations>` element, mirroring how a feed already lists multiple `<podcast:transcript>` resources (see [Relationship to Other Standards](#relationship-to-other-standards)).
 
 ## Transcripts
 
@@ -419,7 +442,7 @@ From [The Everyday Driver Podcast](https://getcarcurious.com), Episode 1,013 (11
 
 ```json
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "episode": {
     "title": "Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013",
     "url": "https://getcarcurious.com/episodes/cars-that-need-a-comeback-a-m-the-fourth-car-minivan-peer-pressure-episode-1-013",
@@ -563,7 +586,7 @@ Two worked annotations show how domain-specific detail lives in `data`. (These a
 
 ```json
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "episode": {
     "title": "Climate Tech with Dr. Sarah Chen"
   },
@@ -685,7 +708,22 @@ Maps to this W3C Web Annotation:
 <podcast:annotations url="https://example.com/episode1.annotations.json" type="application/json" />
 ```
 
-This element would live inside `<item>`, alongside `<podcast:transcript>`. See the [Podcasting 2.0 namespace](https://podcastindex.org/namespace/1.0) for the proposal process.
+This element would live inside `<item>`, alongside `<podcast:transcript>`. An `<item>` MAY carry more than one `<podcast:annotations>` element, one per [layer](#layers) (the official set, a third-party enrichment, a community contribution), exactly as a feed MAY list multiple `<podcast:transcript>` resources for different formats or languages.
+
+So a consumer can choose layers *without* fetching every URL first, the element MAY carry `layer` and `producer` attributes that mirror the in-file fields of the same name. These are structured machine selectors — the feed-level equivalent of the `language` and `rel` attributes on `<podcast:transcript>` — and let a player filter to "official only" or skip community layers using the feed alone. An optional `title` attribute MAY carry a human-readable label for UI display; unlike `layer`/`producer`, `title` is not a selector and consumers MUST NOT key filtering or replacement off it.
+
+When present, the `layer` and `producer` attributes SHOULD match the `layer` and `producer` fields inside the referenced set; the in-file fields remain authoritative if they disagree. As with the in-file fields, the `(producer, layer)` pair SHOULD be stable and unique per episode so a consumer can replace a layer across feed updates.
+
+```xml
+<podcast:annotations url="https://example.com/episode1.official.annotations.json"
+                     type="application/json"
+                     layer="official" producer="fm.getcarcurious" title="Official" />
+<podcast:annotations url="https://example.com/episode1.community.annotations.json"
+                     type="application/json"
+                     layer="community" producer="acme-ai-enrichment" title="Community" />
+```
+
+See the [Podcasting 2.0 namespace](https://podcastindex.org/namespace/1.0) for the proposal process.
 
 **Wikidata / DBpedia.** The `url` field on annotations can reference Wikidata entities (e.g., `https://www.wikidata.org/wiki/Q5300`) for canonical, language-independent entity identification. This enables linked data use cases without adding complexity to the core format.
 

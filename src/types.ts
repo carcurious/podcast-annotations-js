@@ -48,6 +48,10 @@ export interface Episode {
 /** Container format for a collection of annotations. */
 export interface AnnotationSet {
   version: string
+  /** Name of this annotation layer, distinguishing concurrent sets for the same audio (e.g. "official", "community"). */
+  layer?: string
+  /** Identifier for who or what produced this set (e.g. "everyday-driver-official", "acme-ai-enrichment"). */
+  producer?: string
   episode?: Episode
   transcripts?: Transcript[]
   speakers?: Speaker[]
