@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.0 (2026-06-17)
+
+### Added
+- **Annotation layers.** Optional `layer` and `producer` fields on the annotation set let multiple producers (an official set, a third-party AI enrichment, a community contribution) annotate the same audio independently instead of merging into one file at the source. The `(producer, layer)` pair SHOULD be stable and unique per episode so a consumer can fetch, diff, replace, or filter layers; `layer` is a lowercase slug and `producer` a stable namespaced identifier. Additive and backward compatible.
+- `AnnotationSet.layer` and `AnnotationSet.producer` added to the TypeScript types.
+
+### Changed
+- **Spec version bumped to `1.1.0`** for the additive `layer`/`producer` fields. `examples/`, generated `docs/`, and tests updated to `1.1.0`.
+- `SPEC.md`: new Layers section covering the multi-producer model, the stable-and-unique `(producer, layer)` identity rule, and consumer-defined merge semantics. Clarified that cross-layer dedupe needs `canonicalId` **plus** time-range overlap — `canonicalId` keys an entity index, not a timeline occurrence.
+- `SPEC.md` RSS Distribution: an `<item>` MAY carry multiple `<podcast:annotations>` elements, one per layer, with machine-readable `layer`/`producer` attributes as feed-level selectors (mirroring `language`/`rel` on `<podcast:transcript>`). The `title` attribute is a UI label only and MUST NOT be used as a selector.
+- `SPEC.md` overview: promoted the cross-episode entity-graph use case (corpus-wide queries, agent discovery) alongside in-playback rendering, and noted sidecar mutability as a design property.
+
 ## 0.8.0 (2026-06-15)
 
 ### Added
