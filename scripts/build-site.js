@@ -798,7 +798,7 @@ const html = `<!DOCTYPE html>
         <a href="#example">Example</a>
         <a href="#standards">Standards</a>
         <a href="#spec">Specification</a>
-        <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>
+        <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>
       </nav>
     </header>
 
@@ -808,7 +808,7 @@ const html = `<!DOCTYPE html>
         <p class="lede">A podcast annotation marks a moment in an episode: a car at 24:33, a person at 47:26, a place at 1:12:29. It names the entity or topic, when it appears, and the context needed to make sense of it.</p>
         <div class="intro-actions">
           <a class="button-link primary" href="#spec">Read the spec</a>
-          <a class="button-link" href="https://github.com/ryanwi/podcast-annotations-js">View on GitHub</a>
+          <a class="button-link" href="https://github.com/carcurious/podcast-annotations-js">View on GitHub</a>
         </div>
         <div class="spec-meta">
           <span class="spec-meta-status"><span class="rec-dot"></span>Stable</span>
@@ -887,7 +887,7 @@ ${body}
     </section>
 
     <footer>
-      Version ${escapeHtml(specVersion)}. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated ${lastmod}. <a href="https://github.com/ryanwi/podcast-annotations-js">GitHub</a>.
+      Version ${escapeHtml(specVersion)}. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated ${lastmod}. <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.
     </footer>
   </div>
 

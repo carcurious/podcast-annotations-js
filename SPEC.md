@@ -504,7 +504,7 @@ From [The Everyday Driver Podcast](https://getcarcurious.com), Episode 1,013 (11
 }
 ```
 
-The full 113-annotation file is available at [`examples/everyday-driver-episode-1013.annotations.json`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json).
+The full 113-annotation file is available at [`examples/everyday-driver-episode-1013.annotations.json`](https://github.com/carcurious/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json).
 
 ### Additional Examples
 
@@ -512,14 +512,14 @@ Real-world annotation sets from published podcast episodes, showing the format a
 
 | Example | Genre | Annotations | Assembly |
 |---------|-------|-------------|--------|
-| [`everyday-driver-episode-1013`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json) | Automotive review | 113 | AI-generated from transcript |
-| [`bat-podcast-just-back-from-japan`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/bat-podcast-just-back-from-japan.annotations.json) | Automotive auction | 21 | Converted from timestamped show notes |
-| [`acquired-ferrari`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/acquired-ferrari.annotations.json) | Business history | 16 | Converted from timestamped show notes |
-| [`lex-fridman-494-jensen-huang`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/lex-fridman-494-jensen-huang.annotations.json) | Tech/AI interview | 23 | Show notes plus `participation`-tagged people |
-| [`science-vs-artemis-moon`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-artemis-moon.annotations.json) | Science journalism | 6 | Converted from timestamped show notes |
-| [`science-vs-running`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/science-vs-running.annotations.json) | Health/fitness | 5 | Converted from timestamped show notes |
-| [`tim-ferriss-770-elizabeth-gilbert`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/tim-ferriss-770-elizabeth-gilbert.annotations.json) | Creativity/self-help | 25 | Converted from timestamped show notes |
-| [`higher-learning-coachella-bambaataa`](https://github.com/ryanwi/podcast-annotations-js/blob/main/examples/higher-learning-coachella-bambaataa.annotations.json) | Culture/politics | 10 | Converted from timestamped show notes |
+| [`everyday-driver-episode-1013`](https://github.com/carcurious/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json) | Automotive review | 113 | AI-generated from transcript |
+| [`bat-podcast-just-back-from-japan`](https://github.com/carcurious/podcast-annotations-js/blob/main/examples/bat-podcast-just-back-from-japan.annotations.json) | Automotive auction | 21 | Converted from timestamped show notes |
+| [`acquired-ferrari`](https://github.com/carcurious/podcast-annotations-js/blob/main/examples/acquired-ferrari.annotations.json) | Business history | 16 | Converted from timestamped show notes |
+| [`lex-fridman-494-jensen-huang`](https://github.com/carcurious/podcast-annotations-js/blob/main/examples/lex-fridman-494-jensen-huang.annotations.json) | Tech/AI interview | 23 | Show notes plus `participation`-tagged people |
+| [`science-vs-artemis-moon`](https://github.com/carcurious/podcast-annotations-js/blob/main/examples/science-vs-artemis-moon.annotations.json) | Science journalism | 6 | Converted from timestamped show notes |
+| [`science-vs-running`](https://github.com/carcurious/podcast-annotations-js/blob/main/examples/science-vs-running.annotations.json) | Health/fitness | 5 | Converted from timestamped show notes |
+| [`tim-ferriss-770-elizabeth-gilbert`](https://github.com/carcurious/podcast-annotations-js/blob/main/examples/tim-ferriss-770-elizabeth-gilbert.annotations.json) | Creativity/self-help | 25 | Converted from timestamped show notes |
+| [`higher-learning-coachella-bambaataa`](https://github.com/carcurious/podcast-annotations-js/blob/main/examples/higher-learning-coachella-bambaataa.annotations.json) | Culture/politics | 10 | Converted from timestamped show notes |
 
 ### Cross-Genre Annotation Examples
 
@@ -540,7 +540,7 @@ The table below maps common podcast genres to the types and references they tend
 | Travel | `place`, `term` | Destinations, attractions, lodging, transit |
 | Music | `work`, `person` | Songs and albums, artists, venues, genres |
 
-Two worked annotations show how domain-specific detail lives in `data`. (These are illustrative, like the [Minimal Interview Example](#minimal-interview-example) below; the published annotation sets in [`examples/`](https://github.com/ryanwi/podcast-annotations-js/tree/main/examples) are all real episodes.)
+Two worked annotations show how domain-specific detail lives in `data`. (These are illustrative, like the [Minimal Interview Example](#minimal-interview-example) below; the published annotation sets in [`examples/`](https://github.com/carcurious/podcast-annotations-js/tree/main/examples) are all real episodes.)
 
 **Cooking, a recipe mentioned in a food podcast:**
 
@@ -731,9 +731,25 @@ See the [Podcasting 2.0 namespace](https://podcastindex.org/namespace/1.0) for t
 
 ## Reference Implementation
 
-[podcast-annotations](https://github.com/ryanwi/podcast-annotations-js) is a framework-agnostic JavaScript library for rendering podcast annotations with audio players. It supports annotation overlays, transcript sync, timelines, chapters, and DAI alignment.
+[podcast-annotations](https://github.com/carcurious/podcast-annotations-js) is a framework-agnostic JavaScript library for rendering podcast annotations with audio players. It supports annotation overlays, transcript sync, timelines, chapters, and DAI alignment.
 
 This format was developed by [Car Curious](https://getcarcurious.com), a podcast annotation platform for automotive content, and is released as an open specification for the broader podcast ecosystem.
+
+## Changelog
+
+This changelog tracks the **specification** version (the number in the `**Version**` header and the annotation set `version` field), which is independent of the reference implementation's npm package version. The spec uses semantic versioning: additive, backward-compatible changes bump the minor version; breaking changes bump the major version.
+
+### 1.1.0
+
+- **Added `layer` and `producer`** container fields so multiple producers can annotate the same audio as independent [layers](#layers), with a stable-and-unique `(producer, layer)` identity rule for diff and replacement.
+- **RSS:** an `<item>` MAY carry multiple `<podcast:annotations>` elements, one per layer, with machine-readable `layer`/`producer` attributes as feed-level selectors (`title` is a UI label only).
+- Clarified that cross-layer annotation dedupe requires `canonicalId` **plus** time-range overlap; `canonicalId` alone keys an entity index, not a timeline occurrence.
+- Promoted the cross-episode entity-graph use case into the overview and noted sidecar mutability as a design property.
+
+### 1.0.0
+
+- Initial specification: annotation objects, annotation sets, speakers, transcripts, ad breaks, recommended entity types, and W3C Web Annotation mapping.
+- The following backward-compatible additions were folded in under `1.0.0` without a version bump: the `participation` field for `person` annotations, `company` vs `brand` disambiguation guidance, and point-in-time annotations (`endTime` equal to `startTime`).
 
 ## License
 

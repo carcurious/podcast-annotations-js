@@ -42,7 +42,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ryanwi/podcast-annotations-js.git"
+    "url": "git+https://github.com/carcurious/podcast-annotations-js.git"
   },
   "homepage": "https://www.podcastannotation.org",
   "devDependencies": {
