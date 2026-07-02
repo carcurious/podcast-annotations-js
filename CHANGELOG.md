@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1 (2026-07-02)
+
+### Added
+- Non-normative guidance on interop with **Apple Podcasts Timed Links** (iOS 26.2, Nov 2025) in `SPEC.md`'s Relationship to Other Standards section: what Apple's feature covers, how it's narrower than this spec (Apple-ecosystem + podcast link destinations only; no typed entities, `canonicalId`, or layers), and a concrete recommendation to export a top slice of high-`priority` annotations into `<podcast:chapters>` `url` fields for free rendering in Apple Podcasts today, while keeping the full set in the sidecar or a `<podcast:annotations>` element. No data-model change; spec version remains `1.1.0`.
+- New Prior Art & Inspiration bullet citing Apple's timed links as the largest-scale validation yet of the moment-level annotation pattern.
+
 ## 0.9.0 (2026-06-17)
 
 ### Added
