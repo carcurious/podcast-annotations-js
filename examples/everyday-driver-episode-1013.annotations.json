@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "episode": {
     "title": "Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013",
     "url": "https://getcarcurious.com/episodes/cars-that-need-a-comeback-a-m-the-fourth-car-minivan-peer-pressure-episode-1-013",
@@ -23,6 +23,8 @@
       "endTime": 57.6,
       "type": "car",
       "title": "Honda Prelude",
+      "canonicalId": "car:honda:prelude",
+      "sameAs": ["https://www.wikidata.org/entity/Q830370"],
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/1982_Honda_Prelude_%2815977118997%29.jpg/1200px-1982_Honda_Prelude_%2815977118997%29.jpg",
       "data": {
         "imageAttribution": "Riley from Christchurch, New Zealand (CC BY 2.0)"
@@ -45,6 +47,7 @@
       "endTime": 145.1,
       "type": "part",
       "title": "solenoid handles",
+      "canonicalId": "part:solenoid-door-handle",
       "data": {
         "explanation": "Solenoid handles are electronic door handles that use a solenoid mechanism to lock and unlock the door. They are often found in modern vehicles, including electric cars like Teslas, and can malfunction if jammed or stuck.",
         "simplifiedExplanation": "Solenoid handles are the parts that help you open and close car doors electronically. They can sometimes get stuck, making it hard to get into the car."
@@ -67,6 +70,8 @@
       "endTime": 319.76,
       "type": "car",
       "title": "Nissan GT-R",
+      "canonicalId": "car:nissan:gt-r",
+      "sameAs": ["https://www.wikidata.org/entity/Q499109"],
       "image": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Nissan_4BA-R35_GT-R_NISMO_%2823092416543%29.jpg",
       "data": {
         "explanation": "The Nissan GT-R is a high-performance sports car known for its advanced technology and impressive speed. It has a strong motorsport heritage and is often regarded as a benchmark in the supercar segment.",
@@ -79,6 +84,8 @@
       "endTime": 346.72,
       "type": "car",
       "title": "Nissan Leaf",
+      "canonicalId": "car:nissan:leaf",
+      "sameAs": ["https://www.wikidata.org/entity/Q911323"],
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg/1200px-2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg",
       "data": {
         "explanation": "The Nissan Leaf is an all-electric hatchback that has been one of the best-selling electric vehicles globally, known for its practicality and affordability.",
@@ -91,6 +98,8 @@
       "endTime": 773.0,
       "type": "company",
       "title": "FCP Euro",
+      "canonicalId": "company:fcp-euro",
+      "sameAs": ["https://fcpeuro.com"],
       "data": {
         "explanation": "FCP Euro is a well-known supplier of automotive parts, specializing in genuine original equipment and aftermarket performance upgrades for European vehicles. They have been in the industry for nearly 40 years, making them a trusted source for car enthusiasts and professionals alike.",
         "simplifiedExplanation": "FCP Euro is a company that sells car parts, especially for European cars. They provide both original parts and performance upgrades, helping people maintain or improve their vehicles."
@@ -131,6 +140,8 @@
       "endTime": 901.0,
       "type": "term",
       "title": "2JZ engine",
+      "canonicalId": "engine:toyota:2jz",
+      "sameAs": ["https://www.wikidata.org/entity/Q134570195"],
       "data": {
         "explanation": "The 2JZ engine is a 3.0-liter inline-six engine produced by Toyota, famous for its strength and tuning potential. It is most well-known for being used in the Toyota Supra Mark IV, making it a favorite among car enthusiasts.",
         "simplifiedExplanation": "The 2JZ engine is a powerful engine made by Toyota that many people love to modify and race. It's known for being very strong and reliable."
@@ -141,6 +152,8 @@
       "endTime": 902.96,
       "type": "car",
       "title": "Toyota Supra",
+      "canonicalId": "car:toyota:supra",
+      "sameAs": ["https://www.wikidata.org/entity/Q647404"],
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/D%C3%BClmen%2C_Auto_Bertels%2C_Toyota_GR_Supra_--_2021_--_9558.jpg/1200px-D%C3%BClmen%2C_Auto_Bertels%2C_Toyota_GR_Supra_--_2021_--_9558.jpg",
       "data": {
         "imageAttribution": "Dietmar Rabich (CC BY-SA 4.0)"
@@ -403,6 +416,8 @@
       "endTime": 1477.68,
       "type": "car",
       "title": "BMW M5",
+      "canonicalId": "car:bmw:m5",
+      "sameAs": ["https://www.wikidata.org/entity/Q796598"],
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/2018_BMW_M5_Automatic_4.4.jpg/1200px-2018_BMW_M5_Automatic_4.4.jpg",
       "data": {
         "explanation": "The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.",
@@ -685,6 +700,8 @@
       "endTime": 2848.88,
       "type": "car",
       "title": "Pontiac Solstice",
+      "canonicalId": "car:pontiac:solstice",
+      "sameAs": ["https://www.wikidata.org/entity/Q276837"],
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg/1200px-06-09_Pontiac_Solstice_base_convertible.jpg",
       "data": {
         "imageAttribution": "MercurySable99 (CC BY-SA 4.0)"
@@ -867,6 +884,8 @@
       "endTime": 4353.92,
       "type": "car",
       "title": "Subaru Brz",
+      "canonicalId": "car:subaru:brz",
+      "sameAs": ["https://www.wikidata.org/entity/Q3502403"],
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg/1200px-SUBARU_BRZ_%28ZD8%29_China.jpg",
       "data": {
         "imageAttribution": "Dinkun Chen (CC BY-SA 4.0)"

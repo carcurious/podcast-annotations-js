@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "episode": {
     "title": "#494 Jensen Huang: NVIDIA - The $4 Trillion Company & the AI Revolution",
     "url": "https://lexfridman.com/jensen-huang-2",
@@ -35,7 +35,8 @@
       "type": "person",
       "title": "Jensen Huang",
       "participation": "guest",
-      "canonicalId": "person:jensen-huang"
+      "canonicalId": "person:jensen-huang",
+      "sameAs": ["https://www.wikidata.org/entity/Q305177"]
     },
     {
       "startTime": 394.0,
@@ -124,7 +125,8 @@
       "type": "person",
       "title": "Elon Musk",
       "participation": "mentioned",
-      "canonicalId": "person:elon-musk"
+      "canonicalId": "person:elon-musk",
+      "sameAs": ["https://www.wikidata.org/entity/Q317521"]
     },
     {
       "startTime": 3733.0,

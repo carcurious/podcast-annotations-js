@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.0 (2026-07-03)
+
+### Added
+- `Annotation.sameAs`: optional array of URLs asserting the annotated entity's identity in external registries, adopting [Schema.org `sameAs`](https://schema.org/sameAs) semantics. Wikidata concept URIs (`https://www.wikidata.org/entity/Q...`) are the recommended first entry where an item exists at the intended granularity. `canonicalId` remains the producer-scoped join key that always exists and never changes; `sameAs` is the cross-producer bridge. Motivated by John Spurlock's ask for publisher-delineated entities with agreed-upon stable identifiers such as Wikidata IDs, and scoped per Nathan Gathright's observation that canonical relationships are publisher intent apps shouldn't guess.
+- Verified Wikidata QIDs in `examples/`: cars, people, and the 2JZ engine in the Everyday Driver and Lex Fridman sets now carry `canonicalId` plus `sameAs`. FCP Euro (official site only) and "solenoid handles" (no `sameAs`) demonstrate graceful degradation where Wikidata has no item.
+
+### Changed
+- **Spec version bumped to `1.2.0`** for the additive `sameAs` field. New "External Identity: sameAs" section in `SPEC.md` with lookup guidance (`wbsearchentities`, SPARQL, prefix-search pitfalls); Canonical IDs section now states the producer-scoped, never-changes contract explicitly. W3C mapping row (`purpose: "identifying"`), layers dedupe note, and the Schema.org paragraph updated to match. `examples/`, generated `docs/`, and tests updated to `1.2.0`.
+
 ## 0.9.1 (2026-07-02)
 
 ### Added
