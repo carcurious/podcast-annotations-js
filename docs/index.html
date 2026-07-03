@@ -587,7 +587,7 @@
         <p class="lede">A podcast annotation marks a moment in an episode: a car at 24:33, a person at 47:26, a place at 1:12:29. It names the entity or topic, when it appears, and the context needed to make sense of it.</p>
         <p class="intro-cta"><a class="cta-spec" href="#spec">Read the specification</a></p>
         <dl class="spec-facts">
-          <div><dt>This version</dt><dd>1.2.0 (stable)</dd></div>
+          <div><dt>This version</dt><dd>1.1.0 (stable)</dd></div>
           <div><dt>Last updated</dt><dd>2026-07-03</dd></div>
           <div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></dd></div>
           <div><dt>Source</dt><dd class="mono"><a href="https://github.com/carcurious/podcast-annotations-js">carcurious/podcast-annotations-js</a></dd></div>
@@ -738,7 +738,7 @@
     <section class="spec-wrap">
       <article id="spec">
 <h1 id="podcast-annotation-format">Podcast Annotation Format</h1>
-<p><strong>Version 1.2.0</strong></p>
+<p><strong>Version 1.1.0</strong></p>
 <p>A minimal JSON format for timestamped entity annotations on podcast and spoken media content.</p>
 <h2 id="overview">Overview</h2>
 <p>A transcript records the words and when they were said. It does not tell an app that a host mentioned a 1969 Camaro at 0:45, switched to turbochargers at 2:00, or spent the next 30 seconds on Carroll Shelby. Listeners follow that structure without thinking about it, but almost none of it exists anywhere as structured data.</p>
@@ -849,12 +849,6 @@
 <td>Stable entity identifier for cross-episode deduplication</td>
 </tr>
 <tr>
-<td><code>sameAs</code></td>
-<td><code>array of strings</code></td>
-<td>No</td>
-<td>URLs identifying the same entity in external registries, e.g. a Wikidata concept URI (see <a href="#external-identity-sameas">External Identity: sameAs</a>)</td>
-</tr>
-<tr>
 <td><code>confidence</code></td>
 <td><code>number</code></td>
 <td>No</td>
@@ -898,7 +892,6 @@
   &quot;tags&quot;: [&quot;engine&quot;, &quot;swap&quot;, &quot;performance&quot;],
   &quot;priority&quot;: 0.9,
   &quot;canonicalId&quot;: &quot;car:chevrolet:ls&quot;,
-  &quot;sameAs&quot;: [&quot;https://www.wikidata.org/entity/Q724143&quot;],
   &quot;confidence&quot;: 0.95,
   &quot;source&quot;: &quot;ai&quot;,
   &quot;data&quot;: {
@@ -936,52 +929,25 @@
 <li><code>endTime</code> MUST be &gt;= <code>startTime</code></li>
 <li><code>confidence</code>, if provided, MUST be &gt;= 0.0 and &lt;= 1.0. This reflects extraction certainty: how sure the producer is that this annotation is correct.</li>
 <li><code>priority</code>, if provided, MUST be &gt;= 0.0 and &lt;= 1.0. This reflects editorial importance: how prominently this annotation should be displayed. A high-confidence annotation may still have low priority if it&#39;s tangential.</li>
-<li><code>sameAs</code>, if provided, MUST be an array of absolute URLs, each identifying the annotated entity itself (see <a href="#external-identity-sameas">External Identity: sameAs</a>)</li>
 <li><code>speaker</code>, if provided, MUST reference a valid <code>id</code> in the <code>speakers</code> array</li>
 <li><code>participation</code>, if provided, SHOULD be one of <code>&quot;guest&quot;</code>, <code>&quot;host&quot;</code>, or <code>&quot;mentioned&quot;</code>. Custom values are allowed but reduce interoperability. It applies only when <code>type</code> is <code>&quot;person&quot;</code>; consumers SHOULD ignore it on other types.</li>
 <li>An omitted <code>participation</code> is unspecified, not <code>&quot;mentioned&quot;</code>. Consumers MUST NOT treat absence as a claim: an annotation predating this field, or one whose producer did not set it, carries no participation assertion. Only an explicit <code>&quot;mentioned&quot;</code> asserts that the person was referenced but not present.</li>
 <li>Time values SHOULD be within the duration of the associated audio</li>
 </ul>
 <h3 id="canonical-ids">Canonical IDs</h3>
-<p>The <code>canonicalId</code> field provides a stable, human-readable identifier for the underlying entity, not the annotation itself. The same entity across multiple episodes or annotation sets from the same producer SHOULD use the same <code>canonicalId</code>, enabling cross-episode deduplication, entity graphs, and aggregate views (e.g., &quot;every episode that mentions the LS engine&quot;).</p>
+<p>The <code>canonicalId</code> field provides a stable, human-readable identifier for the underlying entity, not the annotation itself. The same entity across multiple episodes or annotation sets SHOULD use the same <code>canonicalId</code>, enabling cross-episode deduplication, entity graphs, and aggregate views (e.g., &quot;every episode that mentions the LS engine&quot;).</p>
 <p>There is no required format, but a namespaced convention is recommended:</p>
 <ul>
 <li><code>car:chevrolet:camaro:1969</code></li>
 <li><code>person:carroll-shelby</code></li>
 <li><code>place:nurburgring</code></li>
 </ul>
-<p>A <code>canonicalId</code> is scoped to the producer&#39;s own corpus. It is a join key, so it MUST NOT change once assigned: renaming <code>person:carroll-shelby</code> to another form silently breaks every earlier file that used it. Because a producer mints the identifier, one always exists, at whatever granularity the producer needs, with no dependency on any external registry. Producers MAY use external identifiers such as Wikidata QIDs (e.g., <code>wikidata:Q354043</code>) as <code>canonicalId</code> values, but two producers who never coordinated cannot be expected to arrive at the same form. Cross-producer identity belongs in <code>sameAs</code>.</p>
-<h3 id="external-identity-sameas">External Identity: sameAs</h3>
-<p>The optional <code>sameAs</code> field asserts which entity in the wider world an annotation refers to. It adopts the semantics of <a href="https://schema.org/sameAs">Schema.org&#39;s <code>sameAs</code> property</a>: each entry is the URL of a reference page or concept URI that unambiguously identifies the same entity, such as the entity&#39;s Wikidata concept URI, Wikipedia page, or official website.</p>
-<pre><code class="language-json">{
-  &quot;startTime&quot;: 53.12,
-  &quot;endTime&quot;: 57.6,
-  &quot;type&quot;: &quot;car&quot;,
-  &quot;title&quot;: &quot;Honda Prelude&quot;,
-  &quot;canonicalId&quot;: &quot;car:honda:prelude&quot;,
-  &quot;sameAs&quot;: [&quot;https://www.wikidata.org/entity/Q830370&quot;]
-}
-</code></pre>
-<p>Rules:</p>
-<ul>
-<li><code>sameAs</code>, if provided, MUST be an array of absolute URLs.</li>
-<li>Each entry MUST identify the annotated entity itself. A page that merely discusses the entity, such as a news article, does not qualify.</li>
-<li>Where a <a href="https://www.wikidata.org/wiki/Wikidata:Identifiers">Wikidata</a> item exists at the granularity the producer intends, its concept URI is the RECOMMENDED first entry. Use the <code>https://www.wikidata.org/entity/Q830370</code> form, not the <code>/wiki/</code> page URL: the <code>/entity/</code> form is Wikidata&#39;s canonical, language-independent URI, and consumers compare <code>sameAs</code> values by exact string match.</li>
-<li>Consumers MAY treat annotations from different producers that share a <code>sameAs</code> URL as referring to the same entity. <code>sameAs</code> is the cross-producer complement to <code>canonicalId</code>: <code>canonicalId</code> joins entities within one producer&#39;s corpus, <code>sameAs</code> joins them across corpora.</li>
-</ul>
-<p>Wikidata is the recommended registry because it is open, language-independent, community-maintained rather than gatekept, and already functions as the hub that interlinks hundreds of external authority databases. Coverage of the head of most domains is strong, including at the generation level enthusiast conversation sometimes needs: this spec&#39;s own automotive example set resolves to items for its cars, people, and places (Honda Prelude <code>Q830370</code>, Carroll Shelby <code>Q354043</code>, the Nürburgring <code>Q152207</code>), and where an episode distinguishes a specific generation, items like BMW M5 (F90) <code>Q56316510</code> or Toyota Supra (A80) <code>Q2447212</code> exist alongside the nameplate items.</p>
-<p>Coverage is not total, which is why this spec keeps <code>sameAs</code> separate instead of recommending Wikidata QIDs as the default <code>canonicalId</code> form. Testing that same example set found no Wikidata item for FCP Euro, a parts retailer and podcast sponsor, and no entity matching &quot;solenoid handles&quot;, a colloquial name for electronic door-handle hardware. Podcast conversation is dense with exactly this mid-tail: sponsors, local businesses, niche products, shorthand terms. A producer can mint <code>company:fcp-euro</code> on the spot; no external registry can promise the same. Keeping the join key producer-scoped also keeps it stable. When Wikidata later gains an item, the producer adds a <code>sameAs</code> entry and every existing <code>canonicalId</code> keeps working:</p>
-<pre><code class="language-json">{
-  &quot;startTime&quot;: 760.6,
-  &quot;endTime&quot;: 773.0,
-  &quot;type&quot;: &quot;company&quot;,
-  &quot;title&quot;: &quot;FCP Euro&quot;,
-  &quot;canonicalId&quot;: &quot;company:fcp-euro&quot;,
-  &quot;sameAs&quot;: [&quot;https://fcpeuro.com&quot;]
-}
-</code></pre>
-<p>To find a QID in practice, search the entity name on <a href="https://www.wikidata.org">wikidata.org</a> or call the <a href="https://www.wikidata.org/w/api.php?action=help&modules=wbsearchentities"><code>wbsearchentities</code> API</a>; bulk pipelines can use the <a href="https://query.wikidata.org">SPARQL query service</a> or a reconciliation service. Search matches label and alias prefixes, so an entity can exist under a label the producer did not try (the GM LS engine, <code>Q724143</code>, does not surface for the query &quot;LS engine&quot;), and a name can surface unrelated items first (&quot;solenoid&quot; returns a novel before the electromechanical device). Producers SHOULD verify the item&#39;s description before asserting identity.</p>
-<p><em>Non-normative:</em> this field exists because the ask came from outside the project in exactly this shape. John Spurlock (OP3) on the value of open annotation data: &quot;it would be great if podcast publishers delineated mentioned entities using stable identifiers (useful across shows/episodes) with something agreed upon like wikidata ids.&quot; Nathan Gathright, arguing that most new podcast tags lose to client-side inference from transcripts, drew the exception this field lives in: &quot;Tags that express publisher intent, payments, identity, attribution, or canonical relationships still provide something apps shouldn&#39;t just guess.&quot; A <code>sameAs</code> assertion is publisher-stated identity, a canonical relationship a consumer cannot reliably infer from audio.</p>
+<p>A <code>canonicalId</code> is a join key: once assigned, it SHOULD NOT change, because renaming an identifier silently breaks every earlier file that used it. Because the producer mints the identifier, one always exists, at whatever granularity the producer needs, with no dependency on any external registry.</p>
+<h4 id="wikidata-qids">Wikidata QIDs</h4>
+<p>Producers MAY use external identifiers such as <a href="https://www.wikidata.org/wiki/Wikidata:Identifiers">Wikidata</a> QIDs as <code>canonicalId</code> values (e.g., <code>wikidata:Q354043</code> for Carroll Shelby, <code>wikidata:Q152207</code> for the Nürburgring). The namespaced convention above is scoped to the producer&#39;s own corpus; a QID adds a language-independent identity that uncoordinated producers can arrive at independently, so it is the stronger choice when annotations should join across shows and producers.</p>
+<p>Coverage is strong for well-known entities, including at the generation level enthusiast conversation sometimes needs: this spec&#39;s own automotive example set resolves to items for its cars, people, and places (Honda Prelude <code>Q830370</code>, Toyota Supra <code>Q647404</code>, Carroll Shelby <code>Q354043</code>), and where an episode distinguishes a specific generation, items like BMW M5 (F90) <code>Q56316510</code> or Toyota Supra (A80) <code>Q2447212</code> exist alongside the nameplate items. Coverage is not total: the same test found no item for FCP Euro, a parts retailer and podcast sponsor, and no entity matching &quot;solenoid handles&quot;, a colloquial name for electronic door-handle hardware. Podcast conversation is dense with exactly this mid-tail, so producers adopting QIDs still need the namespaced form as a fallback (<code>company:fcp-euro</code>), and per the stability rule above, an entity keyed with a namespaced identifier keeps it even if Wikidata later gains a matching item.</p>
+<p>To find a QID in practice, search the entity name on <a href="https://www.wikidata.org">wikidata.org</a> or call the <a href="https://www.wikidata.org/w/api.php?action=help&modules=wbsearchentities"><code>wbsearchentities</code> API</a>; bulk pipelines can use the <a href="https://query.wikidata.org">SPARQL query service</a> or a reconciliation service. Search matches label and alias prefixes, so an entity can exist under a label the producer did not try (the GM LS engine, <code>Q724143</code>, does not surface for the query &quot;LS engine&quot;), and a name can surface unrelated items first (&quot;solenoid&quot; returns a novel before the electromechanical device). Producers SHOULD verify an item&#39;s description before adopting it as an identifier.</p>
+<p><em>Non-normative:</em> the interest in shared identifiers comes from outside the project. John Spurlock (OP3): &quot;it would be great if podcast publishers delineated mentioned entities using stable identifiers (useful across shows/episodes) with something agreed upon like wikidata ids.&quot; Nathan Gathright, arguing that most new podcast tags lose to client-side inference from transcripts, drew an exception that covers this field: &quot;Tags that express publisher intent, payments, identity, attribution, or canonical relationships still provide something apps shouldn&#39;t just guess.&quot; A canonical identifier is publisher-stated identity, which a consumer cannot reliably infer from audio. A dedicated field for external identity assertions (Schema.org <code>sameAs</code> semantics) is under consideration for a future version.</p>
 <h3 id="participation">Participation</h3>
 <p><code>participation</code> records how a person figures in a single annotation: <code>&quot;guest&quot;</code> (present on the show), <code>&quot;host&quot;</code>, or <code>&quot;mentioned&quot;</code> (referenced but not present). Omission means unspecified, not <code>&quot;mentioned&quot;</code>. A producer who does not track participation, or an annotation written before the field existed, makes no claim either way, so consumers building guest graphs SHOULD treat only explicit values as signal.</p>
 <p>It is orthogonal to <code>speaker</code> and the <code>speakers</code> array: <code>speaker</code> says who is talking during the annotation, the <code>speakers</code> array assigns episode-level roles, and <code>participation</code> describes the annotated person&#39;s role at that one moment. With explicit values, a consumer can separate &quot;the guest was introduced here&quot; from &quot;the guest was named in passing&quot; without a second extraction pass. The same person can carry different <code>participation</code> values across an episode.</p>
@@ -1050,7 +1016,7 @@
 <td><code>version</code></td>
 <td><code>string</code></td>
 <td><strong>Yes</strong></td>
-<td>Spec version (semver, currently <code>&quot;1.2.0&quot;</code>)</td>
+<td>Spec version (semver, currently <code>&quot;1.1.0&quot;</code>)</td>
 </tr>
 <tr>
 <td><code>layer</code></td>
@@ -1162,7 +1128,7 @@
   &quot;annotations&quot;: [ ]
 }
 </code></pre>
-<p>This spec does not define merge semantics across layers. When a consumer combines layers, deduplication and conflict resolution are consumer-defined. <code>canonicalId</code> identifies the underlying entity, not the timeline occurrence (see <a href="#canonical-ids">Canonical IDs</a>), so it collapses cleanly in an <em>entity index</em> (&quot;which layers mention the LS engine&quot;). It is not sufficient on its own to dedupe <em>timeline annotations</em>: two layers may annotate the same entity at different moments, and those are distinct occurrences that should not merge. A consumer deduping annotations for a timeline SHOULD also require time-range overlap, treating same <code>canonicalId</code> plus overlapping <code>[startTime, endTime]</code> as the same occurrence. Layers from different producers rarely share <code>canonicalId</code> forms; when both assert a <code>sameAs</code> URL, consumers can join on that instead (see <a href="#external-identity-sameas">External Identity: sameAs</a>). In RSS, each layer is carried by its own <code>&lt;podcast:annotations&gt;</code> element, mirroring how a feed already lists multiple <code>&lt;podcast:transcript&gt;</code> resources (see <a href="#relationship-to-other-standards">Relationship to Other Standards</a>).</p>
+<p>This spec does not define merge semantics across layers. When a consumer combines layers, deduplication and conflict resolution are consumer-defined. <code>canonicalId</code> identifies the underlying entity, not the timeline occurrence (see <a href="#canonical-ids">Canonical IDs</a>), so it collapses cleanly in an <em>entity index</em> (&quot;which layers mention the LS engine&quot;). It is not sufficient on its own to dedupe <em>timeline annotations</em>: two layers may annotate the same entity at different moments, and those are distinct occurrences that should not merge. A consumer deduping annotations for a timeline SHOULD also require time-range overlap, treating same <code>canonicalId</code> plus overlapping <code>[startTime, endTime]</code> as the same occurrence. In RSS, each layer is carried by its own <code>&lt;podcast:annotations&gt;</code> element, mirroring how a feed already lists multiple <code>&lt;podcast:transcript&gt;</code> resources (see <a href="#relationship-to-other-standards">Relationship to Other Standards</a>).</p>
 <h2 id="transcripts">Transcripts</h2>
 <p>The <code>transcripts</code> array links to transcript files associated with the audio. Multiple formats can be provided.</p>
 <table>
@@ -1834,14 +1800,6 @@
 <td>May be represented via <code>creator</code> or external metadata in W3C systems</td>
 </tr>
 <tr>
-<td><code>canonicalId</code></td>
-<td>Not mapped (application-specific)</td>
-</tr>
-<tr>
-<td><code>sameAs</code></td>
-<td>Additional <code>body</code> with <code>purpose: &quot;identifying&quot;</code> pointing at the external entity URI</td>
-</tr>
-<tr>
 <td><code>participation</code></td>
 <td>Not mapped (application-specific)</td>
 </tr>
@@ -1882,17 +1840,12 @@
                      layer=&quot;community&quot; producer=&quot;acme-ai-enrichment&quot; title=&quot;Community&quot; /&gt;
 </code></pre>
 <p>See the <a href="https://podcastindex.org/namespace/1.0">Podcasting 2.0 namespace</a> for the proposal process.</p>
-<p>On the linked-data side, Schema.org&#39;s <code>PodcastEpisode</code> defines episode-level metadata for search engines, and a <code>PodcastEpisode</code> might link to an <code>.annotations.json</code> file via a custom property; the two operate at different granularities. The annotation <code>sameAs</code> field carries Schema.org&#39;s own reconciliation pattern down to the entity level: on a Schema.org <code>Thing</code>, <code>sameAs</code> holds the URL of a reference page that unambiguously identifies the item, such as its Wikipedia page or Wikidata entry, and this spec adopts the same name and semantics (see <a href="#external-identity-sameas">External Identity: sameAs</a>). Pointing an annotation at <code>https://www.wikidata.org/entity/Q5300</code> gives it a canonical, language-independent entity identity without adding any machinery to the core format. Richer ontologies, such as the BBC&#39;s Linked Data Platform, describe entities, creative works, web documents, products, and provenance; podcast annotations are compatible with that model but solve a different problem, saying when an entity or topic is relevant inside an audio timeline. Implementations that live in both worlds can store ontology identifiers in <code>sameAs</code>, <code>url</code>, <code>tags</code>, or <code>data</code> while keeping the core timing format simple.</p>
+<p>On the linked-data side, Schema.org&#39;s <code>PodcastEpisode</code> defines episode-level metadata for search engines, and a <code>PodcastEpisode</code> might link to an <code>.annotations.json</code> file via a custom property; the two operate at different granularities. Wikidata and DBpedia work well as targets for the <code>url</code> and <code>canonicalId</code> fields. Pointing an annotation at <code>https://www.wikidata.org/wiki/Q5300</code> gives it a canonical, language-independent entity identity without adding any machinery to the core format. Richer ontologies, such as the BBC&#39;s Linked Data Platform, describe entities, creative works, web documents, products, and provenance; podcast annotations are compatible with that model but solve a different problem, saying when an entity or topic is relevant inside an audio timeline. Implementations that live in both worlds can store ontology identifiers in <code>canonicalId</code>, <code>url</code>, <code>tags</code>, or <code>data</code> while keeping the core timing format simple.</p>
 <h2 id="reference-implementation">Reference Implementation</h2>
 <p><a href="https://github.com/carcurious/podcast-annotations-js">podcast-annotations</a> is a framework-agnostic JavaScript library for rendering podcast annotations with audio players. It supports annotation overlays, transcript sync, timelines, chapters, and DAI alignment.</p>
 <p>This format was developed by <a href="https://getcarcurious.com">Car Curious</a>, a podcast annotation platform for automotive content, and is released as an open specification for the broader podcast ecosystem.</p>
 <h2 id="changelog">Changelog</h2>
 <p>This changelog tracks the <strong>specification</strong> version (the number in the <code>**Version**</code> header and the annotation set <code>version</code> field), which is independent of the reference implementation&#39;s npm package version. The spec uses semantic versioning: additive, backward-compatible changes bump the minor version; breaking changes bump the major version.</p>
-<h3 id="120">1.2.0</h3>
-<ul>
-<li><strong>Added <code>sameAs</code></strong> annotation field: an array of URLs asserting the entity&#39;s identity in external registries, adopting <a href="https://schema.org/sameAs">Schema.org <code>sameAs</code></a> semantics. Wikidata concept URIs (<code>https://www.wikidata.org/entity/Q830370</code>) are the recommended first entry where an item exists at the intended granularity. <code>canonicalId</code> stays the producer-scoped join key that always exists; <code>sameAs</code> is the cross-producer bridge (see <a href="#external-identity-sameas">External Identity: sameAs</a>).</li>
-<li>Examples updated with verified Wikidata QIDs for entities that have them, and producer-minted <code>canonicalId</code> values where Wikidata has no item (FCP Euro, &quot;solenoid handles&quot;).</li>
-</ul>
 <h3 id="110">1.1.0</h3>
 <ul>
 <li><strong>Added <code>layer</code> and <code>producer</code></strong> container fields so multiple producers can annotate the same audio as independent <a href="#layers">layers</a>, with a stable-and-unique <code>(producer, layer)</code> identity rule for diff and replacement.</li>
@@ -1912,7 +1865,7 @@
     </section>
 
     <footer>
-      Version 1.2.0. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated 2026-07-03. <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.
+      Version 1.1.0. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated 2026-07-03. <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.
     </footer>
   </div>
 

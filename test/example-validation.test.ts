@@ -14,7 +14,7 @@ const exampleFiles = readdirSync(examplesDir)
 
 describe.each(exampleFiles)('Example: $name', ({ data }) => {
   it('has valid top-level structure', () => {
-    expect(data.version).toBe('1.2.0')
+    expect(data.version).toBe('1.1.0')
     expect(data.episode).toBeDefined()
     expect(data.episode!.title).toBeTruthy()
     expect(data.annotations).toBeInstanceOf(Array)
@@ -42,16 +42,6 @@ describe.each(exampleFiles)('Example: $name', ({ data }) => {
     for (const a of data.annotations) {
       expect(a.type).toBeTruthy()
       expect(a.title).toBeTruthy()
-    }
-  })
-
-  it('sameAs entries are absolute URLs', () => {
-    for (const a of data.annotations) {
-      if (!a.sameAs) continue
-      expect(a.sameAs).toBeInstanceOf(Array)
-      for (const entry of a.sameAs) {
-        expect(() => new URL(entry)).not.toThrow()
-      }
     }
   })
 

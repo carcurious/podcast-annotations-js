@@ -10,7 +10,7 @@ const exampleData: AnnotationSet = JSON.parse(readFileSync(examplePath, 'utf-8')
 
 describe('Real annotation set (Everyday Driver ep 1013)', () => {
   it('has valid top-level structure', () => {
-    expect(exampleData.version).toBe('1.2.0')
+    expect(exampleData.version).toBe('1.1.0')
     expect(exampleData.episode).toBeDefined()
     expect(exampleData.episode!.title).toBeTruthy()
     expect(exampleData.episode!.audioUrl).toMatch(/^https:\/\//)

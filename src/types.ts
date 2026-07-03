@@ -86,13 +86,8 @@ export interface Annotation {
   tags?: string[]
   /** Editorial importance from 0.0 to 1.0. */
   priority?: number
-  /** Stable entity identifier for cross-episode deduplication. Producer-scoped join key. */
+  /** Stable entity identifier for cross-episode deduplication. */
   canonicalId?: string
-  /**
-   * URLs identifying the same entity in external registries (Schema.org sameAs semantics).
-   * Wikidata concept URIs (https://www.wikidata.org/entity/Q...) recommended where an item exists.
-   */
-  sameAs?: string[]
   /** Confidence score from 0.0 to 1.0. */
   confidence?: number
   /** How the annotation was produced (e.g., "human", "ai", "hybrid"). */
