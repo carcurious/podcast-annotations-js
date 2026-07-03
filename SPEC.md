@@ -152,7 +152,7 @@ There is no required format, but a namespaced convention is recommended:
 - `person:carroll-shelby`
 - `place:nurburgring`
 
-Producers MAY also use external identifiers such as Wikidata QIDs (e.g., `wikidata:Q332448`).
+Producers MAY also use external identifiers such as [Wikidata](https://www.wikidata.org/wiki/Wikidata:Identifiers) QIDs (e.g., `wikidata:Q354043` for Carroll Shelby). A QID is language-independent and lets producers who never coordinated arrive at the same identifier, which makes it the stronger choice when annotations should join across shows. Wikidata has no item for everything a podcast mentions: this spec's own example set resolves its cars, people, and places, while FCP Euro and "solenoid handles" have none, so the namespaced form covers what the registry does not. An assigned `canonicalId` SHOULD NOT change: renaming an identifier breaks every earlier file that used it.
 
 ### Participation
 
