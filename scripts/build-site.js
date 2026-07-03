@@ -323,21 +323,11 @@ const html = `<!DOCTYPE html>
       border-bottom: 1px solid var(--border);
     }
     .topbar strong {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
       font-family: var(--mono);
       font-weight: 500;
       font-size: 0.78rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-    }
-    .topbar strong::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 1px;
-      background: var(--accent);
     }
     .topbar nav {
       display: flex;
@@ -385,15 +375,12 @@ const html = `<!DOCTYPE html>
       font-weight: 600;
       font-size: 1.05rem;
       color: var(--text);
-      text-decoration: none;
-      border-bottom: 3px solid var(--accent);
-      padding-bottom: 2px;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-decoration-color: var(--text);
+      text-underline-offset: 5px;
     }
-    .cta-spec::after {
-      content: " \\2193";
-      color: var(--accent);
-    }
-    .cta-spec:hover { color: var(--accent); text-decoration: none; }
+    .cta-spec:hover { color: var(--accent); text-decoration-color: var(--accent); }
     .section {
       margin-bottom: 40px;
     }
@@ -597,22 +584,13 @@ const html = `<!DOCTYPE html>
       font-size: 0.82rem;
     }
     .demo-type {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
+      display: inline-block;
       font-family: var(--mono);
       font-size: 0.74rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--muted);
       margin-bottom: 12px;
-    }
-    .demo-type::before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      border-radius: 1px;
-      background: var(--accent);
     }
     .demo-copy h3 {
       font-family: var(--serif);
@@ -636,10 +614,14 @@ const html = `<!DOCTYPE html>
     }
     .demo-payload summary {
       cursor: pointer;
-      color: var(--accent);
+      color: var(--text);
       font-weight: 500;
+      text-decoration: underline;
+      text-decoration-color: var(--border-strong);
+      text-underline-offset: 2px;
       margin-bottom: 8px;
     }
+    .demo-payload summary:hover { color: var(--accent); text-decoration-color: var(--accent); }
     .demo-payload pre {
       font-size: 0.82rem;
       max-height: 260px;
@@ -686,19 +668,9 @@ const html = `<!DOCTYPE html>
       background: var(--surface-muted);
     }
     .spec-wrap {
-      position: relative;
       margin-top: 48px;
       padding-top: 36px;
       border-top: 1px solid var(--border-strong);
-    }
-    .spec-wrap::before {
-      content: "";
-      position: absolute;
-      top: -2px;
-      left: 0;
-      width: 40px;
-      height: 4px;
-      background: var(--accent);
     }
     #spec {
       max-width: var(--max-spec);
