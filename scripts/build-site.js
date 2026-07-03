@@ -2,6 +2,39 @@ import { execSync } from 'child_process'
 import { readFileSync, readdirSync, writeFileSync } from 'fs'
 import { marked } from 'marked'
 
+const slugCounts = new Map()
+
+function getPlainText(tokens) {
+  if (!tokens) return ''
+  return tokens.map(t => t.tokens ? getPlainText(t.tokens) : (t.text || '')).join('')
+}
+
+marked.use({
+  renderer: {
+    heading(token) {
+      const text = this.parser.parseInline(token.tokens)
+      const plainText = getPlainText(token.tokens)
+      let slug = plainText
+        .toLowerCase()
+        .replace(/<[^>]+>/g, '')
+        .replace(/[^\p{L}\p{M}\p{N}\p{Pc}\p{Pd}\s]/gu, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '')
+
+      if (slugCounts.has(slug)) {
+        const count = slugCounts.get(slug)
+        slugCounts.set(slug, count + 1)
+        slug = `${slug}-${count}`
+      } else {
+        slugCounts.set(slug, 1)
+      }
+
+      return `<h${token.depth} id="${slug}">${text}</h${token.depth}>\n`
+    }
+  }
+})
+
 const spec = readFileSync('SPEC.md', 'utf-8')
 const body = marked.parse(spec)
 const specVersion = spec.match(/\*\*Version ([^*]+)\*\*/)?.[1] ?? '1.1.0'
