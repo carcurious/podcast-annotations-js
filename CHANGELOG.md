@@ -3,7 +3,7 @@
 ## 0.9.2 (2026-07-03)
 
 ### Added
-- Non-normative **Wikidata QID guidance** in `SPEC.md`'s Canonical IDs section: a QID lets uncoordinated producers arrive at the same identifier, so it is the stronger `canonicalId` choice for cross-show joins; coverage was live-tested against the Everyday Driver example set (10 of 12 entities resolve, FCP Euro and "solenoid handles" do not, so the namespaced form stays the fallback); and an assigned `canonicalId` SHOULD NOT change. Motivated by John Spurlock's ask for publisher-delineated entities with agreed-upon stable identifiers such as Wikidata IDs. No data-model change; spec version remains `1.1.0`.
+- Non-normative **Wikidata QID guidance** in `SPEC.md`'s Canonical IDs section: a QID lets uncoordinated producers arrive at the same identifier, so it is the stronger `canonicalId` choice for cross-show joins; coverage was live-tested against the Everyday Driver example set (10 of 12 entities resolve, FCP Euro and "solenoid handles" do not, so the namespaced form covers what the registry does not); and an assigned `canonicalId` SHOULD NOT change. Motivated by John Spurlock's ask for publisher-delineated entities with agreed-upon stable identifiers such as Wikidata IDs. No data-model change; spec version remains `1.1.0`.
 
 ## 0.9.1 (2026-07-02)
 
