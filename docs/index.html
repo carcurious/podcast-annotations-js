@@ -9,6 +9,14 @@
   <meta property="og:description" content="Timestamped entity and topic references for podcast audio, anchored to the seconds where they are actually discussed.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.podcastannotation.org">
+  <meta property="og:image" content="https://www.podcastannotation.org/og-image.png">
+  <meta property="og:image:width" content="2400">
+  <meta property="og:image:height" content="1260">
+  <meta property="og:image:alt" content="Podcast Annotation Format: timestamped context for podcast audio, with a minimal annotation JSON example.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Podcast Annotation Format">
+  <meta name="twitter:description" content="Timestamped entity and topic references for podcast audio, anchored to the seconds where they are actually discussed.">
+  <meta name="twitter:image" content="https://www.podcastannotation.org/og-image.png">
   <link rel="canonical" href="https://www.podcastannotation.org">
   <style>
     @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/fraunces-400.woff2") format("woff2"); }
@@ -143,32 +151,23 @@
       max-width: 64ch;
       font-size: 1rem;
     }
-    .intro-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 18px;
+    .intro-cta {
+      margin-top: 24px;
     }
-    .button-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 40px;
-      padding: 0 16px;
-      border-radius: 4px;
-      border: 1px solid var(--text);
-      background: transparent;
+    .cta-spec {
+      display: inline-block;
+      font-weight: 600;
+      font-size: 1.05rem;
       color: var(--text);
-      font-weight: 500;
       text-decoration: none;
+      border-bottom: 3px solid var(--accent);
+      padding-bottom: 2px;
     }
-    .button-link:hover { text-decoration: none; background: var(--surface-muted); }
-    .button-link.primary {
-      background: var(--text);
-      border-color: var(--text);
-      color: var(--bg);
+    .cta-spec::after {
+      content: " \2193";
+      color: var(--accent);
     }
-    .button-link.primary:hover { background: #000; }
+    .cta-spec:hover { color: var(--accent); text-decoration: none; }
     .section {
       margin-bottom: 40px;
     }
@@ -186,70 +185,48 @@
       color: var(--text);
       margin: 0 0 26px;
     }
-    .spec-meta {
-      display: inline-flex;
-      flex-wrap: wrap;
-      align-items: stretch;
-      margin: 24px 0 0;
+    .spec-facts {
+      margin: 30px 0 0;
+      max-width: 420px;
+      border-top: 1px solid var(--border-strong);
+    }
+    .spec-facts > div {
+      display: grid;
+      grid-template-columns: 104px minmax(0, 1fr);
+      gap: 14px;
+      align-items: baseline;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .spec-facts dt {
       font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--muted);
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      overflow: hidden;
     }
-    .spec-meta > span {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 13px;
-      border-right: 1px solid var(--border);
+    .spec-facts dd {
+      margin: 0;
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
     }
-    .spec-meta > span:last-child { border-right: 0; }
-    .spec-meta .spec-meta-status { color: var(--text); }
-    .rec-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent);
-      margin-right: 8px;
-    }
-    @media (prefers-reduced-motion: no-preference) {
-      .rec-dot { animation: recpulse 2.6s ease-in-out infinite; }
-    }
-    @keyframes recpulse {
-      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(229, 52, 31, 0.35); }
-      50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(229, 52, 31, 0); }
-    }
-    .code-card {
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      overflow: hidden;
-      background: var(--code-bg);
-    }
-    .code-card-tab {
-      display: flex;
-      align-items: center;
-      padding: 9px 14px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
+    .spec-facts dd.mono {
       font-family: var(--mono);
-      font-size: 0.74rem;
+      font-size: 0.8rem;
+    }
+    .code-figure {
+      margin: 0;
+    }
+    .code-figure figcaption {
+      margin-top: 10px;
       color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
     }
-    .code-card-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--border-strong);
-      box-shadow: 13px 0 0 var(--border-strong), 26px 0 0 var(--border-strong);
-      margin-right: 34px;
-    }
-    .code-card pre {
-      border: 0;
-      border-radius: 0;
+    .code-figure figcaption code {
       background: transparent;
+      padding: 0;
     }
     .field-note {
       grid-column: 1 / -1;
@@ -608,26 +585,23 @@
       <div>
         <h1>Timestamped context for podcast audio.</h1>
         <p class="lede">A podcast annotation marks a moment in an episode: a car at 24:33, a person at 47:26, a place at 1:12:29. It names the entity or topic, when it appears, and the context needed to make sense of it.</p>
-        <div class="intro-actions">
-          <a class="button-link primary" href="#spec">Read the spec</a>
-          <a class="button-link" href="https://github.com/carcurious/podcast-annotations-js">View on GitHub</a>
-        </div>
-        <div class="spec-meta">
-          <span class="spec-meta-status"><span class="rec-dot"></span>Stable</span>
-          <span>v1.1.0</span>
-          <span>CC BY 4.0</span>
-          <span>Updated 2026-07-03</span>
-        </div>
+        <p class="intro-cta"><a class="cta-spec" href="#spec">Read the specification</a></p>
+        <dl class="spec-facts">
+          <div><dt>This version</dt><dd>1.1.0 (stable)</dd></div>
+          <div><dt>Last updated</dt><dd>2026-07-03</dd></div>
+          <div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></dd></div>
+          <div><dt>Source</dt><dd class="mono"><a href="https://github.com/carcurious/podcast-annotations-js">carcurious/podcast-annotations-js</a></dd></div>
+        </dl>
       </div>
-      <div class="code-card">
-        <div class="code-card-tab"><span class="code-card-dot"></span>bmw-m5.annotation.json</div>
+      <figure class="code-figure">
         <pre><code>{
   "startTime": 1473.36,
   "endTime": 1477.68,
   "type": "car",
   "title": "BMW M5"
 }</code></pre>
-      </div>
+        <figcaption>A complete annotation as published: this one marks 24:33 to 24:37 in a real episode.</figcaption>
+      </figure>
       <p class="field-note">Each annotation starts with <code>startTime</code> and <code>endTime</code>. Add optional fields like <code>type</code>, <code>title</code>, <code>url</code>, <code>quote</code>, and <code>data</code> when a player, search index, archive, or show-notes workflow needs more context.</p>
     </section>
 
