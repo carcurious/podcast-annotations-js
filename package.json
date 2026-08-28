@@ -1,6 +1,6 @@
 {
   "name": "podcast-annotations",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Timed annotation overlays, live transcript sync, chapter sync, and annotation timelines for audio players",
   "type": "module",
   "main": "dist/index.js",
