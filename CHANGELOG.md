@@ -10,6 +10,7 @@
 - **Spec version bumped to `1.2.0`** for the additive `explanation` field. `examples/`, generated `docs/`, and tests updated to `1.2.0`. Existing `1.1.0` files remain valid.
 - `SPEC.md`: new "The `explanation` Field" section (length and plain-text guidance, entity-not-moment scoping, and the rule that reading-level variants and translations stay in `data`), a validation rule, and a W3C Web Annotation mapping row.
 - `SPEC.md`: new [Digest Rendering](SPEC.md#digest-rendering) section covering per-mention to per-entity collapse, which member supplies the text and image, deep-linking to the first mention, and how digest grouping differs from cross-layer dedupe (which also requires time-range overlap).
+- `SPEC.md` Prior Art & Inspiration: added YouTube's automatic concepts, the first machine-generated annotation layer cited in the section (entities inferred from the content rather than authored by the creator, surfaced as images and short text snippets on the watch page and written into the video description). It is the precedent for `confidence`, `source`, and independent layers: creators disable the feature when the inferences are wrong, and YouTube ships a per-video toggle for it.
 - `examples/everyday-driver-episode-1013.annotations.json`: 24 annotations move `explanation` out of `data` to the top level. `data.simplifiedExplanation` stays where it is, as a producer extension.
 
 ## 0.9.1 (2026-07-02)
