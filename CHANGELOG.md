@@ -3,15 +3,15 @@
 ## 0.10.0 (2026-09-05)
 
 ### Added
-- **`Annotation.explanation`.** A first-class optional field for the short plain-text description of an entity, for display alongside the annotation. Producers already wrote this text and had nowhere interoperable to put it: the automotive example in `SPEC.md` and `examples/everyday-driver-episode-1013.annotations.json` both carried it as `data.explanation`, where no consumer could rely on it. X-Ray's blurb, Genius's annotation body, and YouTube's automatic-concept snippets all deliver the same thing. Without it, a consumer holds a label and a link, and has to send the listener off-platform to learn what was meant.
-- **`groupByEntity(annotations, options?)`.** Collapses per-mention annotations into one entry per entity for digest views (show notes, episode pages). Groups by `canonicalId`, falling back to `type` plus normalized `title`; display fields come from the highest-`priority` member with a first-non-empty fallback, `startTime` is the earliest mention, and `sortBy: 'mentions'` orders by group size. Exported alongside the `EntityGroup` and `GroupByEntityOptions` types.
+- **`Annotation.explanation`.** Short plain-text description of the entity, for display alongside the annotation. Producers already wrote this text with nowhere interoperable to put it: the automotive example in `SPEC.md` and 24 annotations in `examples/everyday-driver-episode-1013.annotations.json` carried it as `data.explanation`, where no consumer could rely on it. Reading-level variants, translations, and long bodies stay in `data`.
+- **`groupByEntity(annotations, options?)`.** Collapses annotations into one entry per entity for digest views. Groups by `canonicalId`, falling back to `type` plus normalized `title`; display fields come from the highest-`priority` member with a first-non-empty fallback, `startTime` is the earliest mention, and `sortBy: 'mentions'` orders by group size. Exported with the `EntityGroup` and `GroupByEntityOptions` types.
 
 ### Changed
-- **Bumped the spec version to `1.2.0`** for the additive `explanation` field. `examples/`, generated `docs/`, and tests updated to `1.2.0`. Existing `1.1.0` files remain valid.
-- `SPEC.md`: new "The `explanation` Field" section (length and plain-text guidance, entity-not-moment scoping, and the rule that reading-level variants and translations stay in `data`), a validation rule, and a W3C Web Annotation mapping row.
-- `SPEC.md`: new [Digest Rendering](SPEC.md#digest-rendering) section covering per-mention to per-entity collapse, which member supplies the text and image, deep-linking to the first mention, and how digest grouping differs from cross-layer dedupe (which also requires time-range overlap).
-- `SPEC.md` Prior Art & Inspiration: added YouTube's automatic concepts, the first machine-generated layer the section cites. A pipeline picks the entities out of the video and the creator writes none of them, which is the case for carrying provenance: creators turn the feature off when a definition is wrong, and YouTube ships a per-video toggle so they can.
-- `examples/everyday-driver-episode-1013.annotations.json`: 24 annotations move `explanation` out of `data` to the top level. `data.simplifiedExplanation` stays where it is, as a producer extension.
+- **Bumped the spec version to `1.2.0`** for the additive `explanation` field. `examples/`, generated `docs/`, and tests updated. Existing `1.1.0` files remain valid.
+- `SPEC.md`: new "The `explanation` Field" section, a validation rule, and a W3C Web Annotation mapping row.
+- `SPEC.md`: new [Digest Rendering](SPEC.md#digest-rendering) section on collapsing per-mention annotations into a per-entity list, and how that differs from cross-layer dedupe.
+- `SPEC.md` Prior Art & Inspiration: added YouTube's automatic concepts, the first machine-generated layer the section cites, and the case for carrying provenance.
+- `examples/everyday-driver-episode-1013.annotations.json`: `explanation` moves out of `data` to the top level. `data.simplifiedExplanation` stays put, as a producer extension.
 
 ## 0.9.1 (2026-07-02)
 

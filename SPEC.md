@@ -29,7 +29,7 @@ Two fields are required, `startTime` and `endTime`. Everything else is optional,
 
 Timed context on media has a long track record; podcasting has transcripts, chapters, and show notes, but no compact file for within-episode references. VH1's *Pop-Up Video* was overlaying timestamped trivia on music videos in the late 1990s. Amazon's X-Ray on Prime Video does the same job today, syncing cast, characters, and trivia to the current scene, and it is the closest thing this spec has to a canonical reference. Amazon has never published X-Ray's underlying data model, which is part of why writing this one down in the open is worth doing. On the audio side, SoundCloud's timed comments were among the earliest mainstream timestamped annotations on sound: listeners drop a comment at any `t=` position in a track, and they use the feature heavily enough to show that people will engage with audio at the level of a single moment.
 
-Three products outside podcasting show the pattern holding up at scale. Genius built a community annotation layer on song lyrics and turned entity-level annotation on media content into a durable product; structurally it is the closest analog to this format, an annotation body attached to an anchor in the media, with a URL for more context. YouTube's automatic concepts identifies key concepts in educational videos and surfaces "images and short text snippets" about them on the watch page, and it is the one *machine-generated* layer cited here: a pipeline picks the entities out of the content, and the creator never writes them. That difference is why this format carries provenance. A creator who reads a wrong definition on their own video wants it gone, and YouTube gives them a per-video toggle to remove it, so a listener meeting the same annotation in a player needs `confidence`, `source`, and [layers](#layers) to tell whose claim it is. The BBC's public Linked Data ontologies approach the problem from the graph side, modeling "Things" (people, places, organisations, themes, programmes, web documents) so content can be connected through shared topics. Podcast annotations address a smaller layer: when one of those things becomes relevant inside an audio episode.
+Three products outside podcasting show the pattern holding up at scale. Genius built a community annotation layer on song lyrics and turned entity-level annotation on media content into a durable product; structurally it is the closest analog to this format, an annotation body attached to an anchor in the media, with a URL for more context. YouTube's automatic concepts identifies key concepts in educational videos and surfaces "images and short text snippets" about them on the watch page. It is the one *machine-generated* layer cited here, inferred by a pipeline rather than written by the creator, and a creator who finds a wrong definition on their own video can switch the feature off. A listener meeting that annotation inside a player has no such switch, which is the job of `confidence`, `source`, and [layers](#layers). The BBC's public Linked Data ontologies approach the problem from the graph side, modeling "Things" (people, places, organisations, themes, programmes, web documents) so content can be connected through shared topics. Podcast annotations address a smaller layer: when one of those things becomes relevant inside an audio episode.
 
 Podcasting itself supplies the rest of the precedent. Chapters (Podcasting 2.0, Podlove, MP4) are coarse timestamped metadata that podcast apps already implement, which is evidence the ecosystem adopts spec extensions when they improve listening. Overcast has shipped structured-metadata features for years (Smart Speed, chapters, transcript sync), and Marco Arment's public discussion of synchronizing transcripts across dynamic ad insertion informed this spec's approach to ad break alignment. Snipd lets listeners highlight and annotate moments for personal note-taking, so listener-side annotation on podcast audio is already in production; this spec makes the same capability an open, shared layer instead of a closed personal tool. Most recently, [Apple Podcasts Timed Links](https://podcasters.apple.com/support/5536-links-on-apple-podcasts) (iOS 26.2, Nov 2025) render creator-authored timed links as banners on the Now Playing screen, inline in the transcript, and in a "From This Episode" section. At the scale of Apple's own listener base, that confirms a moment inside an episode deserves its own addressable UI, not just the episode as a whole. The feature is far narrower than this spec, with link destinations limited to Apple's own ecosystem and other podcasts, and no typed entities, canonical IDs, or layers; see [Relationship to Other Standards](#relationship-to-other-standards).
 
@@ -109,18 +109,13 @@ An annotation MAY set `endTime` equal to `startTime` to mark a point in time rat
 
 ### The `explanation` Field
 
-`title` names an entity; `explanation` says what it is. It carries a short plain-text description written for a listener who does not already know the term, so a consumer can render something useful at the moment of the mention without following `url` off-platform.
+`title` names an entity; `explanation` says what it is, in short plain text, for a listener who does not know the term. Without it a consumer holds a label and a link, and has to send the listener off-platform to find out what was meant. Every system in [Prior Art](#prior-art--inspiration) ships this text in some form.
 
-Amazon's X-Ray shows a blurb next to a cast member, Genius's annotation body *is* the explanation, and YouTube's automatic concepts surface "images and short text snippets" for unfamiliar terms on the watch page. A consumer holding only a label and a link has to send the listener off-platform to find out what was meant, which is what annotating the moment was supposed to avoid.
+Keep it to one or two sentences, 300 characters or fewer. It renders in an overlay or a narrow panel while the audio plays, and a reader sees it on its own with no surrounding sentence to lean on. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support, matching `episode.description`.
 
-Guidance:
+Describe the entity, not the moment. `quote` already carries what was said, and an explanation written about the entity stays reusable across every episode that mentions it.
 
-- Keep it short. It renders in an overlay or a narrow panel while the audio keeps playing. One or two sentences, 300 characters or fewer, is the target.
-- Plain text. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support, matching `episode.description`.
-- Describe the entity, not the moment. `quote` already carries what was said; `explanation` should stay reusable across every episode that mentions the same entity.
-- Self-contained. A reader sees the explanation on its own, with no surrounding sentence to lean on.
-
-Variants belong in `data`. A producer offering a simplified reading-level version, a translation, or a longer article body SHOULD keep `explanation` as the default rendering and put the alternates in `data` (for example `data.simplifiedExplanation`), so a consumer that knows nothing about the extension still displays something sensible.
+A producer with a simplified reading-level version, a translation, or a longer article body SHOULD keep `explanation` as the default rendering and put the alternates in `data` (`data.simplifiedExplanation`, say), so a consumer that knows nothing about the extension still shows something sensible.
 
 ### The `data` Field
 
@@ -174,15 +169,15 @@ Producers MAY also use external identifiers such as Wikidata QIDs (e.g., `wikida
 
 ### Digest Rendering
 
-Annotations are **per-mention**; a digest view is **per-entity**. An episode that discusses the 2JZ engine nine times carries nine annotations, but a show-notes list, an episode page, or a "From This Episode" panel should show it once. Platforms shipping timed context render both surfaces: YouTube writes its automatic concepts into the video description as well as the watch page, and Apple Podcasts renders timed links as Now Playing banners and in a per-episode list.
+Annotations are **per-mention**; a digest view is **per-entity**. An episode that discusses the 2JZ engine nine times carries nine annotations, but a show-notes list or an episode page should show it once. YouTube and Apple Podcasts both render their timed context twice this way, once during playback and once as a per-episode list.
 
-Consumers building a digest SHOULD group annotations by `canonicalId`, falling back to `type` plus normalized `title` for annotations that carry no canonical ID, and render one entry per group:
+Consumers building a digest SHOULD group annotations by `canonicalId`, falling back to `type` plus normalized `title` when no canonical ID is present, and render one entry per group:
 
-- **Text and image:** take them from the highest-`priority` member of the group, breaking ties on `confidence` and then on earliest `startTime`. Fall back to the first member that has a non-empty value for a given field, since a producer may only fill `explanation` or `image` on the first mention.
-- **Deep link:** use the earliest `startTime` in the group, so a listener lands where the subject first comes up.
-- **Ordering:** by first mention for a walkthrough of the episode, or by group size for a "most discussed" view.
+- **Text and image:** take them from the highest-`priority` member, breaking ties on `confidence` and then earliest `startTime`. Fall back to the first member with a non-empty value, since a producer may fill `explanation` or `image` only on the first mention.
+- **Deep link:** use the earliest `startTime`, so a listener lands where the subject first comes up.
+- **Ordering:** by first mention, or by group size for a "most discussed" view.
 
-Grouping for a digest is weaker than cross-layer deduplication, which requires `canonicalId` **and** time-range overlap (see [Layers](#layers)). A digest collapses distinct occurrences on purpose; a dedupe must not.
+Grouping for a digest is weaker than cross-layer deduplication, which also requires time-range overlap (see [Layers](#layers)). A digest collapses distinct occurrences on purpose; a dedupe must not.
 
 ### Participation
 
