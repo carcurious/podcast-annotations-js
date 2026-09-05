@@ -18,6 +18,7 @@ All synced to playback. Framework-agnostic vanilla JavaScript with zero dependen
 - **Transcript Sync**: Highlight the active transcript segment with auto-scroll and user-interrupt detection
 - **Annotation Timeline**: Visual markers showing where annotations appear, with a playhead and click-to-seek
 - **Chapter Sync**: Track Podcasting 2.0 JSON chapters with audio, render a clickable chapter list, and fire change events
+- **Entity Digest**: Collapse per-mention annotations into one entry per entity for show notes and episode pages
 - **DAI Alignment**: Remap canonical transcripts to variant audio with dynamic ad insertion, with gap-aware sync that pauses during ad breaks
 
 Each module works independently. Use one, a few, or all of them.
@@ -272,6 +273,28 @@ interface AlignmentGap {
   position?: string          // "pre-roll", "mid-roll", or "post-roll"
 }
 ```
+
+### `groupByEntity(annotations, options?)`
+
+Collapses annotations into one entry per entity, for show notes, episode pages, and other digest views. An episode that returns to the same subject five times carries five annotations and should list it once.
+
+```js
+import { groupByEntity } from 'podcast-annotations'
+
+const groups = groupByEntity(annotations)
+
+document.querySelector('#show-notes').innerHTML = groups
+  .map(g => `<li><a href="#t=${g.startTime}">${g.title}</a> (${g.mentions}) — ${g.explanation ?? ''}</li>`)
+  .join('')
+```
+
+Groups by `canonicalId`, falling back to `type` plus normalized `title`. Display fields come from the highest-`priority` member (ties broken on `confidence`, then earliest `startTime`), falling back to the first member that carries a value, since producers often fill `explanation` or `image` only on the first mention.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `sortBy` | `'time' \| 'mentions'` | `'time'` | Order groups by first mention, or by group size |
+
+**Group fields:** `key`, `canonicalId`, `type`, `title`, `explanation`, `url`, `image`, `startTime` (earliest mention), `mentions` (count), `representative` (the annotation display fields came from), `annotations` (all members, in input order)
 
 ### Timing utilities
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.0 (2026-09-05)
+
+### Added
+- **`Annotation.explanation`.** Short plain-text description of the entity, for display alongside the annotation. Producers already wrote this text with nowhere interoperable to put it: the automotive example in `SPEC.md` and 24 annotations in `examples/everyday-driver-episode-1013.annotations.json` carried it as `data.explanation`, where no consumer could rely on it. Reading-level variants, translations, and long bodies stay in `data`.
+- **`groupByEntity(annotations, options?)`.** Collapses annotations into one entry per entity for digest views. Groups by `canonicalId`, falling back to `type` plus normalized `title`; display fields come from the highest-`priority` member with a first-non-empty fallback, `startTime` is the earliest mention, and `sortBy: 'mentions'` orders by group size. Exported with the `EntityGroup` and `GroupByEntityOptions` types.
+
+### Changed
+- **Bumped the spec version to `1.2.0`** for the additive `explanation` field. `examples/`, generated `docs/`, and tests updated. Existing `1.1.0` files remain valid.
+- `SPEC.md`: new "The `explanation` Field" section, a validation rule, and a W3C Web Annotation mapping row.
+- `SPEC.md`: new [Digest Rendering](SPEC.md#digest-rendering) section on collapsing per-mention annotations into a per-entity list, and how that differs from cross-layer dedupe.
+- `SPEC.md` Prior Art & Inspiration: added YouTube's automatic concepts, the first machine-generated layer the section cites, and the case for carrying provenance.
+- `examples/everyday-driver-episode-1013.annotations.json`: `explanation` moves out of `data` to the top level. `data.simplifiedExplanation` stays put, as a producer extension.
+
 ## 0.9.1 (2026-07-02)
 
 ### Added

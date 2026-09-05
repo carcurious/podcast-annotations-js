@@ -68,6 +68,8 @@ export interface Annotation {
   type?: string
   /** Human-readable display label. */
   title?: string
+  /** Short plain-text explanation of the entity, for display alongside the annotation. */
+  explanation?: string
   /** URL to more information about the entity. */
   url?: string
   /** URL to an image representing the entity. */

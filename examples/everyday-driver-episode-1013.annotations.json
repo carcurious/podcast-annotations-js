@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "episode": {
     "title": "Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013",
     "url": "https://getcarcurious.com/episodes/cars-that-need-a-comeback-a-m-the-fourth-car-minivan-peer-pressure-episode-1-013",
@@ -33,9 +33,9 @@
       "endTime": 85.44,
       "type": "car",
       "title": "Tesla Model Y",
+      "explanation": "The Tesla Model Y is an all-electric compact SUV that shares a platform with the Model 3 sedan. It offers impressive range, performance, and advanced technology features, making it a popular choice in the electric vehicle market.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Tesla_Model_Y_%282025%29_MYLE_Festival_2025_DSC_9565.jpg/1200px-Tesla_Model_Y_%282025%29_MYLE_Festival_2025_DSC_9565.jpg",
       "data": {
-        "explanation": "The Tesla Model Y is an all-electric compact SUV that shares a platform with the Model 3 sedan. It offers impressive range, performance, and advanced technology features, making it a popular choice in the electric vehicle market.",
         "simplifiedExplanation": "The Tesla Model Y is a type of electric car that looks like an SUV. It's known for being efficient and having lots of modern features, like a big touchscreen inside.",
         "imageAttribution": "Alexander Migl (CC BY-SA 4.0)"
       }
@@ -45,8 +45,8 @@
       "endTime": 145.1,
       "type": "part",
       "title": "solenoid handles",
+      "explanation": "Solenoid handles are electronic door handles that use a solenoid mechanism to lock and unlock the door. They are often found in modern vehicles, including electric cars like Teslas, and can malfunction if jammed or stuck.",
       "data": {
-        "explanation": "Solenoid handles are electronic door handles that use a solenoid mechanism to lock and unlock the door. They are often found in modern vehicles, including electric cars like Teslas, and can malfunction if jammed or stuck.",
         "simplifiedExplanation": "Solenoid handles are the parts that help you open and close car doors electronically. They can sometimes get stuck, making it hard to get into the car."
       }
     },
@@ -55,9 +55,9 @@
       "endTime": 158.48,
       "type": "car",
       "title": "Chevrolet Corvette",
+      "explanation": "The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg/1200px-Chevrolet_Corvette%2C_BAS_24%2C_Brussels_%28P1170389-RR%29.jpg",
       "data": {
-        "explanation": "The Chevrolet Corvette C8 is the eighth generation of the Corvette sports car, known for its mid-engine layout and advanced technology. It represents a significant shift in design and performance for the Corvette lineup.",
         "simplifiedExplanation": "The Corvette C8 is a modern sports car from Chevrolet that has its engine located in the middle of the car, which helps with handling and speed. It's known for being very powerful and high-tech.",
         "imageAttribution": "Matti Blume (CC BY-SA)"
       }
@@ -67,9 +67,9 @@
       "endTime": 319.76,
       "type": "car",
       "title": "Nissan GT-R",
+      "explanation": "The Nissan GT-R is a high-performance sports car known for its advanced technology and impressive speed. It has a strong motorsport heritage and is often regarded as a benchmark in the supercar segment.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Nissan_4BA-R35_GT-R_NISMO_%2823092416543%29.jpg",
       "data": {
-        "explanation": "The Nissan GT-R is a high-performance sports car known for its advanced technology and impressive speed. It has a strong motorsport heritage and is often regarded as a benchmark in the supercar segment.",
         "simplifiedExplanation": "The Nissan GT-R is a fast sports car that many people admire for its speed and technology. It's famous for being very powerful and is often compared to other supercars.",
         "imageAttribution": "\u5148\u5f93\u9697\u59cb (CC0)"
       }
@@ -79,9 +79,9 @@
       "endTime": 346.72,
       "type": "car",
       "title": "Nissan Leaf",
+      "explanation": "The Nissan Leaf is an all-electric hatchback that has been one of the best-selling electric vehicles globally, known for its practicality and affordability.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg/1200px-2017_Nissan_LEAF_%28ZE0_MY17%29_hatchback_%282018-11-02%29_01.jpg",
       "data": {
-        "explanation": "The Nissan Leaf is an all-electric hatchback that has been one of the best-selling electric vehicles globally, known for its practicality and affordability.",
         "simplifiedExplanation": "The Nissan Leaf is an electric car that is popular for being affordable and practical for everyday use.",
         "imageAttribution": "EurovisionNim (CC BY-SA 4.0)"
       }
@@ -91,8 +91,8 @@
       "endTime": 773.0,
       "type": "company",
       "title": "FCP Euro",
+      "explanation": "FCP Euro is a well-known supplier of automotive parts, specializing in genuine original equipment and aftermarket performance upgrades for European vehicles. They have been in the industry for nearly 40 years, making them a trusted source for car enthusiasts and professionals alike.",
       "data": {
-        "explanation": "FCP Euro is a well-known supplier of automotive parts, specializing in genuine original equipment and aftermarket performance upgrades for European vehicles. They have been in the industry for nearly 40 years, making them a trusted source for car enthusiasts and professionals alike.",
         "simplifiedExplanation": "FCP Euro is a company that sells car parts, especially for European cars. They provide both original parts and performance upgrades, helping people maintain or improve their vehicles."
       }
     },
@@ -101,8 +101,8 @@
       "endTime": 773.0,
       "type": "term",
       "title": "OEM parts",
+      "explanation": "OEM stands for Original Equipment Manufacturer, referring to parts made by the vehicle's original manufacturer. These parts are designed to fit and function exactly as the original components in a vehicle.",
       "data": {
-        "explanation": "OEM stands for Original Equipment Manufacturer, referring to parts made by the vehicle's original manufacturer. These parts are designed to fit and function exactly as the original components in a vehicle.",
         "simplifiedExplanation": "OEM parts are the same parts that were used when the car was first made. They are made by the original company that built the car, so they fit perfectly and work just like the original parts."
       }
     },
@@ -111,8 +111,8 @@
       "endTime": 791.3,
       "type": "term",
       "title": "lifetime replacement guarantee",
+      "explanation": "A lifetime replacement guarantee means that the company will replace a product for free if it fails or is defective for as long as the original purchaser owns it.",
       "data": {
-        "explanation": "A lifetime replacement guarantee means that the company will replace a product for free if it fails or is defective for as long as the original purchaser owns it.",
         "simplifiedExplanation": "A lifetime replacement guarantee is a promise from a company that they will replace a product for free if it breaks while you own it."
       }
     },
@@ -121,8 +121,8 @@
       "endTime": 793.1,
       "type": "term",
       "title": "consumables",
+      "explanation": "Consumables are items that are used up or replaced regularly in a vehicle, such as brake pads, wiper blades, and oil filters.",
       "data": {
-        "explanation": "Consumables are items that are used up or replaced regularly in a vehicle, such as brake pads, wiper blades, and oil filters.",
         "simplifiedExplanation": "Consumables are parts of a car that you need to replace regularly, like brake pads and wiper blades."
       }
     },
@@ -131,8 +131,8 @@
       "endTime": 901.0,
       "type": "term",
       "title": "2JZ engine",
+      "explanation": "The 2JZ engine is a 3.0-liter inline-six engine produced by Toyota, famous for its strength and tuning potential. It is most well-known for being used in the Toyota Supra Mark IV, making it a favorite among car enthusiasts.",
       "data": {
-        "explanation": "The 2JZ engine is a 3.0-liter inline-six engine produced by Toyota, famous for its strength and tuning potential. It is most well-known for being used in the Toyota Supra Mark IV, making it a favorite among car enthusiasts.",
         "simplifiedExplanation": "The 2JZ engine is a powerful engine made by Toyota that many people love to modify and race. It's known for being very strong and reliable."
       }
     },
@@ -151,9 +151,9 @@
       "endTime": 986.72,
       "type": "car",
       "title": "BMW Z4",
+      "explanation": "The BMW Z4 is a two-door sports car known for its sporty handling and performance. It is available in both coupe and convertible body styles and has gone through multiple generations since its introduction.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/BMW_Concept_Z4%2C_Frankfurt_%281Y7A3563%29.jpg/1200px-BMW_Concept_Z4%2C_Frankfurt_%281Y7A3563%29.jpg",
       "data": {
-        "explanation": "The BMW Z4 is a two-door sports car known for its sporty handling and performance. It is available in both coupe and convertible body styles and has gone through multiple generations since its introduction.",
         "simplifiedExplanation": "The BMW Z4 is a sporty car made by BMW. It comes as a coupe or a convertible and is known for being fun to drive.",
         "imageAttribution": "Matti Blume (CC BY-SA 4.0)"
       }
@@ -163,9 +163,9 @@
       "endTime": 988.2,
       "type": "car",
       "title": "Toyota GR86",
+      "explanation": "The Toyota GR86 is a lightweight sports coupe designed for driving enthusiasts, featuring a rear-wheel-drive layout and a focus on handling.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/6/6e/2022_Toyota_GR_86_front.jpg",
       "data": {
-        "explanation": "The Toyota GR86 is a lightweight sports coupe designed for driving enthusiasts, featuring a rear-wheel-drive layout and a focus on handling.",
         "simplifiedExplanation": "The Toyota GR86 is a fun, small sports car that is great for driving. It's designed to be light and easy to handle, making it enjoyable on the road.",
         "imageAttribution": "DestinationFearFan (CC BY-SA 4.0)"
       }
@@ -185,8 +185,8 @@
       "endTime": 1028.8,
       "type": "term",
       "title": "hybrid technology",
+      "explanation": "Hybrid technology refers to vehicles that use a combination of an internal combustion engine and one or more electric motors to improve fuel efficiency and reduce emissions.",
       "data": {
-        "explanation": "Hybrid technology refers to vehicles that use a combination of an internal combustion engine and one or more electric motors to improve fuel efficiency and reduce emissions.",
         "simplifiedExplanation": "Hybrid technology means the car uses both a regular gas engine and electric motors to run. This helps save fuel and is better for the environment."
       }
     },
@@ -195,8 +195,8 @@
       "endTime": 1028.8,
       "type": "term",
       "title": "all-wheel drive",
+      "explanation": "All-wheel drive (AWD) is a drivetrain configuration that provides power to all four wheels of a vehicle simultaneously, improving traction and stability, especially in adverse weather conditions.",
       "data": {
-        "explanation": "All-wheel drive (AWD) is a drivetrain configuration that provides power to all four wheels of a vehicle simultaneously, improving traction and stability, especially in adverse weather conditions.",
         "simplifiedExplanation": "All-wheel drive means that all four wheels of the car get power from the engine, which helps the car grip the road better, especially in rain or snow."
       }
     },
@@ -215,8 +215,8 @@
       "endTime": 1073.0,
       "type": "term",
       "title": "mid-engine",
+      "explanation": "A mid-engine layout places the engine between the front and rear axles, which helps improve weight distribution and handling characteristics of the vehicle. This design is commonly found in sports cars and supercars.",
       "data": {
-        "explanation": "A mid-engine layout places the engine between the front and rear axles, which helps improve weight distribution and handling characteristics of the vehicle. This design is commonly found in sports cars and supercars.",
         "simplifiedExplanation": "Mid-engine means the car's engine is located in the middle of the vehicle, which helps it handle better when driving fast. This setup is often used in sports cars to improve performance."
       }
     },
@@ -225,8 +225,8 @@
       "endTime": 1075.5,
       "type": "term",
       "title": "manual transmission",
+      "explanation": "A manual transmission requires the driver to manually shift gears using a clutch pedal and gear stick, providing a more engaging driving experience compared to automatic transmissions. It allows for greater control over the vehicle's performance.",
       "data": {
-        "explanation": "A manual transmission requires the driver to manually shift gears using a clutch pedal and gear stick, providing a more engaging driving experience compared to automatic transmissions. It allows for greater control over the vehicle's performance.",
         "simplifiedExplanation": "A manual transmission is a type of car gearbox that you have to shift yourself using a stick and a pedal. It gives you more control over how the car drives, but it can be harder to learn than an automatic transmission."
       }
     },
@@ -245,9 +245,9 @@
       "endTime": 1134.24,
       "type": "car",
       "title": "Honda Accord",
+      "explanation": "The Honda Accord is a popular midsize car known for its reliability, comfort, and fuel efficiency. It has been a staple in the automotive market since its introduction in the 1970s, appealing to a wide range of buyers.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/HONDA_ACCORD_%28CP1-CP3%29_China.jpg/1200px-HONDA_ACCORD_%28CP1-CP3%29_China.jpg",
       "data": {
-        "explanation": "The Honda Accord is a popular midsize car known for its reliability, comfort, and fuel efficiency. It has been a staple in the automotive market since its introduction in the 1970s, appealing to a wide range of buyers.",
         "simplifiedExplanation": "The Honda Accord is a well-known car that many people trust because it's reliable and good on gas. It's been around for a long time and is popular with families and commuters.",
         "imageAttribution": "Dinkun Chen (CC BY-SA 4.0)"
       }
@@ -257,9 +257,9 @@
       "endTime": 1184.6,
       "type": "car",
       "title": "Audi R8",
+      "explanation": "The Audi R8 is a luxury sports car known for its striking design and powerful performance. It features a mid-engine layout and is available with both V10 and V10 plus variants, making it a popular choice among enthusiasts.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/2010_Audi_R8_Spyder_Quattro_V10_5.2.jpg/1200px-2010_Audi_R8_Spyder_Quattro_V10_5.2.jpg",
       "data": {
-        "explanation": "The Audi R8 is a luxury sports car known for its striking design and powerful performance. It features a mid-engine layout and is available with both V10 and V10 plus variants, making it a popular choice among enthusiasts.",
         "simplifiedExplanation": "The Audi R8 is a high-end sports car that looks very cool and goes really fast. It's known for its powerful engine and great handling.",
         "imageAttribution": "Vauxford (CC BY-SA 4.0)"
       }
@@ -269,9 +269,9 @@
       "endTime": 1232.4,
       "type": "car",
       "title": "Honda Insight",
+      "explanation": "The Honda Insight is a compact hybrid car that was first introduced in 1999. It was designed to offer excellent fuel economy and was one of the first hybrid vehicles available in the market.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/1999_Honda_Insight_is_the_first_hybrid_car_launched_in_the_UK.jpg/1200px-1999_Honda_Insight_is_the_first_hybrid_car_launched_in_the_UK.jpg",
       "data": {
-        "explanation": "The Honda Insight is a compact hybrid car that was first introduced in 1999. It was designed to offer excellent fuel economy and was one of the first hybrid vehicles available in the market.",
         "simplifiedExplanation": "The Honda Insight is a small car that uses both gas and electric power to drive. It was one of the first cars to be a hybrid, helping people save on gas.",
         "imageAttribution": "Irmantas Baltrusaitis (CC BY-SA 4.0)"
       }
@@ -281,9 +281,9 @@
       "endTime": 1236.32,
       "type": "car",
       "title": "Honda Crz",
+      "explanation": "The Honda CR-Z is a hybrid sports coupe that was produced from 2010 to 2016. It combines sporty styling with hybrid technology, offering a manual transmission option for enthusiasts.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/2007_Honda_CR-Z_01.jpg/1200px-2007_Honda_CR-Z_01.jpg",
       "data": {
-        "explanation": "The Honda CR-Z is a hybrid sports coupe that was produced from 2010 to 2016. It combines sporty styling with hybrid technology, offering a manual transmission option for enthusiasts.",
         "simplifiedExplanation": "The Honda CR-Z is a sporty little car that uses both gas and electricity to run. It was unique because you could get it with a manual transmission, which is rare for hybrids.",
         "imageAttribution": "Mytho88 (CC BY-SA 3.0)"
       }
@@ -303,8 +303,8 @@
       "endTime": 1276.9,
       "type": "concept",
       "title": "full EV",
+      "explanation": "'Full EV' refers to a vehicle that is entirely powered by electricity, with no internal combustion engine. This means it relies solely on electric batteries for propulsion, contributing to zero tailpipe emissions.",
       "data": {
-        "explanation": "'Full EV' refers to a vehicle that is entirely powered by electricity, with no internal combustion engine. This means it relies solely on electric batteries for propulsion, contributing to zero tailpipe emissions.",
         "simplifiedExplanation": "A 'full EV' is a car that runs only on electricity and doesn't use gas or diesel. It has batteries instead of a traditional engine, which helps reduce pollution."
       }
     },
@@ -343,9 +343,9 @@
       "endTime": 1358.48,
       "type": "car",
       "title": "Aston Martin Vantage",
+      "explanation": "The Aston Martin Vantage is a luxury sports car known for its elegant design and performance. It is often considered a grand tourer (GT) that balances comfort and sportiness, making it suitable for enjoyable cruising.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/2013_Aston_Martin_V8_Vantage_Roadster_fR.jpg/1200px-2013_Aston_Martin_V8_Vantage_Roadster_fR.jpg",
       "data": {
-        "explanation": "The Aston Martin Vantage is a luxury sports car known for its elegant design and performance. It is often considered a grand tourer (GT) that balances comfort and sportiness, making it suitable for enjoyable cruising.",
         "simplifiedExplanation": "The Aston Martin Vantage is a fancy sports car that looks great and drives well. It's designed for people who want a mix of comfort and speed, making it fun to drive on long trips.",
         "imageAttribution": "Mr.choppers (CC BY-SA 3.0)"
       }
@@ -381,9 +381,9 @@
       "endTime": 1440.2,
       "type": "car",
       "title": "BMW Z8",
+      "explanation": "The BMW Z8 is a roadster produced by BMW from 1999 to 2003, known for its sleek design and powerful performance. It features a 4.9-liter V8 engine and is celebrated for its classic styling reminiscent of the BMW 507.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/2002_BMW_Z8_Roadster_BS_O24.jpg/1200px-2002_BMW_Z8_Roadster_BS_O24.jpg",
       "data": {
-        "explanation": "The BMW Z8 is a roadster produced by BMW from 1999 to 2003, known for its sleek design and powerful performance. It features a 4.9-liter V8 engine and is celebrated for its classic styling reminiscent of the BMW 507.",
         "simplifiedExplanation": "The BMW Z8 is a stylish sports car made by BMW between 1999 and 2003. It's known for its powerful engine and beautiful design, similar to older classic BMWs.",
         "imageAttribution": "MrWalkr (CC BY-SA 4.0)"
       }
@@ -403,9 +403,9 @@
       "endTime": 1477.68,
       "type": "car",
       "title": "BMW M5",
+      "explanation": "The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.",
       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/2018_BMW_M5_Automatic_4.4.jpg/1200px-2018_BMW_M5_Automatic_4.4.jpg",
       "data": {
-        "explanation": "The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.",
         "simplifiedExplanation": "The BMW M5 is a fast and powerful car that's part of the 5 Series lineup. It's designed for high performance and often features advanced technology.",
         "imageAttribution": "Vauxford (CC BY-SA 4.0)"
       }

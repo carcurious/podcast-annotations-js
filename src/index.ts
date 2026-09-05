@@ -14,6 +14,9 @@ export { enrichAnnotationsWithTiming, selectCurrentAnnotation, upcomingAnnotatio
 export { parseVTT, fetchVTT } from './vtt-parser.js'
 export { formatTime } from './utils.js'
 
+export { groupByEntity } from './digest.js'
+export type { EntityGroup, GroupByEntityOptions } from './digest.js'
+
 export { AlignedTranscript } from './aligned-transcript.js'
 export type { AlignedSegment } from './aligned-transcript.js'
 
