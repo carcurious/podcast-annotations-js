@@ -291,11 +291,9 @@ This spec does not define merge semantics across layers. When a consumer combine
 
 A third-party producer can annotate any audio without asking anyone, and the consumer combines the layers at playback. That independence is the point of the design, and it leaves a question open: how does a publisher say which layers they want alongside their episodes?
 
-The two shipping features closest to this one answer with a per-item control. YouTube's automatic concepts is a per-video checkbox in YouTube Studio, and Apple Podcasts lets creators opt out of auto-detected podcast mentions through Podcasts Connect. Both work as platform-internal switches, because one party runs the extraction, the feed, and the playback surface. An open format has no such chokepoint. Any signal defined here would be advisory: producers and consumers read it or ignore it, the way a crawler treats `robots.txt`.
+The two shipping features closest to this one answer with a per-item control. YouTube's automatic concepts is a per-video checkbox in YouTube Studio, and Apple Podcasts lets creators opt out of auto-detected podcast mentions through Podcasts Connect. Both work because one party runs the extraction, the feed, and the playback surface. An open format has no such chokepoint, so any signal defined here would be advisory, read or ignored the way a crawler treats `robots.txt`.
 
-This spec defines no such signal. A later version might, and its shape is easy enough to guess: a machine-readable element in the feed, the feed being the one artifact a publisher controls, naming which layers are welcome on that show or episode, with consumers filtering on it. `layer` and `producer` already cover part of the ground, letting a player tell a listener whose annotations they are reading and default to the official set (see [Layers](#layers)).
-
-This section records the question instead of answering it with a field. A signal is worth defining once publishers, producers, and players agree to read one, which puts it in front of the [Podcasting 2.0 namespace](https://podcastindex.org/namespace/1.0) process rather than in this document alone.
+A later version might define one, and its likely shape is an element in the feed, the feed being the one artifact a publisher controls. `layer` and `producer` already cover part of the ground, letting a player tell a listener whose annotations they are reading (see [Layers](#layers)). This spec leaves the question open, because a signal only means something once publishers, producers, and players agree to read it, which puts it in front of the [Podcasting 2.0 namespace](https://podcastindex.org/namespace/1.0) process rather than this document alone.
 
 ## Transcripts
 
