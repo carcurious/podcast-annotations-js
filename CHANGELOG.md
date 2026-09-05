@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.10.0 (2026-09-05)
+
+### Added
+- **`Annotation.explanation`.** A first-class optional field for the short plain-text description of an entity, for display alongside the annotation. Producers already needed this and had nowhere interoperable to put it: the automotive example in `SPEC.md` and `examples/everyday-driver-episode-1013.annotations.json` both carried it as `data.explanation`, where no consumer could rely on it. Every comparable system ships this text (X-Ray's blurb, Genius's annotation body, YouTube's automatic-concept snippets), and without it a consumer holds only a label and a link and has to send the listener off-platform to learn what was meant.
+- **`groupByEntity(annotations, options?)`.** Collapses per-mention annotations into one entry per entity for digest views (show notes, episode pages). Groups by `canonicalId`, falling back to `type` plus normalized `title`; display fields come from the highest-`priority` member with a first-non-empty fallback, `startTime` is the earliest mention, and `sortBy: 'mentions'` orders by group size. Exported alongside the `EntityGroup` and `GroupByEntityOptions` types.
+
+### Changed
+- **Spec version bumped to `1.2.0`** for the additive `explanation` field. `examples/`, generated `docs/`, and tests updated to `1.2.0`. Existing `1.1.0` files remain valid.
+- `SPEC.md`: new "The `explanation` Field" section (length and plain-text guidance, entity-not-moment scoping, and the rule that reading-level variants and translations stay in `data`), a validation rule, and a W3C Web Annotation mapping row.
+- `SPEC.md`: new [Digest Rendering](SPEC.md#digest-rendering) section covering per-mention to per-entity collapse, which member supplies the text and image, deep-linking to the first mention, and how digest grouping differs from cross-layer dedupe (which also requires time-range overlap).
+- `examples/everyday-driver-episode-1013.annotations.json`: 24 annotations move `explanation` out of `data` to the top level. `data.simplifiedExplanation` stays where it is, as a producer extension.
+
 ## 0.9.1 (2026-07-02)
 
 ### Added

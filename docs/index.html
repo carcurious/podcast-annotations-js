@@ -559,7 +559,7 @@
         <p class="lede">A podcast annotation marks a moment in an episode: a car at 24:33, a person at 47:26, a place at 1:12:29. It names the entity or topic, when it appears, and the context needed to make sense of it.</p>
         <p class="intro-cta"><a class="cta-spec" href="#spec">Read the specification</a></p>
         <dl class="spec-facts">
-          <div><dt>This version</dt><dd>1.1.0 (stable)</dd></div>
+          <div><dt>This version</dt><dd>1.2.0 (stable)</dd></div>
           <div><dt>Last updated</dt><dd>2026-07-03</dd></div>
           <div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></dd></div>
           <div><dt>Source</dt><dd class="mono"><a href="https://github.com/carcurious/podcast-annotations-js">carcurious/podcast-annotations-js</a></dd></div>
@@ -606,7 +606,7 @@
             <div class="demo-copy">
               <div class="demo-type" id="demo-type">car</div>
               <h3 id="demo-title">BMW M5</h3>
-              <p id="demo-explanation">The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.</p>
+              <p id="demo-explanation">The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology.</p>
               <p class="demo-quote" id="demo-quote" hidden></p>
             </div>
             <div class="demo-art">
@@ -627,7 +627,6 @@
   &quot;title&quot;: &quot;BMW M5&quot;,
   &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg&quot;,
   &quot;data&quot;: {
-    &quot;explanation&quot;: &quot;The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.&quot;,
     &quot;simplifiedExplanation&quot;: &quot;The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology.&quot;,
     &quot;imageAttribution&quot;: &quot;Vauxford (CC BY-SA 4.0)&quot;
   }
@@ -640,7 +639,7 @@
         data-index="0"
         data-title="BMW M5"
         data-type="car"
-        data-explanation="The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance."
+        data-explanation="The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology."
         data-quote=""
         data-payload="{
   &quot;startTime&quot;: 1473.36,
@@ -649,7 +648,6 @@
   &quot;title&quot;: &quot;BMW M5&quot;,
   &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg&quot;,
   &quot;data&quot;: {
-    &quot;explanation&quot;: &quot;The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.&quot;,
     &quot;simplifiedExplanation&quot;: &quot;The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology.&quot;,
     &quot;imageAttribution&quot;: &quot;Vauxford (CC BY-SA 4.0)&quot;
   }
@@ -710,7 +708,7 @@
     <section class="spec-wrap">
       <article id="spec">
 <h1 id="podcast-annotation-format">Podcast Annotation Format</h1>
-<p><strong>Version 1.1.0</strong></p>
+<p><strong>Version 1.2.0</strong></p>
 <p>A minimal JSON format for timestamped entity annotations on podcast and spoken media content.</p>
 <h2 id="overview">Overview</h2>
 <p>A transcript records the words and when they were said. It does not tell an app that a host mentioned a 1969 Camaro at 0:45, switched to turbochargers at 2:00, or spent the next 30 seconds on Carroll Shelby. Listeners follow that structure without thinking about it, but almost none of it exists anywhere as structured data.</p>
@@ -771,6 +769,12 @@
 <td><code>string</code></td>
 <td>No</td>
 <td>Human-readable display label</td>
+</tr>
+<tr>
+<td><code>explanation</code></td>
+<td><code>string</code></td>
+<td>No</td>
+<td>Short plain-text explanation of the entity, for display alongside the annotation (see <a href="#the-explanation-field">The <code>explanation</code> Field</a>)</td>
 </tr>
 <tr>
 <td><code>url</code></td>
@@ -857,6 +861,7 @@
   &quot;endTime&quot;: 75.0,
   &quot;type&quot;: &quot;car&quot;,
   &quot;title&quot;: &quot;LS Engine&quot;,
+  &quot;explanation&quot;: &quot;General Motors&#39; small-block V8 family, produced since 1997. Compact, cheap, and widely swapped into other cars.&quot;,
   &quot;url&quot;: &quot;https://example.com/ls-engine&quot;,
   &quot;image&quot;: &quot;https://example.com/ls-engine.jpg&quot;,
   &quot;speaker&quot;: &quot;s1&quot;,
@@ -876,6 +881,17 @@
 <p>All times are in <strong>seconds as floating-point numbers</strong>, measured from the start of the audio. This aligns with the Web Audio API, HTMLMediaElement, WebVTT, and most podcast tooling.</p>
 <p>Time values SHOULD use millisecond precision such as <code>45.123</code>. Consumers SHOULD tolerate minor floating-point variance: when one producer emits <code>45.1999</code> and another emits <code>45.2</code> for the same mention, they describe the same moment and a consumer should treat them as equivalent.</p>
 <p>An annotation MAY set <code>endTime</code> equal to <code>startTime</code> to mark a point in time rather than a span, such as the <code>solenoid handles</code> entry in the <a href="#automotive-podcast">automotive example</a> below. Consumers SHOULD render point annotations with a nonzero display window.</p>
+<h3 id="the-explanation-field">The <code>explanation</code> Field</h3>
+<p><code>title</code> names an entity; <code>explanation</code> says what it is. It carries a short plain-text description written for a listener who does not already know the term, so a consumer can render something useful at the moment of the mention without following <code>url</code> off-platform.</p>
+<p>Every prior system in this space delivers this text: Amazon&#39;s X-Ray shows a blurb next to a cast member, Genius&#39;s annotation body <em>is</em> the explanation, and YouTube&#39;s automatic concepts surface &quot;images and short text snippets&quot; for unfamiliar terms directly on the watch page. An annotation with only a label and a link asks the consumer to leave the audio to find out what was meant, which defeats the purpose of annotating the moment.</p>
+<p>Guidance:</p>
+<ul>
+<li>Keep it short. The text competes with playing audio for attention and often renders in an overlay or a narrow panel. One or two sentences, roughly 300 characters or fewer, is the target.</li>
+<li>Plain text. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support, matching <code>episode.description</code>.</li>
+<li>Describe the entity, not the moment. <code>quote</code> already carries what was said; <code>explanation</code> should stay reusable across every episode that mentions the same entity.</li>
+<li>Self-contained. Assume the reader sees the explanation on its own, with no surrounding sentence to lean on.</li>
+</ul>
+<p>Variants belong in <code>data</code>. A producer offering a simplified reading-level version, a translation, or a longer article body SHOULD keep <code>explanation</code> as the default rendering and put the alternates in <code>data</code> (for example <code>data.simplifiedExplanation</code>), so a consumer that knows nothing about the extension still displays something sensible.</p>
 <h3 id="the-data-field">The <code>data</code> Field</h3>
 <p>The <code>data</code> object is an open extension point. Producers can store any JSON-serializable metadata here. Consumers should ignore fields they don&#39;t recognize.</p>
 <p>Common uses:</p>
@@ -904,6 +920,7 @@
 <li><code>speaker</code>, if provided, MUST reference a valid <code>id</code> in the <code>speakers</code> array</li>
 <li><code>participation</code>, if provided, SHOULD be one of <code>&quot;guest&quot;</code>, <code>&quot;host&quot;</code>, or <code>&quot;mentioned&quot;</code>. Custom values are allowed but reduce interoperability. It applies only when <code>type</code> is <code>&quot;person&quot;</code>; consumers SHOULD ignore it on other types.</li>
 <li>An omitted <code>participation</code> is unspecified, not <code>&quot;mentioned&quot;</code>. Consumers MUST NOT treat absence as a claim: an annotation predating this field, or one whose producer did not set it, carries no participation assertion. Only an explicit <code>&quot;mentioned&quot;</code> asserts that the person was referenced but not present.</li>
+<li><code>explanation</code>, if provided, SHOULD be plain text and SHOULD be short enough to render alongside playing audio (roughly 300 characters or fewer)</li>
 <li>Time values SHOULD be within the duration of the associated audio</li>
 </ul>
 <h3 id="canonical-ids">Canonical IDs</h3>
@@ -915,6 +932,15 @@
 <li><code>place:nurburgring</code></li>
 </ul>
 <p>Producers MAY also use external identifiers such as Wikidata QIDs (e.g., <code>wikidata:Q332448</code>).</p>
+<h3 id="digest-rendering">Digest Rendering</h3>
+<p>Annotations are <strong>per-mention</strong>; a digest view is <strong>per-entity</strong>. An episode that discusses the 2JZ engine nine times carries nine annotations, but a show-notes list, an episode page, or a &quot;From This Episode&quot; panel should show it once. This is the second surface for the same data, and platforms that ship timed context ship it too: YouTube writes its automatic concepts into the video description as well as the watch page, and Apple Podcasts renders timed links both as Now Playing banners and as a per-episode list.</p>
+<p><code>canonicalId</code> is the key that makes the collapse possible. Consumers building a digest SHOULD group annotations by <code>canonicalId</code>, falling back to <code>type</code> plus normalized <code>title</code> for annotations that carry no canonical ID, and render one entry per group:</p>
+<ul>
+<li><strong>Text and image:</strong> take them from the highest-<code>priority</code> member of the group, breaking ties on <code>confidence</code> and then on earliest <code>startTime</code>. Fall back to the first member that has a non-empty value for a given field, since a producer may only fill <code>explanation</code> or <code>image</code> on the first mention.</li>
+<li><strong>Deep link:</strong> use the earliest <code>startTime</code> in the group, which points a listener at where the subject comes up.</li>
+<li><strong>Ordering:</strong> by first mention for a walkthrough of the episode, or by group size for a &quot;most discussed&quot; view.</li>
+</ul>
+<p>Note that grouping for a digest is a weaker operation than cross-layer deduplication, which requires <code>canonicalId</code> <strong>and</strong> time-range overlap (see <a href="#layers">Layers</a>). A digest deliberately collapses distinct occurrences; a dedupe must not.</p>
 <h3 id="participation">Participation</h3>
 <p><code>participation</code> records how a person figures in a single annotation: <code>&quot;guest&quot;</code> (present on the show), <code>&quot;host&quot;</code>, or <code>&quot;mentioned&quot;</code> (referenced but not present). Omission means unspecified, not <code>&quot;mentioned&quot;</code>. A producer who does not track participation, or an annotation written before the field existed, makes no claim either way, so consumers building guest graphs SHOULD treat only explicit values as signal.</p>
 <p>It is orthogonal to <code>speaker</code> and the <code>speakers</code> array: <code>speaker</code> says who is talking during the annotation, the <code>speakers</code> array assigns episode-level roles, and <code>participation</code> describes the annotated person&#39;s role at that one moment. With explicit values, a consumer can separate &quot;the guest was introduced here&quot; from &quot;the guest was named in passing&quot; without a second extraction pass. The same person can carry different <code>participation</code> values across an episode.</p>
@@ -943,7 +969,7 @@
 <h2 id="annotation-set">Annotation Set</h2>
 <p>An annotation set is the container format for a collection of annotations associated with a single episode or audio file.</p>
 <pre><code class="language-json">{
-  &quot;version&quot;: &quot;1.1.0&quot;,
+  &quot;version&quot;: &quot;1.2.0&quot;,
   &quot;episode&quot;: {
     &quot;title&quot;: &quot;Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013&quot;,
     &quot;url&quot;: &quot;https://getcarcurious.com/episodes/cars-that-need-a-comeback-a-m-the-fourth-car-minivan-peer-pressure-episode-1-013&quot;,
@@ -983,7 +1009,7 @@
 <td><code>version</code></td>
 <td><code>string</code></td>
 <td><strong>Yes</strong></td>
-<td>Spec version (semver, currently <code>&quot;1.1.0&quot;</code>)</td>
+<td>Spec version (semver, currently <code>&quot;1.2.0&quot;</code>)</td>
 </tr>
 <tr>
 <td><code>layer</code></td>
@@ -1089,7 +1115,7 @@
 <p>The optional <code>layer</code> and <code>producer</code> fields let a set identify itself so a consumer can fetch, diff, replace, or filter layers independently. <code>layer</code> names the role of the set (e.g., <code>&quot;official&quot;</code>, <code>&quot;community&quot;</code>); <code>producer</code> names who generated it. A consumer might show only the official layer by default and let the listener opt into others, or attribute each annotation to its producer in the UI.</p>
 <p>For diff and replacement to be unambiguous, the <code>(producer, layer)</code> pair SHOULD be stable and unique for a given episode or audio file: stable so a later revision of the same layer replaces the earlier one rather than appearing as a new layer, and unique so two distinct sets do not collide. <code>layer</code> SHOULD be a slug-like string — lowercase, no spaces, hyphenated if needed (e.g., <code>&quot;official&quot;</code>, <code>&quot;community&quot;</code>, <code>&quot;ai-enrichment&quot;</code>) — so that <code>&quot;community&quot;</code> and <code>&quot;Community&quot;</code> are not treated as different layers. <code>producer</code> SHOULD be a stable identifier for the producing party (e.g., a reverse-DNS or namespaced handle like <code>&quot;fm.getcarcurious&quot;</code> or <code>&quot;acme-ai-enrichment&quot;</code>) rather than a display name that may change. When either field is omitted, a consumer cannot reliably diff or replace that set and SHOULD treat it as an anonymous, standalone layer.</p>
 <pre><code class="language-json">{
-  &quot;version&quot;: &quot;1.1.0&quot;,
+  &quot;version&quot;: &quot;1.2.0&quot;,
   &quot;layer&quot;: &quot;community&quot;,
   &quot;producer&quot;: &quot;acme-ai-enrichment&quot;,
   &quot;annotations&quot;: [ ]
@@ -1432,7 +1458,7 @@
 <h3 id="automotive-podcast">Automotive Podcast</h3>
 <p>From <a href="https://getcarcurious.com">The Everyday Driver Podcast</a>, Episode 1,013 (113 annotations across ~97 minutes):</p>
 <pre><code class="language-json">{
-  &quot;version&quot;: &quot;1.1.0&quot;,
+  &quot;version&quot;: &quot;1.2.0&quot;,
   &quot;episode&quot;: {
     &quot;title&quot;: &quot;Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013&quot;,
     &quot;url&quot;: &quot;https://getcarcurious.com/episodes/cars-that-need-a-comeback-a-m-the-fourth-car-minivan-peer-pressure-episode-1-013&quot;,
@@ -1458,27 +1484,21 @@
       &quot;endTime&quot;: 145.1,
       &quot;type&quot;: &quot;part&quot;,
       &quot;title&quot;: &quot;solenoid handles&quot;,
-      &quot;data&quot;: {
-        &quot;explanation&quot;: &quot;Electronic door handles that use a solenoid mechanism to lock and unlock. Common in modern EVs, they can malfunction if jammed or stuck.&quot;
-      }
+      &quot;explanation&quot;: &quot;Electronic door handles that use a solenoid mechanism to lock and unlock. Common in modern EVs, they can malfunction if jammed or stuck.&quot;
     },
     {
       &quot;startTime&quot;: 760.6,
       &quot;endTime&quot;: 773.0,
       &quot;type&quot;: &quot;company&quot;,
       &quot;title&quot;: &quot;FCP Euro&quot;,
-      &quot;data&quot;: {
-        &quot;explanation&quot;: &quot;Supplier of automotive parts specializing in genuine OE and aftermarket performance upgrades for European vehicles.&quot;
-      }
+      &quot;explanation&quot;: &quot;Supplier of automotive parts specializing in genuine OE and aftermarket performance upgrades for European vehicles.&quot;
     },
     {
       &quot;startTime&quot;: 898.2,
       &quot;endTime&quot;: 901.0,
       &quot;type&quot;: &quot;term&quot;,
       &quot;title&quot;: &quot;2JZ engine&quot;,
-      &quot;data&quot;: {
-        &quot;explanation&quot;: &quot;A 3.0-liter inline-six engine produced by Toyota, famous for its strength and tuning potential. Most well-known for powering the Toyota Supra Mark IV.&quot;
-      }
+      &quot;explanation&quot;: &quot;A 3.0-liter inline-six engine produced by Toyota, famous for its strength and tuning potential. Most well-known for powering the Toyota Supra Mark IV.&quot;
     },
     {
       &quot;startTime&quot;: 898.24,
@@ -1653,7 +1673,7 @@
 </code></pre>
 <h3 id="minimal-interview-example">Minimal Interview Example</h3>
 <pre><code class="language-json">{
-  &quot;version&quot;: &quot;1.1.0&quot;,
+  &quot;version&quot;: &quot;1.2.0&quot;,
   &quot;episode&quot;: {
     &quot;title&quot;: &quot;Climate Tech with Dr. Sarah Chen&quot;
   },
@@ -1747,6 +1767,10 @@
 <td><code>body.value</code></td>
 </tr>
 <tr>
+<td><code>explanation</code></td>
+<td>Additional <code>TextualBody</code> with <code>purpose: &quot;describing&quot;</code>; <code>title</code> remains the short label body</td>
+</tr>
+<tr>
 <td><code>type</code></td>
 <td>Custom <code>body.type</code> or encoded within <code>body.purpose</code>, depending on implementation</td>
 </tr>
@@ -1791,7 +1815,7 @@
 <p><strong>Apple Podcasts Timed Links.</strong> Starting with iOS 26.2 (Nov 2025), Apple Podcasts renders creator-authored timed links as banners on the Now Playing screen, inline in the transcript, and in a &quot;From This Episode&quot; section on the episode page (<a href="https://podcasters.apple.com/support/5536-links-on-apple-podcasts">Apple&#39;s timed links documentation</a>; see also <a href="https://podcasters.apple.com/support/5545-enhance-episodes-with-chapters-links-more">chapters, links, and more</a>). Creators author these links two ways: hyperlinked text and a timestamp in the episode description, or <code>url</code> fields on the existing Podcasting 2.0 <code>&lt;podcast:chapters&gt;</code> JSON. Apple introduced no new RSS tag for this. Apple also auto-detects podcast mentions in English-language shows and links to the mentioned show; creators can opt out via Apple Podcasts Connect.</p>
 <p>The feature validates the moment-level pattern this spec is built on, at much narrower scope. Link destinations are limited to Apple&#39;s own ecosystem (Apple Books, Music, Music Classical, Maps, News, Podcasts, Sports, Stocks, TV, Shazam) and other podcasts; a timed link cannot point at an arbitrary URL. It also carries no typed entity (<code>person</code>, <code>place</code>, <code>car</code>, …), no <code>canonicalId</code>, no <code>layer</code>/<code>producer</code>, and no time span: it fires at a point, not across the range where an entity is discussed. Apple documents how timed links render. It has not published a data model for what one is.</p>
 <p><em>Interop guidance:</em> Apple already renders <code>url</code> fields on <code>&lt;podcast:chapters&gt;</code>, so a producer can export a slice of their highest-<code>priority</code> annotations into a chapters file and get Apple Podcasts to render them as timed links today, with no new infrastructure. This export is lossy and one-way: a chapters entry carries no <code>type</code>, <code>canonicalId</code>, <code>speaker</code>, or <code>confidence</code>, and chapters stay coarse and non-overlapping by design. iOS 26.2 also only auto-generates chapters when a feed provides none, so publishing every annotation as a chapter would suppress that auto-generation too. Export only the editorial highlights this way, and keep the full annotation set in the sidecar file or, per the RSS Distribution guidance below, a <code>&lt;podcast:annotations&gt;</code> element.</p>
-<p>Show notes are the closest thing podcasting already has to annotations: episode summaries, timestamps, guest info, and links, published as freeform prose via RSS <code>&lt;description&gt;</code> or <code>&lt;content:encoded&gt;</code>. An annotation set is a structured, machine-readable representation of the same information. Where show notes describe what was discussed, annotations make each reference addressable, linkable, and renderable in sync with playback, and the two can feed each other. Producers can generate show notes from an annotation set, or start annotating from existing show notes; several of the files in <a href="#additional-examples">Additional Examples</a> were assembled the second way.</p>
+<p>Show notes are the closest thing podcasting already has to annotations: episode summaries, timestamps, guest info, and links, published as freeform prose via RSS <code>&lt;description&gt;</code> or <code>&lt;content:encoded&gt;</code>. An annotation set is a structured, machine-readable representation of the same information. Where show notes describe what was discussed, annotations make each reference addressable, linkable, and renderable in sync with playback, and the two can feed each other. Producers can generate show notes from an annotation set (see <a href="#digest-rendering">Digest Rendering</a> for collapsing repeated mentions into one entry per entity), or start annotating from existing show notes; several of the files in <a href="#additional-examples">Additional Examples</a> were assembled the second way.</p>
 <p>Podcasting 2.0&#39;s <code>&lt;podcast:person&gt;</code> tag names people at the episode level: who hosted, who guested. Annotations with <code>type: &quot;person&quot;</code> name people at the moment level, when they are discussed, not only who is on the show. The optional <code>participation</code> field bridges the two granularities by marking whether a person is a <code>&quot;guest&quot;</code>, <code>&quot;host&quot;</code>, or merely <code>&quot;mentioned&quot;</code> at a given point in the timeline. The mapping is partial. <code>&quot;guest&quot;</code> and <code>&quot;host&quot;</code> correspond to <code>&lt;podcast:person role=&quot;…&quot;&gt;</code>, but <code>&quot;mentioned&quot;</code> has no <code>&lt;podcast:person&gt;</code> equivalent, because that tag does not model the difference between presence and reference.</p>
 <p><strong>RSS Distribution.</strong> An episode&#39;s annotation file MAY be referenced from the RSS feed or episode web page. The <code>&lt;podcast:transcript&gt;</code> element defined in PSP-1 provides a clear model: a <code>url</code> attribute and a <code>type</code> attribute. A <code>&lt;podcast:annotations&gt;</code> element would follow the same pattern:</p>
 <pre><code class="language-xml">&lt;podcast:annotations url=&quot;https://example.com/episode1.annotations.json&quot; type=&quot;application/json&quot; /&gt;
@@ -1813,6 +1837,12 @@
 <p>This format was developed by <a href="https://getcarcurious.com">Car Curious</a>, a podcast annotation platform for automotive content, and is released as an open specification for the broader podcast ecosystem.</p>
 <h2 id="changelog">Changelog</h2>
 <p>This changelog tracks the <strong>specification</strong> version (the number in the <code>**Version**</code> header and the annotation set <code>version</code> field), which is independent of the reference implementation&#39;s npm package version. The spec uses semantic versioning: additive, backward-compatible changes bump the minor version; breaking changes bump the major version.</p>
+<h3 id="120">1.2.0</h3>
+<ul>
+<li><strong>Added the top-level <code>explanation</code> field</strong>: a short plain-text description of the entity, for display alongside the annotation. Previously producers had no interoperable place for this text and pushed it into <code>data</code>, including the automotive example in this document. Reading-level variants, translations, and longer bodies stay in <code>data</code>.</li>
+<li><strong>Added <a href="#digest-rendering">Digest Rendering</a> guidance</strong>: how to collapse per-mention annotations into a per-entity list for show notes and episode pages, and how that differs from cross-layer deduplication.</li>
+<li>Existing <code>1.1.0</code> files remain valid; <code>explanation</code> is optional and additive.</li>
+</ul>
 <h3 id="110">1.1.0</h3>
 <ul>
 <li><strong>Added <code>layer</code> and <code>producer</code></strong> container fields so multiple producers can annotate the same audio as independent <a href="#layers">layers</a>, with a stable-and-unique <code>(producer, layer)</code> identity rule for diff and replacement.</li>
@@ -1832,7 +1862,7 @@
     </section>
 
     <footer>
-      Version 1.1.0. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated 2026-07-03. <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.
+      Version 1.2.0. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated 2026-07-03. <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.
     </footer>
   </div>
 
@@ -1846,7 +1876,7 @@
       return minutes + ':' + String(seconds).padStart(2, '0')
     }
 
-    const demoMoments = [{"index":0,"startTime":1473.36,"endTime":1477.68,"title":"BMW M5","type":"car","explanation":"The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.","quote":"","payload":{"startTime":1473.36,"endTime":1477.68,"type":"car","title":"BMW M5","image":"https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg","data":{"explanation":"The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.","simplifiedExplanation":"The BMW M5 is a fast and powerful car that's part of the 5 Series lineup. It's designed for high performance and often features advanced technology.","imageAttribution":"Vauxford (CC BY-SA 4.0)"}}},{"index":1,"startTime":2846,"endTime":2848.88,"title":"Pontiac Solstice","type":"car","explanation":"This moment is about Pontiac Solstice. The annotation gives a player the title, type, timing, and artwork for this reference.","quote":"","payload":{"startTime":2846,"endTime":2848.88,"type":"car","title":"Pontiac Solstice","image":"https://upload.wikimedia.org/wikipedia/commons/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg","data":{"imageAttribution":"MercurySable99 (CC BY-SA 4.0)"}}},{"index":2,"startTime":4349.68,"endTime":4353.92,"title":"Subaru Brz","type":"car","explanation":"This moment is about Subaru Brz. The annotation gives a player the title, type, timing, and artwork for this reference.","quote":"","payload":{"startTime":4349.68,"endTime":4353.92,"type":"car","title":"Subaru Brz","image":"https://upload.wikimedia.org/wikipedia/commons/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg","data":{"imageAttribution":"Dinkun Chen (CC BY-SA 4.0)"}}}]
+    const demoMoments = [{"index":0,"startTime":1473.36,"endTime":1477.68,"title":"BMW M5","type":"car","explanation":"The BMW M5 is a fast and powerful car that's part of the 5 Series lineup. It's designed for high performance and often features advanced technology.","quote":"","payload":{"startTime":1473.36,"endTime":1477.68,"type":"car","title":"BMW M5","image":"https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg","data":{"simplifiedExplanation":"The BMW M5 is a fast and powerful car that's part of the 5 Series lineup. It's designed for high performance and often features advanced technology.","imageAttribution":"Vauxford (CC BY-SA 4.0)"}}},{"index":1,"startTime":2846,"endTime":2848.88,"title":"Pontiac Solstice","type":"car","explanation":"This moment is about Pontiac Solstice. The annotation gives a player the title, type, timing, and artwork for this reference.","quote":"","payload":{"startTime":2846,"endTime":2848.88,"type":"car","title":"Pontiac Solstice","image":"https://upload.wikimedia.org/wikipedia/commons/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg","data":{"imageAttribution":"MercurySable99 (CC BY-SA 4.0)"}}},{"index":2,"startTime":4349.68,"endTime":4353.92,"title":"Subaru Brz","type":"car","explanation":"This moment is about Subaru Brz. The annotation gives a player the title, type, timing, and artwork for this reference.","quote":"","payload":{"startTime":4349.68,"endTime":4353.92,"type":"car","title":"Subaru Brz","image":"https://upload.wikimedia.org/wikipedia/commons/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg","data":{"imageAttribution":"Dinkun Chen (CC BY-SA 4.0)"}}}]
     const chips = [...document.querySelectorAll('.demo-chip')]
     const markers = [...document.querySelectorAll('.demo-marker')]
     const typeEl = document.getElementById('demo-type')
