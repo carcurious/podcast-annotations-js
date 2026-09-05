@@ -294,13 +294,13 @@ This spec does not define merge semantics across layers. When a consumer combine
 
 ### Publisher Signals (Open Question)
 
-Because layers are published independently and combined by the consumer, nothing in this format requires a third-party producer to coordinate with the publisher of the audio. That is the property that makes independent layers useful, and it leaves an unanswered question: how a publisher expresses a preference about which layers appear alongside their episodes.
+A third-party producer can annotate any audio without asking anyone, and the consumer combines the layers at playback. That independence is the point of the design, and it leaves a question open: how does a publisher say which layers they want alongside their episodes?
 
-The two shipping features closest to this one both answer it with a per-item control. YouTube's automatic concepts is a per-video checkbox in YouTube Studio, and Apple Podcasts lets creators opt out of auto-detected podcast mentions through Podcasts Connect. Both are platform-internal switches, available because a single party runs the extraction pipeline, the feed, and the playback surface. An open format has no such chokepoint. Any signal it defined would be advisory, honored by the producers and consumers who choose to honor it, in the manner of `robots.txt`.
+The two shipping features closest to this one answer with a per-item control. YouTube's automatic concepts is a per-video checkbox in YouTube Studio, and Apple Podcasts lets creators opt out of auto-detected podcast mentions through Podcasts Connect. Both work as platform-internal switches, because one party runs the extraction, the feed, and the playback surface. An open format has no such chokepoint. Any signal defined here would be advisory: producers and consumers read it or ignore it, the way a crawler treats `robots.txt`.
 
-This spec does not define one. A future version might, and the shape it would take is reasonably clear: a machine-readable element in the feed, since the feed is the artifact a publisher demonstrably controls, expressing which layers are welcome on that show or episode, and consumers filtering layers accordingly. Attribution covers part of the same ground already, since `layer` and `producer` let a player show a listener whose annotations they are reading and default to the official set (see [Layers](#layers)).
+This spec defines no such signal. A later version might, and its shape is easy enough to guess: a machine-readable element in the feed, the feed being the one artifact a publisher controls, naming which layers are welcome on that show or episode, with consumers filtering on it. `layer` and `producer` already cover part of the ground, letting a player tell a listener whose annotations they are reading and default to the official set (see [Layers](#layers)).
 
-It is recorded here as an open question rather than a field because a signal is only worth defining if publishers, producers, and players agree to read it, which makes it a question for the [Podcasting 2.0 namespace](https://podcastindex.org/namespace/1.0) process rather than something this document should settle on its own.
+This section records the question instead of answering it with a field. A signal is worth defining once publishers, producers, and players agree to read one, which puts it in front of the [Podcasting 2.0 namespace](https://podcastindex.org/namespace/1.0) process rather than in this document alone.
 
 ## Transcripts
 
