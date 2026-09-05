@@ -11,6 +11,7 @@
 - `SPEC.md`: new "The `explanation` Field" section, a validation rule, and a W3C Web Annotation mapping row.
 - `SPEC.md`: new [Digest Rendering](SPEC.md#digest-rendering) section on collapsing per-mention annotations into a per-entity list, and how that differs from cross-layer dedupe.
 - `SPEC.md` Prior Art & Inspiration: added YouTube's automatic concepts, the first machine-generated layer the section cites, and the case for carrying provenance.
+- `SPEC.md`: new [Publisher Signals (Open Question)](SPEC.md#publisher-signals-open-question) section after Layers, on how a publisher might say which third-party layers they want alongside their episodes. YouTube and Apple both answer with a per-item control; an open format has no chokepoint, so any signal would be advisory. No mechanism defined. Non-normative, spec version remains `1.2.0`.
 - `examples/everyday-driver-episode-1013.annotations.json`: `explanation` moves out of `data` to the top level. `data.simplifiedExplanation` stays put, as a producer extension.
 
 ## 0.9.1 (2026-07-02)
