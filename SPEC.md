@@ -292,6 +292,16 @@ For diff and replacement to be unambiguous, the `(producer, layer)` pair SHOULD 
 
 This spec does not define merge semantics across layers. When a consumer combines layers, deduplication and conflict resolution are consumer-defined. `canonicalId` identifies the underlying entity, not the timeline occurrence (see [Canonical IDs](#canonical-ids)), so it collapses cleanly in an *entity index* ("which layers mention the LS engine"). It is not sufficient on its own to dedupe *timeline annotations*: two layers may annotate the same entity at different moments, and those are distinct occurrences that should not merge. A consumer deduping annotations for a timeline SHOULD also require time-range overlap, treating same `canonicalId` plus overlapping `[startTime, endTime]` as the same occurrence. In RSS, each layer is carried by its own `<podcast:annotations>` element, mirroring how a feed already lists multiple `<podcast:transcript>` resources (see [Relationship to Other Standards](#relationship-to-other-standards)).
 
+### Publisher Signals (Open Question)
+
+Because layers are published independently and combined by the consumer, nothing in this format requires a third-party producer to coordinate with the publisher of the audio. That is the property that makes independent layers useful, and it leaves an unanswered question: how a publisher expresses a preference about which layers appear alongside their episodes.
+
+The two shipping features closest to this one both answer it with a per-item control. YouTube's automatic concepts is a per-video checkbox in YouTube Studio, and Apple Podcasts lets creators opt out of auto-detected podcast mentions through Podcasts Connect. Both are platform-internal switches, available because a single party runs the extraction pipeline, the feed, and the playback surface. An open format has no such chokepoint. Any signal it defined would be advisory, honored by the producers and consumers who choose to honor it, in the manner of `robots.txt`.
+
+This spec does not define one. A future version might, and the shape it would take is reasonably clear: a machine-readable element in the feed, since the feed is the artifact a publisher demonstrably controls, expressing which layers are welcome on that show or episode, and consumers filtering layers accordingly. Attribution covers part of the same ground already, since `layer` and `producer` let a player show a listener whose annotations they are reading and default to the official set (see [Layers](#layers)).
+
+It is recorded here as an open question rather than a field because a signal is only worth defining if publishers, producers, and players agree to read it, which makes it a question for the [Podcasting 2.0 namespace](https://podcastindex.org/namespace/1.0) process rather than something this document should settle on its own.
+
 ## Transcripts
 
 The `transcripts` array links to transcript files associated with the audio. Multiple formats can be provided.
@@ -748,6 +758,7 @@ This changelog tracks the **specification** version (the number in the `**Versio
 - **Added the top-level `explanation` field**: a short plain-text description of the entity, for display alongside the annotation. Previously producers had no interoperable place for this text and pushed it into `data`, including the automotive example in this document. Reading-level variants, translations, and longer bodies stay in `data`.
 - **Added [Digest Rendering](#digest-rendering) guidance**: how to collapse per-mention annotations into a per-entity list for show notes and episode pages, and how that differs from cross-layer deduplication.
 - Added YouTube's automatic concepts to [Prior Art & Inspiration](#prior-art--inspiration) as the first machine-generated annotation layer cited, and as the precedent for keeping provenance and layer separation in the format.
+- Added [Publisher Signals (Open Question)](#publisher-signals-open-question), recording how publishers might express a preference about third-party layers, and why this spec does not define a mechanism yet. Non-normative; no data-model change.
 - Existing `1.1.0` files remain valid; `explanation` is optional and additive.
 
 ### 1.1.0
