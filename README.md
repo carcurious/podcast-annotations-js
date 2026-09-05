@@ -276,7 +276,7 @@ interface AlignmentGap {
 
 ### `groupByEntity(annotations, options?)`
 
-Collapses per-mention annotations into one entry per entity, for show notes, episode pages, and other digest views. Annotations are per-mention; a digest is per-entity, so an episode that returns to the same subject five times should list it once.
+Collapses annotations into one entry per entity, for show notes, episode pages, and other digest views. An episode that returns to the same subject five times carries five annotations and should list it once.
 
 ```js
 import { groupByEntity } from 'podcast-annotations'
