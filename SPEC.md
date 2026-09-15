@@ -1,6 +1,6 @@
 # Podcast Annotation Format
 
-**Version 1.1.0**
+**Version 1.2.0**
 
 A minimal JSON format for timestamped entity annotations on podcast and spoken media content.
 
@@ -29,7 +29,7 @@ Two fields are required, `startTime` and `endTime`. Everything else is optional,
 
 Timed context on media has a long track record; podcasting has transcripts, chapters, and show notes, but no compact file for within-episode references. VH1's *Pop-Up Video* was overlaying timestamped trivia on music videos in the late 1990s. Amazon's X-Ray on Prime Video does the same job today, syncing cast, characters, and trivia to the current scene, and it is the closest thing this spec has to a canonical reference. Amazon has never published X-Ray's underlying data model, which is part of why writing this one down in the open is worth doing. On the audio side, SoundCloud's timed comments were among the earliest mainstream timestamped annotations on sound: listeners drop a comment at any `t=` position in a track, and they use the feature heavily enough to show that people will engage with audio at the level of a single moment.
 
-Two products outside podcasting show the pattern holding up at scale. Genius built a community annotation layer on song lyrics and turned entity-level annotation on media content into a durable product; structurally it is the closest analog to this format, an annotation body attached to an anchor in the media, with a URL for more context. The BBC's public Linked Data ontologies approach the problem from the graph side, modeling "Things" (people, places, organisations, themes, programmes, web documents) so content can be connected through shared topics. Podcast annotations address a smaller layer: when one of those things becomes relevant inside an audio episode.
+Three products outside podcasting show the pattern holding up at scale. Genius built a community annotation layer on song lyrics and turned entity-level annotation on media content into a durable product; structurally it is the closest analog to this format, an annotation body attached to an anchor in the media, with a URL for more context. YouTube's automatic concepts identifies key concepts in educational videos and surfaces "images and short text snippets" about them on the watch page. It is the one *machine-generated* layer cited here, inferred by a pipeline rather than written by the creator, and a creator who finds a wrong definition on their own video can switch the feature off. A listener meeting that annotation inside a player has no such switch, which is the job of `confidence`, `source`, and [layers](#layers). The BBC's public Linked Data ontologies approach the problem from the graph side, modeling "Things" (people, places, organisations, themes, programmes, web documents) so content can be connected through shared topics. Podcast annotations address a smaller layer: when one of those things becomes relevant inside an audio episode.
 
 Podcasting itself supplies the rest of the precedent. Chapters (Podcasting 2.0, Podlove, MP4) are coarse timestamped metadata that podcast apps already implement, which is evidence the ecosystem adopts spec extensions when they improve listening. Overcast has shipped structured-metadata features for years (Smart Speed, chapters, transcript sync), and Marco Arment's public discussion of synchronizing transcripts across dynamic ad insertion informed this spec's approach to ad break alignment. Snipd lets listeners highlight and annotate moments for personal note-taking, so listener-side annotation on podcast audio is already in production; this spec makes the same capability an open, shared layer instead of a closed personal tool. Most recently, [Apple Podcasts Timed Links](https://podcasters.apple.com/support/5536-links-on-apple-podcasts) (iOS 26.2, Nov 2025) render creator-authored timed links as banners on the Now Playing screen, inline in the transcript, and in a "From This Episode" section. At the scale of Apple's own listener base, that confirms a moment inside an episode deserves its own addressable UI, not just the episode as a whole. The feature is far narrower than this spec, with link destinations limited to Apple's own ecosystem and other podcasts, and no typed entities, canonical IDs, or layers; see [Relationship to Other Standards](#relationship-to-other-standards).
 
@@ -46,6 +46,7 @@ An annotation represents a single entity mention or topic reference in audio. An
 | `endTime` | `number` | **Yes** | End time in seconds (float) |
 | `type` | `string` | No | Entity type (see [Recommended Types](#recommended-entity-types)) |
 | `title` | `string` | No | Human-readable display label |
+| `explanation` | `string` | No | Short plain-text explanation of the entity, for display alongside the annotation (see [The `explanation` Field](#the-explanation-field)) |
 | `url` | `string` | No | URL to more information about the entity |
 | `image` | `string` | No | URL to an image representing the entity |
 | `speaker` | `string` | No | Speaker ID (references an entry in `speakers`) |
@@ -81,6 +82,7 @@ Full example with all optional fields:
   "endTime": 75.0,
   "type": "car",
   "title": "LS Engine",
+  "explanation": "General Motors' small-block V8 family, produced since 1997. Compact, cheap, and widely swapped into other cars.",
   "url": "https://example.com/ls-engine",
   "image": "https://example.com/ls-engine.jpg",
   "speaker": "s1",
@@ -104,6 +106,16 @@ All times are in **seconds as floating-point numbers**, measured from the start 
 Time values SHOULD use millisecond precision such as `45.123`. Consumers SHOULD tolerate minor floating-point variance: when one producer emits `45.1999` and another emits `45.2` for the same mention, they describe the same moment and a consumer should treat them as equivalent.
 
 An annotation MAY set `endTime` equal to `startTime` to mark a point in time rather than a span, such as the `solenoid handles` entry in the [automotive example](#automotive-podcast) below. Consumers SHOULD render point annotations with a nonzero display window.
+
+### The `explanation` Field
+
+`title` names an entity; `explanation` says what it is, in short plain text, for a listener who does not know the term. Without it a consumer holds a label and a link, and has to send the listener off-platform to find out what was meant. Every system in [Prior Art](#prior-art--inspiration) ships this text in some form.
+
+Keep it to one or two sentences, 300 characters or fewer. It renders in an overlay or a narrow panel while the audio plays, and a reader sees it on its own with no surrounding sentence to lean on. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support, matching `episode.description`.
+
+Describe the entity, not the moment. `quote` already carries what was said, and an explanation written about the entity stays reusable across every episode that mentions it.
+
+A producer with a simplified reading-level version, a translation, or a longer article body SHOULD keep `explanation` as the default rendering and put the alternates in `data` (`data.simplifiedExplanation`, say), so a consumer that knows nothing about the extension still shows something sensible.
 
 ### The `data` Field
 
@@ -140,6 +152,7 @@ An annotation set might contain 5 chapter-like topic markers for a 3-hour episod
 - `speaker`, if provided, MUST reference a valid `id` in the `speakers` array
 - `participation`, if provided, SHOULD be one of `"guest"`, `"host"`, or `"mentioned"`. Custom values are allowed but reduce interoperability. It applies only when `type` is `"person"`; consumers SHOULD ignore it on other types.
 - An omitted `participation` is unspecified, not `"mentioned"`. Consumers MUST NOT treat absence as a claim: an annotation predating this field, or one whose producer did not set it, carries no participation assertion. Only an explicit `"mentioned"` asserts that the person was referenced but not present.
+- `explanation`, if provided, SHOULD be plain text and SHOULD be short enough to render alongside playing audio (roughly 300 characters or fewer)
 - Time values SHOULD be within the duration of the associated audio
 
 ### Canonical IDs
@@ -153,6 +166,18 @@ There is no required format, but a namespaced convention is recommended:
 - `place:nurburgring`
 
 Producers MAY also use external identifiers such as Wikidata QIDs (e.g., `wikidata:Q332448`).
+
+### Digest Rendering
+
+Annotations are **per-mention**; a digest view is **per-entity**. An episode that discusses the 2JZ engine nine times carries nine annotations, but a show-notes list or an episode page should show it once. YouTube and Apple Podcasts both render their timed context twice this way, once during playback and once as a per-episode list.
+
+Consumers building a digest SHOULD group annotations by `canonicalId`, falling back to `type` plus normalized `title` when no canonical ID is present, and render one entry per group:
+
+- **Text and image:** take them from the highest-`priority` member, breaking ties on `confidence` and then earliest `startTime`. Fall back to the first member with a non-empty value, since a producer may fill `explanation` or `image` only on the first mention.
+- **Deep link:** use the earliest `startTime`, so a listener lands where the subject first comes up.
+- **Ordering:** by first mention, or by group size for a "most discussed" view.
+
+Grouping for a digest is weaker than cross-layer deduplication, which also requires time-range overlap (see [Layers](#layers)). A digest collapses distinct occurrences on purpose; a dedupe must not.
 
 ### Participation
 
@@ -190,7 +215,7 @@ An annotation set is the container format for a collection of annotations associ
 
 ```json
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "episode": {
     "title": "Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013",
     "url": "https://getcarcurious.com/episodes/cars-that-need-a-comeback-a-m-the-fourth-car-minivan-peer-pressure-episode-1-013",
@@ -221,7 +246,7 @@ An annotation set is the container format for a collection of annotations associ
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `version` | `string` | **Yes** | Spec version (semver, currently `"1.1.0"`) |
+| `version` | `string` | **Yes** | Spec version (semver, currently `"1.2.0"`) |
 | `layer` | `string` | No | Name of this annotation layer, used to distinguish concurrent sets for the same audio (see [Layers](#layers)) |
 | `producer` | `string` | No | Identifier for who or what produced this set (e.g., `"everyday-driver-official"`, `"acme-ai-enrichment"`) |
 | `episode` | `object` | No | Episode metadata |
@@ -253,7 +278,7 @@ For diff and replacement to be unambiguous, the `(producer, layer)` pair SHOULD 
 
 ```json
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "layer": "community",
   "producer": "acme-ai-enrichment",
   "annotations": [ ]
@@ -421,7 +446,7 @@ From [The Everyday Driver Podcast](https://getcarcurious.com), Episode 1,013 (11
 
 ```json
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "episode": {
     "title": "Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013",
     "url": "https://getcarcurious.com/episodes/cars-that-need-a-comeback-a-m-the-fourth-car-minivan-peer-pressure-episode-1-013",
@@ -447,27 +472,21 @@ From [The Everyday Driver Podcast](https://getcarcurious.com), Episode 1,013 (11
       "endTime": 145.1,
       "type": "part",
       "title": "solenoid handles",
-      "data": {
-        "explanation": "Electronic door handles that use a solenoid mechanism to lock and unlock. Common in modern EVs, they can malfunction if jammed or stuck."
-      }
+      "explanation": "Electronic door handles that use a solenoid mechanism to lock and unlock. Common in modern EVs, they can malfunction if jammed or stuck."
     },
     {
       "startTime": 760.6,
       "endTime": 773.0,
       "type": "company",
       "title": "FCP Euro",
-      "data": {
-        "explanation": "Supplier of automotive parts specializing in genuine OE and aftermarket performance upgrades for European vehicles."
-      }
+      "explanation": "Supplier of automotive parts specializing in genuine OE and aftermarket performance upgrades for European vehicles."
     },
     {
       "startTime": 898.2,
       "endTime": 901.0,
       "type": "term",
       "title": "2JZ engine",
-      "data": {
-        "explanation": "A 3.0-liter inline-six engine produced by Toyota, famous for its strength and tuning potential. Most well-known for powering the Toyota Supra Mark IV."
-      }
+      "explanation": "A 3.0-liter inline-six engine produced by Toyota, famous for its strength and tuning potential. Most well-known for powering the Toyota Supra Mark IV."
     },
     {
       "startTime": 898.24,
@@ -565,7 +584,7 @@ Two worked annotations show how domain-specific detail lives in `data`. (These a
 
 ```json
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "episode": {
     "title": "Climate Tech with Dr. Sarah Chen"
   },
@@ -657,6 +676,7 @@ Maps to this W3C Web Annotation:
 |-----------|--------------------
 | `startTime`, `endTime` | `target.selector.value` as `t=start,end` |
 | `title` | `body.value` |
+| `explanation` | Additional `TextualBody` with `purpose: "describing"`; `title` remains the short label body |
 | `type` | Custom `body.type` or encoded within `body.purpose`, depending on implementation |
 | `url` | Additional `body` with `purpose: "linking"` |
 | `image` | Additional `body` with `purpose: "depicting"` |
@@ -679,7 +699,7 @@ The feature validates the moment-level pattern this spec is built on, at much na
 
 *Interop guidance:* Apple already renders `url` fields on `<podcast:chapters>`, so a producer can export a slice of their highest-`priority` annotations into a chapters file and get Apple Podcasts to render them as timed links today, with no new infrastructure. This export is lossy and one-way: a chapters entry carries no `type`, `canonicalId`, `speaker`, or `confidence`, and chapters stay coarse and non-overlapping by design. iOS 26.2 also only auto-generates chapters when a feed provides none, so publishing every annotation as a chapter would suppress that auto-generation too. Export only the editorial highlights this way, and keep the full annotation set in the sidecar file or, per the RSS Distribution guidance below, a `<podcast:annotations>` element.
 
-Show notes are the closest thing podcasting already has to annotations: episode summaries, timestamps, guest info, and links, published as freeform prose via RSS `<description>` or `<content:encoded>`. An annotation set is a structured, machine-readable representation of the same information. Where show notes describe what was discussed, annotations make each reference addressable, linkable, and renderable in sync with playback, and the two can feed each other. Producers can generate show notes from an annotation set, or start annotating from existing show notes; several of the files in [Additional Examples](#additional-examples) were assembled the second way.
+Show notes are the closest thing podcasting already has to annotations: episode summaries, timestamps, guest info, and links, published as freeform prose via RSS `<description>` or `<content:encoded>`. An annotation set is a structured, machine-readable representation of the same information. Where show notes describe what was discussed, annotations make each reference addressable, linkable, and renderable in sync with playback, and the two can feed each other. Producers can generate show notes from an annotation set (see [Digest Rendering](#digest-rendering) for collapsing repeated mentions into one entry per entity), or start annotating from existing show notes; several of the files in [Additional Examples](#additional-examples) were assembled the second way.
 
 Podcasting 2.0's `<podcast:person>` tag names people at the episode level: who hosted, who guested. Annotations with `type: "person"` name people at the moment level, when they are discussed, not only who is on the show. The optional `participation` field bridges the two granularities by marking whether a person is a `"guest"`, `"host"`, or merely `"mentioned"` at a given point in the timeline. The mapping is partial. `"guest"` and `"host"` correspond to `<podcast:person role="…">`, but `"mentioned"` has no `<podcast:person>` equivalent, because that tag does not model the difference between presence and reference.
 
@@ -717,6 +737,13 @@ This format was developed by [Car Curious](https://getcarcurious.com), a podcast
 ## Changelog
 
 This changelog tracks the **specification** version (the number in the `**Version**` header and the annotation set `version` field), which is independent of the reference implementation's npm package version. The spec uses semantic versioning: additive, backward-compatible changes bump the minor version; breaking changes bump the major version.
+
+### 1.2.0
+
+- **Added the top-level `explanation` field**: a short plain-text description of the entity, for display alongside the annotation. Previously producers had no interoperable place for this text and pushed it into `data`, including the automotive example in this document. Reading-level variants, translations, and longer bodies stay in `data`.
+- **Added [Digest Rendering](#digest-rendering) guidance**: how to collapse per-mention annotations into a per-entity list for show notes and episode pages, and how that differs from cross-layer deduplication.
+- Added YouTube's automatic concepts to [Prior Art & Inspiration](#prior-art--inspiration) as the first machine-generated annotation layer cited, and as the precedent for keeping provenance and layer separation in the format.
+- Existing `1.1.0` files remain valid; `explanation` is optional and additive.
 
 ### 1.1.0
 
