@@ -13,6 +13,12 @@
 - `SPEC.md` Prior Art & Inspiration: added YouTube's automatic concepts, the first machine-generated layer the section cites, and the case for carrying provenance.
 - `examples/everyday-driver-episode-1013.annotations.json`: `explanation` moves out of `data` to the top level. `data.simplifiedExplanation` stays put, as a producer extension.
 
+## 0.9.2 (2026-07-14)
+
+### Added
+- New exploratory proposal, [`proposals/chapters-extension.md`](proposals/chapters-extension.md): can the annotation model be carried as an extension of `<podcast:chapters>` instead of a standalone tag? Maps the model field by field, with a minimal proposed scope (extensibility rule, `type`/`canonicalId`, overlap semantics, multiple chapter files) and a replacement test. Follows suggestions from James Cridland and Daniel J. Lewis (#469).
+- Non-normative pointer to the proposal from `SPEC.md`'s Relationship to Other Standards section. No data-model change; spec version remains `1.1.0`.
+
 ## 0.9.1 (2026-07-02)
 
 ### Added
