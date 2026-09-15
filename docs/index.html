@@ -925,7 +925,7 @@
 <li><code>person:carroll-shelby</code></li>
 <li><code>place:nurburgring</code></li>
 </ul>
-<p>Producers MAY also use external identifiers such as Wikidata QIDs (e.g., <code>wikidata:Q332448</code>).</p>
+<p>Producers MAY also use external identifiers such as <a href="https://www.wikidata.org/wiki/Wikidata:Identifiers">Wikidata</a> QIDs (e.g., <code>wikidata:Q354043</code> for Carroll Shelby). A QID is language-independent and lets producers who never coordinated arrive at the same identifier, which makes it the stronger choice when annotations should join across shows. Wikidata has no item for everything a podcast mentions: this spec&#39;s own example set resolves its cars, people, and places, while FCP Euro and &quot;solenoid handles&quot; have none, so the namespaced form covers what the registry does not. An assigned <code>canonicalId</code> SHOULD NOT change: renaming an identifier breaks every earlier file that used it.</p>
 <h3 id="digest-rendering">Digest Rendering</h3>
 <p>Annotations are <strong>per-mention</strong>; a digest view is <strong>per-entity</strong>. An episode that discusses the 2JZ engine nine times carries nine annotations, but a show-notes list or an episode page should show it once. YouTube and Apple Podcasts both render their timed context twice this way, once during playback and once as a per-episode list.</p>
 <p>Consumers building a digest SHOULD group annotations by <code>canonicalId</code>, falling back to <code>type</code> plus normalized <code>title</code> when no canonical ID is present, and render one entry per group:</p>
