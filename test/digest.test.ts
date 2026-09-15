@@ -38,8 +38,13 @@ describe('groupByEntity', () => {
   })
 
   it('keeps untitled, unkeyed annotations separate', () => {
-    const groups = groupByEntity([a({ startTime: 10 }), a({ startTime: 20 })])
-    expect(groups).toHaveLength(2)
+    const groups = groupByEntity([
+      a({ startTime: 10 }),
+      a({ startTime: 20 }),
+      a({ startTime: 30, title: '   ' }),
+      a({ startTime: 40, canonicalId: '   ' })
+    ])
+    expect(groups).toHaveLength(4)
   })
 
   it('takes display fields from the highest-priority member', () => {

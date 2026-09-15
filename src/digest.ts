@@ -39,8 +39,10 @@ function rank(a: Annotation, b: Annotation): number {
 }
 
 function keyFor(annotation: Annotation, index: number): string {
-  if (annotation.canonicalId) return `id:${annotation.canonicalId}`
-  if (annotation.title) return `t:${annotation.type ?? ''}:${annotation.title.trim().toLowerCase()}`
+  const canonicalId = annotation.canonicalId?.trim()
+  if (canonicalId) return `id:${canonicalId}`
+  const title = annotation.title?.trim().toLowerCase()
+  if (title) return `t:${annotation.type ?? ''}:${title}`
   return `i:${index}`
 }
 
