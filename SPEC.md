@@ -287,6 +287,14 @@ For diff and replacement to be unambiguous, the `(producer, layer)` pair SHOULD 
 
 This spec does not define merge semantics across layers. When a consumer combines layers, deduplication and conflict resolution are consumer-defined. `canonicalId` identifies the underlying entity, not the timeline occurrence (see [Canonical IDs](#canonical-ids)), so it collapses cleanly in an *entity index* ("which layers mention the LS engine"). It is not sufficient on its own to dedupe *timeline annotations*: two layers may annotate the same entity at different moments, and those are distinct occurrences that should not merge. A consumer deduping annotations for a timeline SHOULD also require time-range overlap, treating same `canonicalId` plus overlapping `[startTime, endTime]` as the same occurrence. In RSS, each layer is carried by its own `<podcast:annotations>` element, mirroring how a feed already lists multiple `<podcast:transcript>` resources (see [Relationship to Other Standards](#relationship-to-other-standards)).
 
+### Publisher Signals (Open Question)
+
+A third-party producer can annotate any audio without asking anyone, and the consumer combines the layers at playback. That independence is the point of the design, and it leaves a question open: how does a publisher say which layers they want alongside their episodes?
+
+The two shipping features closest to this one answer with a per-item control. YouTube's automatic concepts is a per-video checkbox in YouTube Studio, and Apple Podcasts lets creators opt out of auto-detected podcast mentions through Podcasts Connect. Both work because one party runs the extraction, the feed, and the playback surface. An open format has no such chokepoint, so any signal defined here would be advisory, read or ignored the way a crawler treats `robots.txt`.
+
+A later version might define one, and its likely shape is an element in the feed, the feed being the one artifact a publisher controls. `layer` and `producer` already cover part of the ground, letting a player tell a listener whose annotations they are reading (see [Layers](#layers)). This spec leaves the question open, because a signal only means something once publishers, producers, and players agree to read it, which puts it in front of the [Podcasting 2.0 namespace](https://podcastindex.org/namespace/1.0) process rather than this document alone.
+
 ## Transcripts
 
 The `transcripts` array links to transcript files associated with the audio. Multiple formats can be provided.
@@ -743,6 +751,7 @@ This changelog tracks the **specification** version (the number in the `**Versio
 - **Added the top-level `explanation` field**: a short plain-text description of the entity, for display alongside the annotation. Previously producers had no interoperable place for this text and pushed it into `data`, including the automotive example in this document. Reading-level variants, translations, and longer bodies stay in `data`.
 - **Added [Digest Rendering](#digest-rendering) guidance**: how to collapse per-mention annotations into a per-entity list for show notes and episode pages, and how that differs from cross-layer deduplication.
 - Added YouTube's automatic concepts to [Prior Art & Inspiration](#prior-art--inspiration) as the first machine-generated annotation layer cited, and as the precedent for keeping provenance and layer separation in the format.
+- Added [Publisher Signals (Open Question)](#publisher-signals-open-question), recording how publishers might express a preference about third-party layers, and why this spec does not define a mechanism yet. Non-normative; no data-model change.
 - Existing `1.1.0` files remain valid; `explanation` is optional and additive.
 
 ### 1.1.0
