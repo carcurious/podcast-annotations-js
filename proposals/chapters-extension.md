@@ -135,6 +135,31 @@ mostly maps to sibling tags; see the replacement test. Over a plain chapter the 
 entity `type`, a cross-episode `canonicalId`, provenance, and overlapping spans; over an Apple timed
 link, any destination, not just Apple's.
 
+**`img` is not one field once entity entries share the object with navigational chapters — it is
+two different claims wearing one name, and a consumer has to keep them apart.** A plain chapter's
+`img` is span-scoped decoration: whatever is happening in that stretch, this is a reasonable photo
+to show. An entity entry's `img` is a claim about that entity specifically: this photo depicts the
+car, person, or place named here, nothing else in the span. The row above maps them 1:1 as if they
+were interchangeable; they are not, and a renderer that treats them as one field will eventually
+show an entity-scoped claim ("this photo is the Buick 215") using a photo that only ever meant
+"this is roughly the right vibe for this stretch of the episode."
+
+This is not hypothetical. Car Curious's own chapter data already carries this shape today —
+Bring-a-Trailer-sourced shows have chapters whose `img` is scraped via Open Graph from the linked
+listing (a real photo of one specific car), sitting in the same per-episode object as sparse
+entity annotations that often have no `img` of their own (an engine, a technique, a magazine
+mentioned in passing). The iOS player's "no blank slot" rule (never leave a media slot empty) fell
+back an image-less entity card to the *chapter's* `img` when nothing else was available, and
+produced exactly the failure this note describes: a "Buick 215" engine term rendered over a real
+photo of an unrelated Jaguar, because the chapter covering that stretch of the episode happened to
+be a BaT listing readout for that Jaguar. The text on the card was still correct — only the photo
+implied a claim nothing in the data was making. Fixed client-side by gating the chapter-`img`
+fallback on the active card's own entity `type` (only a `car` entity may borrow it; anything else
+falls further, to episode/show art, which reads as decoration and not as a claim). But the client
+fix only stops our own player from doing this — any other consumer walking this spec's strawman
+JSON has no signal telling it `img` at the chapter level and `img` at the entity level carry
+different weight, because right now they're the same field.
+
 ---
 
 ## Strawman: a full chapters file
@@ -242,6 +267,13 @@ other examples use A for readability.
 - **Does entity data belong in chapters at all?** #469 stalled partly on this. The test raised
   there: data belongs if it is intrinsic metadata describing the same span, authored with the chapter
   (chapter art passes; boostagrams and live comments fail). A typed entity reference passes, and the
-  proposal should say so explicitly.
+  proposal should say so explicitly. Production evidence leans toward **separate**, not inline: once
+  a real per-episode consumer (Car Curious's iOS player) had both a sparse navigational chapter with
+  its own real photo and dense, often photo-less entity entries in the same object, its fallback
+  logic reached across the two and attached the chapter's photo to an unrelated entity card (see the
+  `img` note above). Inlining puts both object kinds in one array for every consumer to
+  disambiguate by convention; a separate file for dense entity data means a renderer walking the
+  navigational chapters never has an entity entry to reach for in the first place, and the failure
+  mode is structurally closed rather than merely documented against.
 - `canonicalId` as a bare QID, prefixed (`wikidata:Q…`), or a URL? Named `canonicalId` rather than
   `sameAs`/`wikidataId` to stay scheme-neutral.
