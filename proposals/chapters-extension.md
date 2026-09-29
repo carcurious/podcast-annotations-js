@@ -66,7 +66,7 @@ inventing a new mechanism, which first pointed this here. Three more arguments, 
 
 ## Prior art: the structure exists, with nowhere open to put it
 
-Moment-level annotation is not a bet on future demand. Five parties already produce it, and each
+Moment-level annotation is not a bet on future demand. Six parties already produce it, and each
 silos or discards the structure for lack of an open format.
 
 | Source | Who produces it | Structure it captures | Anchored to audio? | Where it gets stuck |
@@ -75,6 +75,7 @@ silos or discards the structure for lack of an open format.
 | **[Snipd](https://www.snipd.com/)** | App-derived; AI chapters plus one-tap snips | Time range, transcript excerpt, AI summary, notes | Yes | No type or canonical ID; stays in-app and flattens to Markdown on export |
 | **[Acquired](https://library.acquired.fm/)** "PDF companion" | Publisher, hand-authored | Timestamped chapters, plus typed people (role and org), a dated timeline, sourced entity data | Partly. Chapters are timed; the people and entity data carry no timestamps | The show does the work by hand, but nothing binds an entity to its moment, and it all sits in a PDF |
 | **[Iowa State PAR-TWiM](https://iastate.pressbooks.pub/par-twim/)** (2025) | Expert courseware; five authors, DOI, open-access | "Techniques (with Time Stamps)" and "Concepts (with Time Stamps)": typed entities over spans, linked to papers and figures | Yes (ranges) | Lives in a Pressbooks ebook as prose; no machine-readable form |
+| **[Hypothesis](https://web.hypothes.is/)** | Readers, students, and faculty; W3C social annotation on media transcripts | Free-text notes and replies on a quoted transcript passage, plus the media time range it covers | Yes, snapped to caption cues; text quote first, time range as fallback | No entity type or canonical ID; stays in the annotation service, keyed to the page that showed the transcript, not the audio |
 | **[Overcast transcript search](https://www.reddit.com/r/overcast/comments/1uvy9gc/transcripts_is_like_a_poor_mans_chapters/)** | Listener-improvised | None. ctrl-F over a derived transcript to reach "the part about X" | Loosely | No structure; you must know the term; a keyword hit, not the discussion start; nothing carries across episodes |
 
 The common objection ([Nathan Gathright](https://xoxo.zone/@nathan/116613844156212080), John
@@ -124,7 +125,7 @@ consumers treat chapters as sequential and non-overlapping.
 | `tags` | *(new)* | Freeform labels. |
 | `priority` | *(relates to `toc`)* | Editorial importance. |
 | `data` | *(new)* | Open extension object. |
-| `speaker`, `quote` | *(transcript / ext)* | Usually from the transcript. Not standardized here; carriable as extension fields. |
+| `speaker`, `quote` | *(transcript / ext)* | Usually from the transcript. Not standardized here; carriable as extension fields. Worth keeping `quote` anyway: text does not move under DAI, so it can re-anchor an entry against the as-served transcript, as Hypothesis anchors text-first. |
 | *(none)* | `toc` | `toc: false` hides an entry from the navigation list; reused to keep dense entries out of the human list. |
 
 Only `type` and `canonicalId` are standardized; the rest ride as extension fields (promotable later),
@@ -218,7 +219,8 @@ The fourth is the only structural ask, and the only one needing Podcast Index si
 **Deferred.** Daniel's #469 "super chapters" display extensions (multiple links, videos, text blocks,
 galleries, `children`, polls): a parallel track, kept separate so the minimal extension can ship
 without waiting. And DAI alignment: producing the canonical-to-as-served time map is its own problem;
-this assumes the map exists.
+this assumes the map exists. Until it does, an entry's `quote` is a fallback anchor that survives
+the shift.
 
 ## The replacement test
 
