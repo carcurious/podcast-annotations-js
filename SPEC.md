@@ -680,7 +680,7 @@ Maps to this W3C Web Annotation:
 | `type` | Custom `body.type` or encoded within `body.purpose`, depending on implementation |
 | `url` | Additional `body` with `purpose: "linking"` |
 | `image` | Additional `body` with `purpose: "depicting"` |
-| `quote` | `TextQuoteSelector` (`exact`) on a second `target` whose `source` is a transcript URL from `transcripts`; with no transcript, a `body` with `purpose: "quoting"` |
+| `quote` | `TextQuoteSelector` (`exact`) on an additional `target` whose `source` is a transcript URL from `transcripts`, preferring a format that holds the words verbatim (`text/html`, `text/plain`) over one with cue timings between them; with no transcript, a `body` with `purpose: "quoting"` |
 | `speaker` | May be represented via `creator` or external metadata in W3C systems |
 | `participation` | Not mapped (application-specific) |
 | `confidence` | Not mapped (application-specific) |
@@ -691,7 +691,7 @@ Maps to this W3C Web Annotation:
 
 ### Importing from W3C tools
 
-Not every W3C implementation targets time with Media Fragments. Hypothesis stores a transcript annotation's time range as its own selector type, `{ "type": "MediaTimeSelector", "start": 12.0, "end": 18.5 }` in seconds, next to a `TextQuoteSelector` for the passage, and its JSON-LD export passes `MediaTimeSelector` through unchanged. A consumer converting W3C annotations into this format SHOULD read either selector into `startTime`/`endTime`, SHOULD carry `TextQuoteSelector.exact` into `quote`, and SHOULD publish the result as its own [layer](#layers) rather than merging it into the producer's. Times recorded this way are usually snapped to caption-cue boundaries, so they are coarser than timings a producer derives from the audio.
+Not every W3C implementation targets time with Media Fragments. Hypothesis stores a transcript annotation's time range as its own selector type, `{ "type": "MediaTimeSelector", "start": 12.0, "end": 18.5 }` in seconds, next to a `TextQuoteSelector` for the passage, and its JSON-LD export passes `MediaTimeSelector` through unchanged. A consumer converting W3C annotations into this format SHOULD read either selector into `startTime`/`endTime`, SHOULD carry `TextQuoteSelector.exact` into `quote`, and SHOULD publish the result as its own [layer](#layers) rather than merging it into the producer's. Hypothesis's `target.source` is the page that displayed the transcript, not the audio file, so the consumer has to identify the episode and supply `episode.audioUrl` itself. Times recorded this way are usually snapped to caption-cue boundaries, so they are coarser than timings a producer derives from the audio.
 
 ## Relationship to Other Standards
 
