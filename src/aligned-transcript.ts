@@ -1,3 +1,4 @@
+import { findGap, lowerBound, sortByKey } from './utils.js'
 import type { VTTCue, AlignmentMapping, AlignmentRange, AlignmentGap } from './types.js'
 
 /** A segment in the aligned transcript — either content or a gap. */
@@ -27,43 +28,44 @@ export class AlignedTranscript {
     readonly mapping: AlignmentMapping
   ) {
     this.confidence = mapping.confidence
-    this.gaps = mapping.gaps
+    this.gaps = sortByKey(mapping.gaps, g => g.variantStart)
     this.segments = this._build()
   }
 
   private _build(): AlignedSegment[] {
     const result: AlignedSegment[] = []
-    const sortedRanges = [...this.mapping.ranges].sort((a, b) => a.variantStart - b.variantStart)
-    const sortedGaps = [...this.mapping.gaps].sort((a, b) => a.variantStart - b.variantStart)
+    const sortedRanges = sortByKey(this.mapping.ranges, r => r.variantStart)
+    const sortedCues = sortByKey(this.canonicalCues, c => c.startTime)
 
     // Merge gaps and remapped cues into a single timeline sorted by variant time
     let gapIdx = 0
 
     for (const range of sortedRanges) {
       // Insert any gaps that come before this range
-      while (gapIdx < sortedGaps.length && sortedGaps[gapIdx].variantStart < range.variantStart) {
-        result.push({ type: 'gap', gap: sortedGaps[gapIdx] })
+      while (gapIdx < this.gaps.length && this.gaps[gapIdx].variantStart < range.variantStart) {
+        result.push({ type: 'gap', gap: this.gaps[gapIdx] })
         gapIdx++
       }
 
       // Find canonical cues that fall within this range
       const offset = range.variantStart - range.canonicalStart
+      const startIdx = lowerBound(sortedCues, range.canonicalStart, c => c.startTime)
+      const endIdx = lowerBound(sortedCues, range.canonicalEnd, c => c.startTime)
 
-      for (const cue of this.canonicalCues) {
-        if (cue.startTime >= range.canonicalStart && cue.startTime < range.canonicalEnd) {
-          result.push({
-            type: 'content',
-            cue,
-            variantStart: cue.startTime + offset,
-            variantEnd: cue.endTime + offset
-          })
-        }
+      for (let i = startIdx; i < endIdx; i++) {
+        const cue = sortedCues[i]
+        result.push({
+          type: 'content',
+          cue,
+          variantStart: cue.startTime + offset,
+          variantEnd: cue.endTime + offset
+        })
       }
     }
 
     // Append any remaining gaps after the last range
-    while (gapIdx < sortedGaps.length) {
-      result.push({ type: 'gap', gap: sortedGaps[gapIdx] })
+    while (gapIdx < this.gaps.length) {
+      result.push({ type: 'gap', gap: this.gaps[gapIdx] })
       gapIdx++
     }
 
@@ -88,9 +90,7 @@ export class AlignedTranscript {
    * Check if a given variant time falls within a gap.
    */
   isInGap(variantTime: number): AlignmentGap | null {
-    return this.gaps.find(g =>
-      variantTime >= g.variantStart && variantTime < g.variantEnd
-    ) ?? null
+    return findGap(this.gaps, variantTime)
   }
 
   /**

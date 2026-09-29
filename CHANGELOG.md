@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.10.1 (2026-09-28)
+
+### Fixed
+- **`groupByEntity` now recovers `type`/`title` from `data` like the rest of the library does.** `AnnotationTimeline` and `enrichAnnotationsWithTiming` already fell back to `data.type`/`data.title`/`data.id` when a producer nested those fields instead of promoting them to the top level; `groupByEntity`'s grouping key and display fields didn't, so the same annotation could render correctly in a timeline widget but miskey or drop fields in a digest built from the same data.
+
+### Changed
+- Consolidated duplicated sort/binary-search/fetch-and-check/gap-lookup logic across `chapters.ts`, `transcript-sync.ts`, `aligned-transcript.ts`, `timing.ts`, `annotation-overlay.ts`, and `vtt-parser.ts` into shared helpers in `utils.ts` (`sortByKey`, `upperBound`, `lowerBound`, `findGap`, `fetchOrThrow`, `annotationField`). No public API changes.
+- `AlignedTranscript._build()` no longer rescans the full cue list for every alignment range; cues are sorted once and located per range with binary search.
+- `selectCurrentAnnotation` no longer scans the full annotation array on every `timeupdate`; it binary-searches to the relevant window instead.
+
 ## 0.10.0 (2026-09-05)
 
 ### Added

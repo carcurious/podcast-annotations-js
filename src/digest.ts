@@ -1,3 +1,4 @@
+import { annotationField } from './utils.js'
 import type { Annotation } from './types.js'
 
 /** A set of annotations that refer to the same entity, collapsed for digest rendering. */
@@ -41,15 +42,15 @@ function rank(a: Annotation, b: Annotation): number {
 function keyFor(annotation: Annotation, index: number): string {
   const canonicalId = annotation.canonicalId?.trim()
   if (canonicalId) return `id:${canonicalId}`
-  const title = annotation.title?.trim().toLowerCase()
-  if (title) return `t:${annotation.type ?? ''}:${title}`
+  const title = annotationField<string>(annotation, 'title')?.trim().toLowerCase()
+  if (title) return `t:${annotationField<string>(annotation, 'type') ?? ''}:${title}`
   return `i:${index}`
 }
 
 /** First non-empty value for a field, over members already ordered by rank. */
 function firstOf(members: Annotation[], field: 'explanation' | 'url' | 'image' | 'title' | 'type'): string | undefined {
   for (const member of members) {
-    const value = member[field]
+    const value = field === 'title' || field === 'type' ? annotationField<string>(member, field) : member[field]
     if (typeof value === 'string' && value.trim() !== '') return value
   }
   return undefined

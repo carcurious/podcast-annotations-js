@@ -1,4 +1,5 @@
 import { parseVTT, fetchVTT } from './vtt-parser.js'
+import { findGap, sortByKey, upperBound } from './utils.js'
 import type { VTTCue, AlignmentGap } from './types.js'
 
 export interface TranscriptSyncOptions {
@@ -62,7 +63,7 @@ export class TranscriptSync {
 
     this.container = options.container
     this.autoScrollEnabled = this.options.autoScroll
-    this._gaps = (options.gaps ?? []).sort((a, b) => a.variantStart - b.variantStart)
+    this._gaps = sortByKey(options.gaps ?? [], g => g.variantStart)
 
     this._cacheSegments()
 
@@ -88,7 +89,7 @@ export class TranscriptSync {
     const time = this.audio.currentTime
 
     // Check if we're inside a gap
-    const gap = this._findGap(time)
+    const gap = findGap(this._gaps, time)
     if (gap) {
       if (!this._inGap) {
         this._inGap = true
@@ -100,19 +101,7 @@ export class TranscriptSync {
       this.options.onGapExit?.()
     }
 
-    let activeIndex = -1
-
-    let lo = 0
-    let hi = this._startTimes.length - 1
-    while (lo <= hi) {
-      const mid = (lo + hi) >>> 1
-      if (this._startTimes[mid] <= time) {
-        activeIndex = mid
-        lo = mid + 1
-      } else {
-        hi = mid - 1
-      }
-    }
+    const activeIndex = upperBound(this._startTimes, time, t => t) - 1
 
     if (activeIndex === this.activeSegmentIndex) return
 
@@ -128,14 +117,6 @@ export class TranscriptSync {
     if (activeIndex >= 0 && this.autoScrollEnabled && !this.audio.paused) {
       this._scrollToSegment(this._segments[activeIndex])
     }
-  }
-
-  private _findGap(time: number): AlignmentGap | null {
-    for (const gap of this._gaps) {
-      if (time >= gap.variantStart && time < gap.variantEnd) return gap
-      if (gap.variantStart > time) break // gaps are sorted, no need to check further
-    }
-    return null
   }
 
   private _updateSegmentClasses(prevIndex: number, newIndex: number): void {
@@ -206,7 +187,7 @@ export class TranscriptSync {
 
   /** Update the gap ranges (e.g. after receiving an alignment mapping). */
   setGaps(gaps: AlignmentGap[]): void {
-    this._gaps = [...gaps].sort((a, b) => a.variantStart - b.variantStart)
+    this._gaps = sortByKey(gaps, g => g.variantStart)
     this._inGap = false
     this.activeSegmentIndex = -1
   }

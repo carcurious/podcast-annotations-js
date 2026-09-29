@@ -1,3 +1,4 @@
+import { fetchOrThrow } from './utils.js'
 import type { VTTCue } from './types.js'
 
 /**
@@ -70,10 +71,7 @@ function parseTimestamp(
  * Fetch and parse a VTT/SRT file from a URL.
  */
 export async function fetchVTT(url: string): Promise<VTTCue[]> {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Failed to fetch VTT: ${response.status} ${response.statusText}`)
-  }
+  const response = await fetchOrThrow(url, 'VTT')
   const text = await response.text()
   return parseVTT(text)
 }

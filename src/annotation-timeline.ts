@@ -1,4 +1,5 @@
 import { enrichAnnotationsWithTiming } from './timing.js'
+import { annotationField } from './utils.js'
 import type { Annotation, EnrichedAnnotation } from './types.js'
 
 export interface AnnotationTimelineOptions {
@@ -73,8 +74,8 @@ export class AnnotationTimeline {
       marker.className = this.options.markerClass
       marker.style.left = `${(annotation.startTime / dur * 100).toFixed(2)}%`
 
-      const type = annotation.type ?? annotation.data?.type as string | undefined
-      const title = annotation.title ?? annotation.data?.title as string | undefined
+      const type = annotationField<string>(annotation, 'type')
+      const title = annotationField<string>(annotation, 'title')
       if (type) {
         marker.dataset.type = type
       }

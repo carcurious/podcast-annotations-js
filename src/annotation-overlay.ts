@@ -1,14 +1,12 @@
 import { enrichAnnotationsWithTiming, selectCurrentAnnotation, upcomingAnnotations } from './timing.js'
+import { fetchOrThrow } from './utils.js'
 import type { Annotation, AnnotationSet, EnrichedAnnotation, TimingOptions } from './types.js'
 
 /**
  * Fetch and parse a `.annotations.json` file.
  */
 export async function fetchAnnotationSet(url: string): Promise<AnnotationSet> {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Failed to fetch annotation set: ${response.status} ${response.statusText}`)
-  }
+  const response = await fetchOrThrow(url, 'annotation set')
   return response.json()
 }
 

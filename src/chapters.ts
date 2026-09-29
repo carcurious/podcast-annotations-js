@@ -1,4 +1,4 @@
-import { formatTime } from './utils.js'
+import { fetchOrThrow, formatTime, sortByKey, upperBound } from './utils.js'
 import type { Chapter, ChaptersJSON } from './types.js'
 
 /**
@@ -6,19 +6,17 @@ import type { Chapter, ChaptersJSON } from './types.js'
  */
 export function parseChaptersJSON(json: string | ChaptersJSON): Chapter[] {
   const data: ChaptersJSON = typeof json === 'string' ? JSON.parse(json) : json
-  return (data.chapters ?? [])
-    .filter(ch => ch.startTime !== undefined && ch.title)
-    .sort((a, b) => a.startTime - b.startTime)
+  return sortByKey(
+    (data.chapters ?? []).filter(ch => ch.startTime !== undefined && ch.title),
+    ch => ch.startTime
+  )
 }
 
 /**
  * Fetch and parse a Podcasting 2.0 JSON chapters file from a URL.
  */
 export async function fetchChapters(url: string): Promise<Chapter[]> {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Failed to fetch chapters: ${response.status} ${response.statusText}`)
-  }
+  const response = await fetchOrThrow(url, 'chapters')
   const data = await response.json()
   return parseChaptersJSON(data)
 }
@@ -122,20 +120,7 @@ export class ChapterSync {
 
   private _update(): void {
     const time = this.audio.currentTime
-    let idx = -1
-
-    // Binary search for active chapter
-    let lo = 0
-    let hi = this.chapters.length - 1
-    while (lo <= hi) {
-      const mid = (lo + hi) >>> 1
-      if (this.chapters[mid].startTime <= time) {
-        idx = mid
-        lo = mid + 1
-      } else {
-        hi = mid - 1
-      }
-    }
+    const idx = upperBound(this.chapters, time, ch => ch.startTime) - 1
 
     if (idx === this.activeIndex) return
 
@@ -169,7 +154,7 @@ export class ChapterSync {
 
   /** Replace chapters and re-render. */
   setChapters(chapters: Chapter[]): void {
-    this.chapters = chapters.sort((a, b) => a.startTime - b.startTime)
+    this.chapters = sortByKey(chapters, ch => ch.startTime)
     this.activeIndex = -1
     this._render()
     this._update()

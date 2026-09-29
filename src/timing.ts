@@ -1,3 +1,4 @@
+import { annotationField, sortByKey, upperBound } from './utils.js'
 import type { Annotation, EnrichedAnnotation, TimingOptions } from './types.js'
 
 const DEFAULTS: Required<TimingOptions> = {
@@ -14,7 +15,7 @@ export function enrichAnnotationsWithTiming(
   options: TimingOptions = {}
 ): EnrichedAnnotation[] {
   const { leadTime, transitionBuffer, maxExtension } = { ...DEFAULTS, ...options }
-  const sorted = [...annotations].sort((a, b) => a.startTime - b.startTime)
+  const sorted = sortByKey(annotations, a => a.startTime)
 
   return sorted.map((annotation, index) => {
     const nextAnnotation = sorted[index + 1]
@@ -29,7 +30,7 @@ export function enrichAnnotationsWithTiming(
 
     return {
       ...annotation,
-      id: annotation.id ?? (annotation.data?.id as string | number | undefined) ?? `_pa_${index}`,
+      id: annotationField<string | number>(annotation, 'id') ?? `_pa_${index}`,
       triggerStartTime: annotation.startTime - leadTime,
       displayEndTime
     }
@@ -43,14 +44,15 @@ export function selectCurrentAnnotation(
   annotations: EnrichedAnnotation[],
   currentTime: number
 ): EnrichedAnnotation | null {
-  return annotations.findLast((a) =>
-    currentTime >= a.triggerStartTime && currentTime <= a.displayEndTime
-  ) ?? null
+  // Annotations at or after this index can't have started yet, so the match
+  // (if any) is at or before it. Scan backward from there instead of the whole array.
+  const cursor = upperBound(annotations, currentTime, a => a.triggerStartTime)
+  for (let i = cursor - 1; i >= 0; i--) {
+    if (annotations[i].displayEndTime >= currentTime) return annotations[i]
+  }
+  return null
 }
 
-/**
- * Get annotations coming up after the current time.
- */
 /**
  * Get annotations coming up after the current time.
  * Assumes annotations are sorted by startTime (as returned by enrichAnnotationsWithTiming).
@@ -60,15 +62,8 @@ export function upcomingAnnotations(
   currentTime: number,
   limit: number = 3
 ): EnrichedAnnotation[] {
-  // Binary search for first annotation whose display window hasn't started yet.
   // Compare against triggerStartTime (not startTime) so an annotation that is
   // already active (triggerStartTime <= currentTime) is not also listed as upcoming.
-  let lo = 0
-  let hi = annotations.length
-  while (lo < hi) {
-    const mid = (lo + hi) >>> 1
-    if (annotations[mid].triggerStartTime <= currentTime) lo = mid + 1
-    else hi = mid
-  }
+  const lo = upperBound(annotations, currentTime, a => a.triggerStartTime)
   return annotations.slice(lo, lo + limit)
 }
