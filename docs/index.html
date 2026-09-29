@@ -19,612 +19,249 @@
   <meta name="twitter:image" content="https://www.podcastannotation.org/og-image.png">
   <link rel="canonical" href="https://www.podcastannotation.org">
   <style>
-    @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/fraunces-400.woff2") format("woff2"); }
-    @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/fraunces-500.woff2") format("woff2"); }
-    @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/fraunces-600.woff2") format("woff2"); }
-    @font-face { font-family: "Plex Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/plex-sans-400.woff2") format("woff2"); }
-    @font-face { font-family: "Plex Sans"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/plex-sans-500.woff2") format("woff2"); }
-    @font-face { font-family: "Plex Sans"; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/plex-sans-600.woff2") format("woff2"); }
-    @font-face { font-family: "Plex Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/plex-mono-400.woff2") format("woff2"); }
-    @font-face { font-family: "Plex Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/plex-mono-500.woff2") format("woff2"); }
     :root {
-      --bg: #FCFCFB;
-      --surface: #ffffff;
-      --surface-muted: #F4F4F1;
-      --text: #0B0B0C;
-      --muted: #54565B;
-      --border: #E4E4E1;
-      --border-strong: #CFCFCB;
-      --accent: #E5341F;
-      --accent-soft: #FBE7E3;
-      --code-bg: #F6F6F4;
-      --shadow: none;
-      --max-page: 1040px;
-      --max-spec: 720px;
-      --serif: "Fraunces", Georgia, "Times New Roman", serif;
-      --sans: "Plex Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --mono: "Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --text: #1b1b1b;
+      --muted: #5f5f5f;
+      --rule: #dcdcdc;
+      --link: #1f4e9c;
+      --code-bg: #f5f5f2;
+      --mark: #b3261e;
+      --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      background: var(--bg);
+      background: #fff;
       color: var(--text);
-      font-family: var(--sans);
+      font-family: var(--serif);
+      font-size: 18px;
       line-height: 1.6;
-      padding: 32px 18px 72px;
     }
-    a {
-      color: var(--text);
-      text-decoration: underline;
-      text-decoration-color: var(--border-strong);
-      text-underline-offset: 2px;
-      transition: color 0.15s, text-decoration-color 0.15s;
+    main, .masthead, footer {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 20px;
     }
-    a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+    a { color: var(--link); text-underline-offset: 2px; }
+    a:hover { text-decoration-thickness: 2px; }
     code {
       font-family: var(--mono);
+      font-size: 0.84em;
       background: var(--code-bg);
-      padding: 0.1em 0.35em;
-      border-radius: 4px;
-      font-size: 0.92em;
+      padding: 0.1em 0.3em;
+      border-radius: 3px;
     }
     pre {
-      margin: 0;
-      font-family: var(--mono);
-      font-size: 0.92rem;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 16px;
-      overflow: auto;
-    }
-    .page {
-      max-width: var(--max-page);
-      margin: 0 auto;
-    }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-      margin-bottom: 44px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--border);
-    }
-    .topbar strong {
-      font-family: var(--mono);
-      font-weight: 500;
-      font-size: 0.78rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .topbar nav {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      font-family: var(--mono);
-      font-size: 0.76rem;
-      letter-spacing: 0.02em;
-    }
-    .topbar nav a { color: var(--muted); text-decoration: none; }
-    .topbar nav a:hover { color: var(--accent); }
-    .intro {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
-      gap: 32px;
-      align-items: start;
-      margin-bottom: 40px;
-    }
-    h1, h2, h3 {
-      margin: 0;
-      font-weight: 600;
-      line-height: 1.1;
-      letter-spacing: 0;
-    }
-    h1 {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: 3.5rem;
-      line-height: 1.04;
-      letter-spacing: -0.015em;
-      margin-bottom: 20px;
-    }
-    .intro p,
-    .section p {
-      margin: 0 0 14px;
-      color: var(--muted);
-      max-width: 64ch;
-      font-size: 1rem;
-    }
-    .intro-cta {
-      margin-top: 24px;
-    }
-    .cta-spec {
-      display: inline-block;
-      font-weight: 600;
-      font-size: 1.05rem;
-      color: var(--text);
-      text-decoration: underline;
-      text-decoration-thickness: 2px;
-      text-decoration-color: var(--text);
-      text-underline-offset: 5px;
-    }
-    .cta-spec:hover { color: var(--accent); text-decoration-color: var(--accent); }
-    .section {
-      margin-bottom: 40px;
-    }
-    .section h2 {
-      font-family: var(--serif);
-      font-weight: 500;
-      font-size: 1.85rem;
-      letter-spacing: -0.01em;
-      margin-bottom: 14px;
-    }
-    .lede {
-      max-width: 60ch;
-      font-size: 1.18rem;
-      line-height: 1.55;
-      color: var(--text);
-      margin: 0 0 26px;
-    }
-    .spec-facts {
-      margin: 30px 0 0;
-      max-width: 420px;
-      border-top: 1px solid var(--border-strong);
-    }
-    .spec-facts > div {
-      display: grid;
-      grid-template-columns: 104px minmax(0, 1fr);
-      gap: 14px;
-      align-items: baseline;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .spec-facts dt {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .spec-facts dd {
-      margin: 0;
-      font-size: 0.9rem;
-      overflow-wrap: anywhere;
-    }
-    .spec-facts dd.mono {
       font-family: var(--mono);
       font-size: 0.8rem;
-    }
-    .code-figure {
-      margin: 0;
-    }
-    .code-figure figcaption {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 0.88rem;
       line-height: 1.5;
+      background: var(--code-bg);
+      padding: 14px 16px;
+      overflow: auto;
+      border-radius: 3px;
     }
-    .code-figure figcaption code {
-      background: transparent;
-      padding: 0;
+    pre code { background: none; padding: 0; font-size: inherit; }
+    h1, h2, h3, h4 { line-height: 1.25; }
+    h1 { font-size: 2.1rem; margin: 0 0 6px; }
+    h2 { font-size: 1.45rem; margin: 2.4em 0 0.6em; }
+    h3 { font-size: 1.12rem; margin: 1.8em 0 0.5em; }
+    h4 { font-size: 1rem; margin: 1.5em 0 0.4em; }
+    ul, ol { padding-left: 1.4em; }
+    li { margin-bottom: 0.3em; }
+    blockquote { margin: 1em 0; padding-left: 1em; border-left: 3px solid var(--rule); color: var(--muted); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      margin: 1em 0 1.4em;
     }
-    .field-note {
-      grid-column: 1 / -1;
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-    .demo {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 20px;
-    }
-    .demo-head {
+    th, td { text-align: left; vertical-align: top; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--rule); }
+    th { border-bottom: 2px solid var(--text); }
+    td code, th code { font-size: 0.92em; }
+    .table-wrap { overflow-x: auto; }
+
+    .masthead {
       display: flex;
       justify-content: space-between;
-      gap: 14px;
       align-items: baseline;
-      margin-bottom: 16px;
       flex-wrap: wrap;
+      gap: 6px 20px;
+      padding-top: 18px;
+      padding-bottom: 18px;
+      font-family: var(--sans);
+      font-size: 0.85rem;
     }
-    .demo-head p {
-      margin: 0;
+    .masthead a { color: var(--text); text-decoration: none; }
+    .masthead a:hover { text-decoration: underline; }
+    .masthead nav { display: flex; gap: 18px; flex-wrap: wrap; }
+    .masthead nav a { color: var(--muted); }
+
+    .doc-status {
+      margin: 0 0 28px;
+      color: var(--muted);
       font-size: 0.95rem;
     }
+    .intro-example { margin: 1.4em 0; }
+    .intro-example pre { margin: 0; }
+    .intro-example figcaption { margin-top: 6px; color: var(--muted); font-size: 0.9rem; }
+
+    .demo {
+      margin: 1.2em 0 0;
+      border-top: 2px solid var(--text);
+      border-bottom: 1px solid var(--rule);
+      padding: 12px 0 20px;
+    }
+    .demo-episode { margin: 0; font-family: var(--sans); font-size: 0.85rem; }
+    .demo-episode span { color: var(--muted); }
     .demo-track {
       position: relative;
-      height: 54px;
-      margin: 16px 0 4px;
+      height: 4px;
+      margin: 18px 0 6px;
+      background: var(--rule);
     }
-    .demo-track::before {
-      content: "";
+    .demo-tick {
       position: absolute;
-      left: 0;
-      right: 0;
-      top: 15px;
-      height: 2px;
-      background: var(--border-strong);
+      top: -5px;
+      width: 2px;
+      height: 14px;
+      margin-left: -1px;
+      background: var(--muted);
     }
-    .demo-track-labels {
+    .demo-tick.is-active { background: var(--mark); width: 4px; margin-left: -2px; }
+    .demo-track-ends {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 22px;
-      color: var(--muted);
       font-family: var(--mono);
-      font-size: 0.74rem;
-    }
-    .demo-marker {
-      position: absolute;
-      top: 9px;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 11px;
-      border: 0;
-      background: transparent;
-      padding: 0;
-      cursor: pointer;
+      font-size: 0.72rem;
       color: var(--muted);
-      text-align: center;
+      margin-bottom: 16px;
     }
-    .demo-marker-dot {
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: 2px solid var(--border-strong);
-      box-sizing: border-box;
-      transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
-    }
-    .demo-marker:hover .demo-marker-dot { border-color: var(--text); }
-    .demo-marker-time {
-      display: block;
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      transition: color 0.18s;
-    }
-    .demo-marker.is-active { color: var(--text); }
-    .demo-marker.is-active .demo-marker-dot {
-      background: var(--accent);
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(229, 52, 31, 0.14);
-    }
-    .demo-detail {
-      max-width: 760px;
-    }
-    .demo-card {
+    .demo-body {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(160px, 220px);
-      gap: 20px;
-      align-items: stretch;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: var(--surface-muted);
-      padding: 18px;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 24px;
     }
-    .demo-copy {
-      min-width: 0;
-    }
-    .demo-art {
-      min-height: 150px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      background: var(--code-bg);
-      overflow: hidden;
-      position: relative;
-    }
-    .demo-art img {
-      width: 100%;
-      height: 100%;
-      min-height: 150px;
-      object-fit: cover;
+    .demo-list { list-style: none; margin: 0; padding: 0; font-family: var(--sans); font-size: 0.88rem; }
+    .demo-list li { margin: 0; }
+    .demo-moment {
       display: block;
-    }
-    .demo-art-fallback {
-      min-height: 150px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      color: var(--text);
-      font-family: var(--mono);
-      text-align: center;
-      padding: 16px;
-    }
-    .demo-art-type {
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .demo-art-title {
-      font-family: var(--serif);
-      font-size: 1.35rem;
-      line-height: 1.1;
-    }
-    .demo-art-time {
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
-    .demo-type {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-    .demo-copy h3 {
-      font-family: var(--serif);
-      font-weight: 500;
-      font-size: 1.9rem;
-      letter-spacing: 0;
-      margin-bottom: 10px;
-    }
-    .demo-copy p {
-      margin: 0 0 12px;
-      color: var(--muted);
-    }
-    .demo-quote {
-      padding-left: 12px;
-      border-left: 3px solid var(--border);
-      font-style: italic;
-    }
-    .demo-quote[hidden] { display: none; }
-    .demo-payload {
-      margin-top: 14px;
-    }
-    .demo-payload summary {
+      width: 100%;
+      text-align: left;
+      font: inherit;
+      color: var(--link);
+      background: none;
+      border: 0;
+      border-left: 3px solid transparent;
+      padding: 6px 0 6px 10px;
       cursor: pointer;
-      color: var(--text);
-      font-weight: 500;
-      text-decoration: underline;
-      text-decoration-color: var(--border-strong);
-      text-underline-offset: 2px;
-      margin-bottom: 8px;
     }
-    .demo-payload summary:hover { color: var(--accent); text-decoration-color: var(--accent); }
-    .demo-payload pre {
-      font-size: 0.82rem;
-      max-height: 260px;
-    }
-    .demo-jump-label {
-      margin-top: 18px;
-      margin-bottom: 8px;
+    .demo-moment:hover { text-decoration: underline; }
+    .demo-moment[aria-pressed="true"] { color: var(--text); border-left-color: var(--mark); }
+    .demo-moment-time { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); margin-right: 4px; }
+    .demo-detail h3 { margin: 0 0 4px; font-size: 1.3rem; }
+    .demo-meta { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+    .demo-detail p { margin: 0 0 10px; }
+    .demo-figure { float: right; width: 200px; margin: 0 0 10px 18px; }
+    .demo-figure img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--code-bg); }
+    .demo-figure figcaption { font-family: var(--sans); font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .demo-detail details { clear: both; padding-top: 4px; font-size: 0.92rem; }
+    .demo-detail summary { cursor: pointer; color: var(--link); }
+    .demo-detail details pre { max-height: 300px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    [hidden] { display: none !important; }
+
+    .spec { margin-top: 3em; }
+    footer {
+      margin-top: 4em;
+      padding-top: 16px;
+      padding-bottom: 40px;
+      border-top: 1px solid var(--rule);
       color: var(--muted);
       font-size: 0.9rem;
     }
-    .demo-chips {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .demo-chip {
-      border: 1px solid var(--border);
-      background: transparent;
-      border-radius: 4px;
-      padding: 10px 12px;
-      text-align: left;
-      cursor: pointer;
-      min-width: 170px;
-      font-family: inherit;
-    }
-    .demo-chip:hover { background: var(--surface-muted); }
-    .demo-chip span,
-    .demo-chip strong {
-      display: block;
-    }
-    .demo-chip span {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .demo-chip.is-active span { color: var(--accent); }
-    .demo-chip strong {
-      font-size: 0.95rem;
-      color: var(--text);
-    }
-    .demo-chip.is-active {
-      border-color: var(--text);
-      background: var(--surface-muted);
-    }
-    .spec-wrap {
-      margin-top: 48px;
-      padding-top: 36px;
-      border-top: 1px solid var(--border-strong);
-    }
-    #spec {
-      max-width: var(--max-spec);
-    }
-    #spec h1 {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: 2.6rem;
-      letter-spacing: -0.015em;
-      margin-bottom: 0.5rem;
-    }
-    #spec h2 {
-      font-family: var(--serif);
-      font-weight: 500;
-      font-size: 1.7rem;
-      letter-spacing: -0.01em;
-      margin-top: 2.8rem;
-      margin-bottom: 0.9rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid var(--border);
-    }
-    #spec h3 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-top: 1.7rem;
-      margin-bottom: 0.55rem;
-    }
-    #spec p, #spec ul, #spec ol, #spec table, #spec pre, #spec blockquote {
-      margin-bottom: 1rem;
-    }
-    #spec ul, #spec ol {
-      padding-left: 1.35rem;
-    }
-    #spec li {
-      margin-bottom: 0.35rem;
-    }
-    #spec table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
-    }
-    #spec th, #spec td {
-      text-align: left;
-      padding: 0.6rem 0.8rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    #spec thead th {
-      font-family: var(--mono);
-      font-weight: 500;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--muted);
-      border-bottom: 1px solid var(--border-strong);
-    }
-    #spec tbody tr:hover { background: var(--code-bg); }
-    #spec blockquote {
-      margin-left: 0;
-      padding-left: 1rem;
-      border-left: 3px solid var(--border);
-      color: var(--muted);
-    }
-    footer {
-      margin-top: 28px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-    @media (max-width: 900px) {
-      .intro,
-      .demo-card {
-        grid-template-columns: 1fr;
-      }
-    }
-    @media (max-width: 720px) {
-      body {
-        padding: 22px 14px 56px;
-      }
-      h1 {
-        font-size: 2.4rem;
-      }
-      .topbar {
-        display: block;
-      }
-      .topbar nav {
-        margin-top: 10px;
-      }
-      .demo-chip {
-        min-width: 0;
-        flex: 1 1 100%;
-      }
+
+    @media (max-width: 640px) {
+      body { font-size: 17px; }
+      main, .masthead, footer { padding: 0 16px; }
+      .masthead { padding-top: 14px; padding-bottom: 14px; }
+      h1 { font-size: 1.7rem; }
+      .demo-body { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+      .demo-figure { float: none; width: 100%; margin: 0 0 10px; }
+      .demo-figure img { aspect-ratio: 16 / 9; }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <header class="topbar">
-      <strong>Podcast Annotation Format</strong>
-      <nav>
-        <a href="#example">Example</a>
-        <a href="#standards">Standards</a>
-        <a href="#spec">Specification</a>
-        <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>
-      </nav>
-    </header>
+  <header class="masthead">
+    <a href="/">Podcast Annotation Format</a>
+    <nav>
+      <a href="#example">Example</a>
+      <a href="#overview">Specification</a>
+      <a href="#changelog">Changelog</a>
+      <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>
+    </nav>
+  </header>
 
-    <section class="intro">
-      <div>
-        <h1>Timestamped context for podcast audio.</h1>
-        <p class="lede">A podcast annotation marks a moment in an episode: a car at 24:33, a person at 47:26, a place at 1:12:29. It names the entity or topic, when it appears, and the context needed to make sense of it.</p>
-        <p class="intro-cta"><a class="cta-spec" href="#spec">Read the specification</a></p>
-        <dl class="spec-facts">
-          <div><dt>This version</dt><dd>1.2.0 (stable)</dd></div>
-          <div><dt>Last updated</dt><dd>2026-09-28</dd></div>
-          <div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></dd></div>
-          <div><dt>Source</dt><dd class="mono"><a href="https://github.com/carcurious/podcast-annotations-js">carcurious/podcast-annotations-js</a></dd></div>
-        </dl>
-      </div>
-      <figure class="code-figure">
-        <pre><code>{
+  <main>
+    <h1>Podcast Annotation Format</h1>
+    <p class="doc-status">Version 1.2.0, last changed 2026-09-28. Published under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; source and issues on <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.</p>
+
+    <p>A podcast annotation marks a moment in an episode: a car at 24:33, a person at 47:26, a place at 1:12:29. It names the entity or topic, when it appears, and the context needed to make sense of it.</p>
+    <p>Only <code>startTime</code> and <code>endTime</code> are required. Fields like <code>type</code>, <code>title</code>, <code>explanation</code>, <code>url</code>, and <code>quote</code> are there for when a player, search index, archive, or show-notes tool needs more.</p>
+
+    <figure class="intro-example">
+      <pre><code>{
   "startTime": 1473.36,
   "endTime": 1477.68,
   "type": "car",
   "title": "BMW M5"
 }</code></pre>
-        <figcaption>A complete annotation as published: this one marks 24:33 to 24:37 in a real episode.</figcaption>
-      </figure>
-      <p class="field-note">Each annotation starts with <code>startTime</code> and <code>endTime</code>. Add optional fields like <code>type</code>, <code>title</code>, <code>url</code>, <code>quote</code>, and <code>data</code> when a player, search index, archive, or show-notes workflow needs more context.</p>
-    </section>
+      <figcaption>A complete annotation, marking 24:33–24:37 of a real episode.</figcaption>
+    </figure>
 
-    <section class="section" id="example">
-      <h2>Example</h2>
-      <p>Three real annotations from <code>everyday-driver-episode-1013.annotations.json</code>. Click a marker to see what a player could show at that moment.</p>
-      <div class="demo">
-        <div class="demo-head">
-          <strong>Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013</strong>
-          <p>113 annotations across 1:37:04</p>
-        </div>
-        <div class="demo-track">
-          <button class="demo-marker is-active" type="button" data-index="0" style="left:25.30%">
-        <span class="demo-marker-dot"></span>
-        <span class="demo-marker-time">24:33</span>
-      </button><button class="demo-marker" type="button" data-index="1" style="left:48.86%">
-        <span class="demo-marker-dot"></span>
-        <span class="demo-marker-time">47:26</span>
-      </button><button class="demo-marker" type="button" data-index="2" style="left:74.68%">
-        <span class="demo-marker-dot"></span>
-        <span class="demo-marker-time">1:12:29</span>
-      </button>
-        </div>
-        <div class="demo-track-labels">
-          <span>0:00</span>
-          <span>1:37:04</span>
-        </div>
-        <div class="demo-detail">
-          <div class="demo-card">
-            <div class="demo-copy">
-              <div class="demo-type" id="demo-type">car</div>
-              <h3 id="demo-title">BMW M5</h3>
-              <p id="demo-explanation">The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology.</p>
-              <p class="demo-quote" id="demo-quote" hidden></p>
-            </div>
-            <div class="demo-art">
-              <img id="demo-image" src="https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg" alt="BMW M5">
-              <div class="demo-art-fallback" id="demo-art-fallback" hidden>
-                <span class="demo-art-type" id="demo-art-type">car</span>
-                <strong class="demo-art-title" id="demo-art-title">BMW M5</strong>
-                <span class="demo-art-time" id="demo-art-time">24:33-24:37</span>
-              </div>
-            </div>
-          </div>
-          <details class="demo-payload">
-            <summary>View annotation JSON</summary>
+    <p id="standards">Annotations sit beside the formats podcasts already have: WebVTT and SRT carry the words, RSS and show notes describe the episode, and Wikidata or the BBC ontologies can supply stable identifiers for the entities. The spec defines the annotation itself; a sidecar JSON file is the simplest way to ship one, and RSS or an API work too.</p>
+
+    <h2 id="example">Example</h2>
+    <p>Three annotations taken from <a href="https://github.com/carcurious/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json"><code>everyday-driver-episode-1013.annotations.json</code></a>, shown the way a player might show them.</p>
+
+    <div class="demo">
+      <p class="demo-episode">Cars That Need A Comeback (A-M), The Fourth Car, Minivan Peer Pressure | Episode 1,013 <span>&middot; 113 annotations, 1:37:04</span></p>
+      <div class="demo-track" aria-hidden="true">
+        <span class="demo-tick is-active" data-index="0" style="left:25.30%" title="BMW M5"></span><span class="demo-tick" data-index="1" style="left:48.86%" title="Pontiac Solstice"></span><span class="demo-tick" data-index="2" style="left:74.68%" title="Subaru Brz"></span>
+      </div>
+      <div class="demo-track-ends" aria-hidden="true"><span>0:00</span><span>1:37:04</span></div>
+
+      <div class="demo-body">
+        <ol class="demo-list">
+        <li><button class="demo-moment" type="button" data-index="0" aria-pressed="true">
+          <span class="demo-moment-time">24:33</span> BMW M5
+        </button></li>
+        <li><button class="demo-moment" type="button" data-index="1" aria-pressed="false">
+          <span class="demo-moment-time">47:26</span> Pontiac Solstice
+        </button></li>
+        <li><button class="demo-moment" type="button" data-index="2" aria-pressed="false">
+          <span class="demo-moment-time">1:12:29</span> Subaru Brz
+        </button></li>
+        </ol>
+        <div class="demo-detail" aria-live="polite">
+          <figure class="demo-figure" id="demo-figure">
+            <img id="demo-image" src="https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg" alt="BMW M5">
+            <figcaption id="demo-credit">Photo: Vauxford (CC BY-SA 4.0)</figcaption>
+          </figure>
+          <h3 id="demo-title">BMW M5</h3>
+          <p class="demo-meta" id="demo-meta">car, 24:33–24:37</p>
+          <p id="demo-explanation">The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.</p>
+          <details>
+            <summary>Annotation JSON</summary>
             <pre id="demo-payload">{
   &quot;startTime&quot;: 1473.36,
   &quot;endTime&quot;: 1477.68,
   &quot;type&quot;: &quot;car&quot;,
   &quot;title&quot;: &quot;BMW M5&quot;,
+  &quot;explanation&quot;: &quot;The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.&quot;,
   &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg&quot;,
   &quot;data&quot;: {
     &quot;simplifiedExplanation&quot;: &quot;The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology.&quot;,
@@ -633,83 +270,10 @@
 }</pre>
           </details>
         </div>
-        <div class="demo-jump-label">Jump to moment</div>
-        <div class="demo-chips">
-          <button class="demo-chip is-active" type="button"
-        data-index="0"
-        data-title="BMW M5"
-        data-type="car"
-        data-explanation="The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology."
-        data-quote=""
-        data-payload="{
-  &quot;startTime&quot;: 1473.36,
-  &quot;endTime&quot;: 1477.68,
-  &quot;type&quot;: &quot;car&quot;,
-  &quot;title&quot;: &quot;BMW M5&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg&quot;,
-  &quot;data&quot;: {
-    &quot;simplifiedExplanation&quot;: &quot;The BMW M5 is a fast and powerful car that&#39;s part of the 5 Series lineup. It&#39;s designed for high performance and often features advanced technology.&quot;,
-    &quot;imageAttribution&quot;: &quot;Vauxford (CC BY-SA 4.0)&quot;
-  }
-}"
-        data-start="1473.36">
-        <span>24:33</span>
-        <strong>BMW M5</strong>
-      </button><button class="demo-chip" type="button"
-        data-index="1"
-        data-title="Pontiac Solstice"
-        data-type="car"
-        data-explanation="This moment is about Pontiac Solstice. The annotation gives a player the title, type, timing, and artwork for this reference."
-        data-quote=""
-        data-payload="{
-  &quot;startTime&quot;: 2846,
-  &quot;endTime&quot;: 2848.88,
-  &quot;type&quot;: &quot;car&quot;,
-  &quot;title&quot;: &quot;Pontiac Solstice&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg&quot;,
-  &quot;data&quot;: {
-    &quot;imageAttribution&quot;: &quot;MercurySable99 (CC BY-SA 4.0)&quot;
-  }
-}"
-        data-start="2846">
-        <span>47:26</span>
-        <strong>Pontiac Solstice</strong>
-      </button><button class="demo-chip" type="button"
-        data-index="2"
-        data-title="Subaru Brz"
-        data-type="car"
-        data-explanation="This moment is about Subaru Brz. The annotation gives a player the title, type, timing, and artwork for this reference."
-        data-quote=""
-        data-payload="{
-  &quot;startTime&quot;: 4349.68,
-  &quot;endTime&quot;: 4353.92,
-  &quot;type&quot;: &quot;car&quot;,
-  &quot;title&quot;: &quot;Subaru Brz&quot;,
-  &quot;image&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg&quot;,
-  &quot;data&quot;: {
-    &quot;imageAttribution&quot;: &quot;Dinkun Chen (CC BY-SA 4.0)&quot;
-  }
-}"
-        data-start="4349.68">
-        <span>1:12:29</span>
-        <strong>Subaru Brz</strong>
-      </button>
-        </div>
       </div>
-    </section>
+    </div>
 
-    <section class="section" id="standards">
-      <h2>Where this fits</h2>
-      <p>This spec defines the annotation, not the transport. A sidecar JSON file is the simplest carrier today, but the same annotation model can be embedded in RSS, returned from an API, or delivered however a producer and consumer choose.</p>
-      <p>WebVTT and SRT carry the words. RSS and show notes describe the episode. BBC-style ontologies and Wikidata name the entities. Annotations sit across those layers: each one pairs an entity or topic reference with the time range where it is being discussed, plus whatever extra context (title, link, image, quote, speaker, tags) a producer wants to attach. These are references for identifiers and related concepts, not dependencies. A producer can use any, all, or none of them.</p>
-      <p>Not a transcript format, not a chapter format, not a player, not a CMS. Just timestamped references on audio.</p>
-    </section>
-
-    <section class="spec-wrap">
-      <article id="spec">
-<h1 id="podcast-annotation-format">Podcast Annotation Format</h1>
-<p><strong>Version 1.2.0</strong></p>
-<p>A minimal JSON format for timestamped entity annotations on podcast and spoken media content.</p>
+    <article class="spec" id="spec">
 <h2 id="overview">Overview</h2>
 <p>A transcript records the words and when they were said. It does not tell an app that a host mentioned a 1969 Camaro at 0:45, switched to turbochargers at 2:00, or spent the next 30 seconds on Carroll Shelby. Listeners follow that structure without thinking about it, but almost none of it exists anywhere as structured data.</p>
 <p>The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is to make the references inside a podcast episode addressable, so that a player, search index, archive, or show-notes generator can do something useful with them.</p>
@@ -731,7 +295,7 @@
 <p>Podcast audio already contains this information. This spec defines one way to represent it as structured data. Annotations can be derived from transcripts, but precomputed annotations allow better timing, better entity resolution, and more consistent behavior across players and archives.</p>
 <h2 id="annotation-object">Annotation Object</h2>
 <p>An annotation represents a single entity mention or topic reference in audio. An annotation&#39;s time range represents the duration over which the entity is actively discussed or relevant, not only the exact moment it is first mentioned.</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Field</th>
@@ -842,7 +406,7 @@
 <td>No</td>
 <td>Arbitrary extension metadata</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <p>Typical usage:</p>
 <pre><code class="language-json">{
   &quot;startTime&quot;: 45.2,
@@ -990,7 +554,7 @@
 }
 </code></pre>
 <h3 id="container-fields">Container Fields</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1101,7 +665,7 @@
 <td><strong>Yes</strong></td>
 <td>Array of annotation objects</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <p>The <code>episode</code> object is optional. When annotations are delivered alongside audio (e.g., via RSS or an API), episode metadata may be redundant. Including <code>episode.guid</code>, <code>episode.pubDate</code>, and <code>episode.duration</code> makes an annotation file self-contained: a consumer can identify and play the episode without fetching the RSS feed. These fields align with the corresponding RSS item elements (<code>&lt;guid&gt;</code>, <code>&lt;pubDate&gt;</code>, <code>&lt;itunes:duration&gt;</code>) defined in the <a href="https://github.com/Podcast-Standards-Project/PSP-1-Podcast-RSS-Specification">PSP-1 RSS specification</a>.</p>
 <p>Short episode summaries or show notes can be included directly via <code>episode.description</code>. The recommended format is plain text. Producers MAY use markdown, but consumers SHOULD NOT assume markdown support. For richer episode-level metadata (licensing, series info), see Schema.org <code>PodcastEpisode</code>.</p>
 <h3 id="layers">Layers</h3>
@@ -1118,7 +682,7 @@
 <p>This spec does not define merge semantics across layers. When a consumer combines layers, deduplication and conflict resolution are consumer-defined. <code>canonicalId</code> identifies the underlying entity, not the timeline occurrence (see <a href="#canonical-ids">Canonical IDs</a>), so it collapses cleanly in an <em>entity index</em> (&quot;which layers mention the LS engine&quot;). It is not sufficient on its own to dedupe <em>timeline annotations</em>: two layers may annotate the same entity at different moments, and those are distinct occurrences that should not merge. A consumer deduping annotations for a timeline SHOULD also require time-range overlap, treating same <code>canonicalId</code> plus overlapping <code>[startTime, endTime]</code> as the same occurrence. In RSS, each layer is carried by its own <code>&lt;podcast:annotations&gt;</code> element, mirroring how a feed already lists multiple <code>&lt;podcast:transcript&gt;</code> resources (see <a href="#relationship-to-other-standards">Relationship to Other Standards</a>).</p>
 <h2 id="transcripts">Transcripts</h2>
 <p>The <code>transcripts</code> array links to transcript files associated with the audio. Multiple formats can be provided.</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1145,9 +709,9 @@
 <td>No</td>
 <td>BCP 47 language tag (e.g., <code>&quot;en&quot;</code>, <code>&quot;es&quot;</code>)</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <p><strong>Supported MIME types:</strong></p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>MIME type</th>
@@ -1174,7 +738,7 @@
 <td><code>text/plain</code></td>
 <td>Plain text</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <p>These values align with the <code>&lt;podcast:transcript&gt;</code> element defined in the <a href="https://github.com/Podcast-Standards-Project/PSP-1-Podcast-RSS-Specification">PSP-1 RSS specification</a>, allowing RSS feeds and annotation files to reference the same transcript resources without type translation.</p>
 <pre><code class="language-json">{
   &quot;transcripts&quot;: [
@@ -1185,7 +749,7 @@
 </code></pre>
 <h2 id="speakers">Speakers</h2>
 <p>The <code>speakers</code> array defines the people speaking in the audio. Annotations reference speakers by <code>id</code>.</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1218,7 +782,7 @@
 <td>No</td>
 <td>URL to the speaker&#39;s profile or website</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <pre><code class="language-json">{
   &quot;speakers&quot;: [
     { &quot;id&quot;: &quot;paul&quot;, &quot;name&quot;: &quot;Paul Zarella&quot;, &quot;role&quot;: &quot;host&quot; },
@@ -1230,7 +794,7 @@
 <p>Speaker IDs are opaque strings. Use short, stable identifiers (e.g., <code>&quot;s1&quot;</code>, <code>&quot;matt-farah&quot;</code>). The same speaker across episodes should use the same ID to enable cross-episode analysis.</p>
 <h2 id="ad-breaks">Ad Breaks</h2>
 <p>The <code>adBreaks</code> array defines time ranges where dynamically inserted content (ads, promos, sponsorships) appears. This is separate from annotations to keep the semantic distinction clean: ad breaks are structural holes in the content, not entity references.</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1263,7 +827,7 @@
 <td>No</td>
 <td>Placement: <code>&quot;pre-roll&quot;</code>, <code>&quot;mid-roll&quot;</code>, or <code>&quot;post-roll&quot;</code></td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <pre><code class="language-json">{
   &quot;adBreaks&quot;: [
     { &quot;startTime&quot;: 120.0, &quot;endTime&quot;: 150.0, &quot;label&quot;: &quot;ad&quot;, &quot;position&quot;: &quot;mid-roll&quot; },
@@ -1276,7 +840,7 @@
 <h2 id="recommended-entity-types">Recommended Entity Types</h2>
 <h3 id="core-types">Core types</h3>
 <p>The following types are genre-neutral and recommended for interoperability across all kinds of podcasts. This list is not exhaustive; producers may use any string value for <code>type</code>.</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Type</th>
@@ -1339,7 +903,7 @@
 <td>A technical or domain-specific term</td>
 <td>&quot;Helium-3&quot;, &quot;Oversteer&quot;</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <h3 id="disambiguating-company-vs-brand">Disambiguating <code>company</code> vs <code>brand</code></h3>
 <p>The <code>company</code> and <code>brand</code> types overlap in practice: most brands belong to a company, and many companies are referred to by their brand name. The following guidance is non-normative. Producers MAY disregard it. It is offered as a consistency tool to keep annotator judgment from drifting between coin flips, for automated producers in particular.</p>
 <p>The rule is a <em>role test</em>, not an <em>ontology test</em>. Tag based on how the name is being used in the surrounding utterance, not on what the entity ontologically is.</p>
@@ -1360,7 +924,7 @@
 <p>Use <code>organization</code> as the broader umbrella when the mention invokes neither the corporate-actor (<code>company</code>) nor the consumer-brand (<code>brand</code>) role, such as a sports team, a government agency, a university, or a nonprofit.</p>
 <h3 id="domain-specific-types">Domain-specific types</h3>
 <p>The core types cover most podcasts, but many genres have natural entity types of their own. These examples are non-normative; they show how the format extends to specific niches. Producers invent types freely, and consumers MUST ignore types they don&#39;t recognize (see <a href="#ordering-and-overlaps">Ordering and Overlaps</a> and the <code>data</code> field for how unknown values are handled).</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Type</th>
@@ -1428,11 +992,11 @@
 <td>Software</td>
 <td>&quot;React&quot;</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <p>A domain-specific type often pairs with domain-specific <code>data</code> fields (e.g. a <code>recipe</code> with <code>data.servings</code>, a <code>plant</code> with <code>data.scientificName</code>). See <a href="#cross-genre-annotation-examples">Cross-Genre Annotation Examples</a>.</p>
 <p>All type values use <strong>lowercase</strong>. Producers SHOULD use recommended types when applicable to maximize interoperability. Single words are preferred for common types. Custom types SHOULD be hyphenated (e.g., <code>&quot;race-series&quot;</code>, <code>&quot;engine-code&quot;</code>).</p>
 <h2 id="file-extension-and-mime-type">File Extension and MIME Type</h2>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th></th>
@@ -1447,7 +1011,7 @@
 <td>MIME type</td>
 <td><code>application/json</code></td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <h2 id="examples">Examples</h2>
 <h3 id="automotive-podcast">Automotive Podcast</h3>
 <p>From <a href="https://getcarcurious.com">The Everyday Driver Podcast</a>, Episode 1,013 (113 annotations across ~97 minutes):</p>
@@ -1510,7 +1074,7 @@
 <p>The full 113-annotation file is available at <a href="https://github.com/carcurious/podcast-annotations-js/blob/main/examples/everyday-driver-episode-1013.annotations.json"><code>examples/everyday-driver-episode-1013.annotations.json</code></a>.</p>
 <h3 id="additional-examples">Additional Examples</h3>
 <p>Real-world annotation sets from published podcast episodes, showing the format across genres and how each file was assembled:</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Example</th>
@@ -1567,11 +1131,11 @@
 <td>10</td>
 <td>Converted from timestamped show notes</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <h3 id="cross-genre-annotation-examples">Cross-Genre Annotation Examples</h3>
 <p>The format is genre-neutral. You annotate a car in an automotive show, a recipe in a cooking show, a plant in a gardening show, and a stock in a finance show with the same timing-plus-entity model. Only the <code>type</code> value and the domain-specific fields inside <code>data</code> change from genre to genre; the structure stays the same.</p>
 <p>The table below maps common podcast genres to the types and references they tend to produce:</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Genre</th>
@@ -1629,7 +1193,7 @@
 <td><code>work</code>, <code>person</code></td>
 <td>Songs and albums, artists, venues, genres</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <p>Two worked annotations show how domain-specific detail lives in <code>data</code>. (These are illustrative, like the <a href="#minimal-interview-example">Minimal Interview Example</a> below; the published annotation sets in <a href="https://github.com/carcurious/podcast-annotations-js/tree/main/examples"><code>examples/</code></a> are all real episodes.)</p>
 <p><strong>Cooking, a recipe mentioned in a food podcast:</strong></p>
 <pre><code class="language-json">{
@@ -1745,7 +1309,7 @@
 }
 </code></pre>
 <h3 id="mapping-rules">Mapping Rules</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Podcast Annotation Field</th>
@@ -1800,7 +1364,7 @@
 <td><code>episode.audioUrl</code></td>
 <td><code>target.source</code></td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <blockquote>
 <p><strong>Note:</strong> The W3C mapping requires <code>episode.audioUrl</code> to populate <code>target.source</code>. Annotation sets without <code>episode.audioUrl</code> cannot produce complete W3C Web Annotations.</p>
 </blockquote>
@@ -1855,13 +1419,12 @@
 <h2 id="license">License</h2>
 <p>This specification is released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
 
-      </article>
-    </section>
+    </article>
+  </main>
 
-    <footer>
-      Version 1.2.0. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated 2026-09-28. <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.
-    </footer>
-  </div>
+  <footer>
+    Podcast Annotation Format 1.2.0, last changed 2026-09-28. <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.
+  </footer>
 
   <script>
     function formatTime(totalSeconds) {
@@ -1873,56 +1436,37 @@
       return minutes + ':' + String(seconds).padStart(2, '0')
     }
 
-    const demoMoments = [{"index":0,"startTime":1473.36,"endTime":1477.68,"title":"BMW M5","type":"car","explanation":"The BMW M5 is a fast and powerful car that's part of the 5 Series lineup. It's designed for high performance and often features advanced technology.","quote":"","payload":{"startTime":1473.36,"endTime":1477.68,"type":"car","title":"BMW M5","image":"https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg","data":{"simplifiedExplanation":"The BMW M5 is a fast and powerful car that's part of the 5 Series lineup. It's designed for high performance and often features advanced technology.","imageAttribution":"Vauxford (CC BY-SA 4.0)"}}},{"index":1,"startTime":2846,"endTime":2848.88,"title":"Pontiac Solstice","type":"car","explanation":"This moment is about Pontiac Solstice. The annotation gives a player the title, type, timing, and artwork for this reference.","quote":"","payload":{"startTime":2846,"endTime":2848.88,"type":"car","title":"Pontiac Solstice","image":"https://upload.wikimedia.org/wikipedia/commons/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg","data":{"imageAttribution":"MercurySable99 (CC BY-SA 4.0)"}}},{"index":2,"startTime":4349.68,"endTime":4353.92,"title":"Subaru Brz","type":"car","explanation":"This moment is about Subaru Brz. The annotation gives a player the title, type, timing, and artwork for this reference.","quote":"","payload":{"startTime":4349.68,"endTime":4353.92,"type":"car","title":"Subaru Brz","image":"https://upload.wikimedia.org/wikipedia/commons/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg","data":{"imageAttribution":"Dinkun Chen (CC BY-SA 4.0)"}}}]
-    const chips = [...document.querySelectorAll('.demo-chip')]
-    const markers = [...document.querySelectorAll('.demo-marker')]
-    const typeEl = document.getElementById('demo-type')
-    const titleEl = document.getElementById('demo-title')
-    const explanationEl = document.getElementById('demo-explanation')
-    const quoteEl = document.getElementById('demo-quote')
+    const demoMoments = [{"index":0,"startTime":1473.36,"endTime":1477.68,"title":"BMW M5","type":"car","explanation":"The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.","quote":"","image":"https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg","imageCredit":"Vauxford (CC BY-SA 4.0)","payload":{"startTime":1473.36,"endTime":1477.68,"type":"car","title":"BMW M5","explanation":"The BMW M5 is a high-performance version of the BMW 5 Series, known for its powerful engines and sporty handling. The hybrid V8 powertrain suggests a shift towards more efficient performance.","image":"https://upload.wikimedia.org/wikipedia/commons/3/31/2018_BMW_M5_Automatic_4.4.jpg","data":{"simplifiedExplanation":"The BMW M5 is a fast and powerful car that's part of the 5 Series lineup. It's designed for high performance and often features advanced technology.","imageAttribution":"Vauxford (CC BY-SA 4.0)"}}},{"index":1,"startTime":2846,"endTime":2848.88,"title":"Pontiac Solstice","type":"car","explanation":"","quote":"","image":"https://upload.wikimedia.org/wikipedia/commons/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg","imageCredit":"MercurySable99 (CC BY-SA 4.0)","payload":{"startTime":2846,"endTime":2848.88,"type":"car","title":"Pontiac Solstice","image":"https://upload.wikimedia.org/wikipedia/commons/1/1f/06-09_Pontiac_Solstice_base_convertible.jpg","data":{"imageAttribution":"MercurySable99 (CC BY-SA 4.0)"}}},{"index":2,"startTime":4349.68,"endTime":4353.92,"title":"Subaru Brz","type":"car","explanation":"","quote":"","image":"https://upload.wikimedia.org/wikipedia/commons/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg","imageCredit":"Dinkun Chen (CC BY-SA 4.0)","payload":{"startTime":4349.68,"endTime":4353.92,"type":"car","title":"Subaru Brz","image":"https://upload.wikimedia.org/wikipedia/commons/6/6a/SUBARU_BRZ_%28ZD8%29_China.jpg","data":{"imageAttribution":"Dinkun Chen (CC BY-SA 4.0)"}}}]
+    const buttons = [...document.querySelectorAll('.demo-moment')]
+    const ticks = [...document.querySelectorAll('.demo-tick')]
+    const figureEl = document.getElementById('demo-figure')
     const imageEl = document.getElementById('demo-image')
-    const artFallbackEl = document.getElementById('demo-art-fallback')
-    const artTypeEl = document.getElementById('demo-art-type')
-    const artTitleEl = document.getElementById('demo-art-title')
-    const artTimeEl = document.getElementById('demo-art-time')
+    const creditEl = document.getElementById('demo-credit')
+    const titleEl = document.getElementById('demo-title')
+    const metaEl = document.getElementById('demo-meta')
+    const explanationEl = document.getElementById('demo-explanation')
     const payloadEl = document.getElementById('demo-payload')
 
     function selectDemo(index) {
-      const annotation = demoMoments.find((moment) => moment.index === index)
-      if (!annotation) return
+      const moment = demoMoments.find((m) => m.index === index)
+      if (!moment) return
 
-      chips.forEach((chip) => chip.classList.toggle('is-active', Number(chip.dataset.index) === index))
-      markers.forEach((marker) => marker.classList.toggle('is-active', Number(marker.dataset.index) === index))
-      typeEl.textContent = annotation.type || 'unknown'
-      titleEl.textContent = annotation.title || 'Annotation'
-      explanationEl.textContent = annotation.explanation || 'This annotation provides timed context for the current moment.'
-      quoteEl.hidden = !annotation.quote
-      quoteEl.textContent = annotation.quote ? '"' + annotation.quote + '"' : ''
-      const image = annotation.payload && annotation.payload.image
-      imageEl.hidden = !image
-      imageEl.src = image || ''
-      imageEl.alt = annotation.title || ''
-      artFallbackEl.hidden = Boolean(image)
-      artTypeEl.textContent = annotation.type || 'unknown'
-      artTitleEl.textContent = annotation.title || 'Annotation'
-      artTimeEl.textContent = formatTime(annotation.startTime || 0) + '-' + formatTime(annotation.endTime || annotation.startTime || 0)
-      payloadEl.textContent = JSON.stringify(annotation.payload || {}, null, 2)
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.index) === index)))
+      ticks.forEach((t) => t.classList.toggle('is-active', Number(t.dataset.index) === index))
+      figureEl.hidden = !moment.image
+      imageEl.src = moment.image || ''
+      imageEl.alt = moment.title || ''
+      creditEl.hidden = !moment.imageCredit
+      creditEl.textContent = 'Photo: ' + moment.imageCredit
+      titleEl.textContent = moment.title
+      metaEl.textContent = moment.type + ', ' + formatTime(moment.startTime || 0) + '\u2013' + formatTime(moment.endTime || moment.startTime || 0)
+      explanationEl.hidden = !moment.explanation
+      explanationEl.textContent = moment.explanation
+      payloadEl.textContent = JSON.stringify(moment.payload, null, 2)
     }
 
-    imageEl.addEventListener('error', () => {
-      imageEl.hidden = true
-      artFallbackEl.hidden = false
-    })
-
-    chips.forEach((chip) => {
-      chip.addEventListener('click', () => selectDemo(Number(chip.dataset.index)))
-    })
-
-    markers.forEach((marker) => {
-      marker.addEventListener('click', () => selectDemo(Number(marker.dataset.index)))
-    })
-
-    if (demoMoments[0]) selectDemo(demoMoments[0].index)
+    imageEl.addEventListener('error', () => { figureEl.hidden = true })
+    buttons.forEach((b) => b.addEventListener('click', () => selectDemo(Number(b.dataset.index))))
   </script>
 </body>
 </html>

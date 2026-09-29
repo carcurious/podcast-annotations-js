@@ -36,7 +36,12 @@ marked.use({
 })
 
 const spec = readFileSync('SPEC.md', 'utf-8')
-const body = marked.parse(spec)
+// The page supplies its own title block, so render the spec from its first section on.
+const specBodyStart = spec.search(/^## /m)
+const specTitle = spec.match(/^# (.+)$/m)?.[1] ?? 'Podcast Annotation Format'
+const body = marked.parse(spec.slice(specBodyStart))
+  .replaceAll('<table>', '<div class="table-wrap"><table>')
+  .replaceAll('</table>', '</table></div>')
 const specVersion = spec.match(/\*\*Version ([^*]+)\*\*/)?.[1] ?? '1.1.0'
 const lastmod = execSync('git log -1 --format=%cI SPEC.md', { encoding: 'utf-8' }).trim().slice(0, 10)
 
@@ -85,32 +90,29 @@ const demoCandidates = featured.annotations
   .filter((annotation) =>
     annotation.title &&
     !/tesla/i.test(annotation.title) &&
-    !/tesla/i.test(annotation.data?.explanation ?? '') &&
+    !/tesla/i.test(annotation.explanation ?? '') &&
     !/tesla/i.test(annotation.data?.simplifiedExplanation ?? '')
   )
 
 const demoMoments = selectDistributedMoments(demoCandidates, 3, featured.duration)
-  .map((annotation, index) => ({
-    index,
-    startTime: annotation.startTime,
-    endTime: annotation.endTime,
-    title: annotation.title,
-    type: annotation.type ?? 'unknown',
-    explanation: annotation.data?.explanation ??
-      annotation.data?.simplifiedExplanation ??
-      annotation.quote ??
-      `This moment is about ${annotation.title}. The annotation gives a player the title, type, timing, and artwork for this reference.`,
-    quote: annotation.quote ?? '',
-    payload: {
+  .map((annotation, index) => {
+    const payload = { ...annotation, image: normalizeExternalImageUrl(annotation.image) }
+    if (!payload.image) delete payload.image
+
+    return {
+      index,
       startTime: annotation.startTime,
       endTime: annotation.endTime,
-      type: annotation.type ?? 'unknown',
       title: annotation.title,
-      image: normalizeExternalImageUrl(annotation.image),
-      quote: annotation.quote,
-      data: annotation.data ?? {}
+      type: annotation.type ?? 'unknown',
+      // Same fallback order the spec asks of consumers: `explanation` first, alternates in `data` after.
+      explanation: annotation.explanation ?? annotation.data?.simplifiedExplanation ?? '',
+      quote: annotation.quote ?? '',
+      image: payload.image ?? '',
+      imageCredit: annotation.data?.imageAttribution ?? '',
+      payload
     }
-  }))
+  })
 
 function selectDistributedMoments(annotations, count, duration) {
   if (annotations.length <= count) return annotations
@@ -187,34 +189,27 @@ function formatTime(seconds) {
   return `${mins}:${String(secs).padStart(2, '0')}`
 }
 
+function formatRange(start, end) {
+  return `${formatTime(start ?? 0)}–${formatTime(end ?? start ?? 0)}`
+}
+
 function renderDemoMarkers(moments, duration) {
   return moments
     .map((moment, index) => {
       const left = duration > 0 ? Math.min(100, Math.max(0, (moment.startTime / duration) * 100)) : 0
-      return `<button class="demo-marker${index === 0 ? ' is-active' : ''}" type="button" data-index="${moment.index}" style="left:${left.toFixed(2)}%">
-        <span class="demo-marker-dot"></span>
-        <span class="demo-marker-time">${formatTime(moment.startTime)}</span>
-      </button>`
+      return `<span class="demo-tick${index === 0 ? ' is-active' : ''}" data-index="${moment.index}" style="left:${left.toFixed(2)}%" title="${escapeHtml(moment.title)}"></span>`
     })
     .join('')
 }
 
-function renderDemoButtons(moments) {
+function renderDemoList(moments) {
   return moments
     .map((moment, index) => {
-      return `<button class="demo-chip${index === 0 ? ' is-active' : ''}" type="button"
-        data-index="${moment.index}"
-        data-title="${escapeHtml(moment.title)}"
-        data-type="${escapeHtml(moment.type)}"
-        data-explanation="${escapeHtml(moment.explanation)}"
-        data-quote="${escapeHtml(moment.quote)}"
-        data-payload="${escapeHtml(JSON.stringify(moment.payload, null, 2))}"
-        data-start="${moment.startTime}">
-        <span>${formatTime(moment.startTime)}</span>
-        <strong>${escapeHtml(moment.title)}</strong>
-      </button>`
+      return `<li><button class="demo-moment" type="button" data-index="${moment.index}" aria-pressed="${index === 0}">
+          <span class="demo-moment-time">${formatTime(moment.startTime)}</span> ${escapeHtml(moment.title)}
+        </button></li>`
     })
-    .join('')
+    .join('\n        ')
 }
 
 const demoInitial = demoMoments[0]
@@ -245,625 +240,249 @@ const html = `<!DOCTYPE html>
   <meta name="twitter:image" content="https://www.podcastannotation.org/og-image.png">
   <link rel="canonical" href="https://www.podcastannotation.org">
   <style>
-    @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/fraunces-400.woff2") format("woff2"); }
-    @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/fraunces-500.woff2") format("woff2"); }
-    @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/fraunces-600.woff2") format("woff2"); }
-    @font-face { font-family: "Plex Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/plex-sans-400.woff2") format("woff2"); }
-    @font-face { font-family: "Plex Sans"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/plex-sans-500.woff2") format("woff2"); }
-    @font-face { font-family: "Plex Sans"; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/plex-sans-600.woff2") format("woff2"); }
-    @font-face { font-family: "Plex Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/plex-mono-400.woff2") format("woff2"); }
-    @font-face { font-family: "Plex Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/plex-mono-500.woff2") format("woff2"); }
     :root {
-      --bg: #FCFCFB;
-      --surface: #ffffff;
-      --surface-muted: #F4F4F1;
-      --text: #0B0B0C;
-      --muted: #54565B;
-      --border: #E4E4E1;
-      --border-strong: #CFCFCB;
-      --accent: #E5341F;
-      --accent-soft: #FBE7E3;
-      --code-bg: #F6F6F4;
-      --shadow: none;
-      --max-page: 1040px;
-      --max-spec: 720px;
-      --serif: "Fraunces", Georgia, "Times New Roman", serif;
-      --sans: "Plex Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --mono: "Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --text: #1b1b1b;
+      --muted: #5f5f5f;
+      --rule: #dcdcdc;
+      --link: #1f4e9c;
+      --code-bg: #f5f5f2;
+      --mark: #b3261e;
+      --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      background: var(--bg);
+      background: #fff;
       color: var(--text);
-      font-family: var(--sans);
+      font-family: var(--serif);
+      font-size: 18px;
       line-height: 1.6;
-      padding: 32px 18px 72px;
     }
-    a {
-      color: var(--text);
-      text-decoration: underline;
-      text-decoration-color: var(--border-strong);
-      text-underline-offset: 2px;
-      transition: color 0.15s, text-decoration-color 0.15s;
+    main, .masthead, footer {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 20px;
     }
-    a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+    a { color: var(--link); text-underline-offset: 2px; }
+    a:hover { text-decoration-thickness: 2px; }
     code {
       font-family: var(--mono);
+      font-size: 0.84em;
       background: var(--code-bg);
-      padding: 0.1em 0.35em;
-      border-radius: 4px;
-      font-size: 0.92em;
+      padding: 0.1em 0.3em;
+      border-radius: 3px;
     }
     pre {
-      margin: 0;
-      font-family: var(--mono);
-      font-size: 0.92rem;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 16px;
-      overflow: auto;
-    }
-    .page {
-      max-width: var(--max-page);
-      margin: 0 auto;
-    }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-      margin-bottom: 44px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--border);
-    }
-    .topbar strong {
-      font-family: var(--mono);
-      font-weight: 500;
-      font-size: 0.78rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .topbar nav {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      font-family: var(--mono);
-      font-size: 0.76rem;
-      letter-spacing: 0.02em;
-    }
-    .topbar nav a { color: var(--muted); text-decoration: none; }
-    .topbar nav a:hover { color: var(--accent); }
-    .intro {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
-      gap: 32px;
-      align-items: start;
-      margin-bottom: 40px;
-    }
-    h1, h2, h3 {
-      margin: 0;
-      font-weight: 600;
-      line-height: 1.1;
-      letter-spacing: 0;
-    }
-    h1 {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: 3.5rem;
-      line-height: 1.04;
-      letter-spacing: -0.015em;
-      margin-bottom: 20px;
-    }
-    .intro p,
-    .section p {
-      margin: 0 0 14px;
-      color: var(--muted);
-      max-width: 64ch;
-      font-size: 1rem;
-    }
-    .intro-cta {
-      margin-top: 24px;
-    }
-    .cta-spec {
-      display: inline-block;
-      font-weight: 600;
-      font-size: 1.05rem;
-      color: var(--text);
-      text-decoration: underline;
-      text-decoration-thickness: 2px;
-      text-decoration-color: var(--text);
-      text-underline-offset: 5px;
-    }
-    .cta-spec:hover { color: var(--accent); text-decoration-color: var(--accent); }
-    .section {
-      margin-bottom: 40px;
-    }
-    .section h2 {
-      font-family: var(--serif);
-      font-weight: 500;
-      font-size: 1.85rem;
-      letter-spacing: -0.01em;
-      margin-bottom: 14px;
-    }
-    .lede {
-      max-width: 60ch;
-      font-size: 1.18rem;
-      line-height: 1.55;
-      color: var(--text);
-      margin: 0 0 26px;
-    }
-    .spec-facts {
-      margin: 30px 0 0;
-      max-width: 420px;
-      border-top: 1px solid var(--border-strong);
-    }
-    .spec-facts > div {
-      display: grid;
-      grid-template-columns: 104px minmax(0, 1fr);
-      gap: 14px;
-      align-items: baseline;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .spec-facts dt {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .spec-facts dd {
-      margin: 0;
-      font-size: 0.9rem;
-      overflow-wrap: anywhere;
-    }
-    .spec-facts dd.mono {
       font-family: var(--mono);
       font-size: 0.8rem;
-    }
-    .code-figure {
-      margin: 0;
-    }
-    .code-figure figcaption {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 0.88rem;
       line-height: 1.5;
+      background: var(--code-bg);
+      padding: 14px 16px;
+      overflow: auto;
+      border-radius: 3px;
     }
-    .code-figure figcaption code {
-      background: transparent;
-      padding: 0;
+    pre code { background: none; padding: 0; font-size: inherit; }
+    h1, h2, h3, h4 { line-height: 1.25; }
+    h1 { font-size: 2.1rem; margin: 0 0 6px; }
+    h2 { font-size: 1.45rem; margin: 2.4em 0 0.6em; }
+    h3 { font-size: 1.12rem; margin: 1.8em 0 0.5em; }
+    h4 { font-size: 1rem; margin: 1.5em 0 0.4em; }
+    ul, ol { padding-left: 1.4em; }
+    li { margin-bottom: 0.3em; }
+    blockquote { margin: 1em 0; padding-left: 1em; border-left: 3px solid var(--rule); color: var(--muted); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      margin: 1em 0 1.4em;
     }
-    .field-note {
-      grid-column: 1 / -1;
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-    .demo {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 20px;
-    }
-    .demo-head {
+    th, td { text-align: left; vertical-align: top; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--rule); }
+    th { border-bottom: 2px solid var(--text); }
+    td code, th code { font-size: 0.92em; }
+    .table-wrap { overflow-x: auto; }
+
+    .masthead {
       display: flex;
       justify-content: space-between;
-      gap: 14px;
       align-items: baseline;
-      margin-bottom: 16px;
       flex-wrap: wrap;
+      gap: 6px 20px;
+      padding-top: 18px;
+      padding-bottom: 18px;
+      font-family: var(--sans);
+      font-size: 0.85rem;
     }
-    .demo-head p {
-      margin: 0;
+    .masthead a { color: var(--text); text-decoration: none; }
+    .masthead a:hover { text-decoration: underline; }
+    .masthead nav { display: flex; gap: 18px; flex-wrap: wrap; }
+    .masthead nav a { color: var(--muted); }
+
+    .doc-status {
+      margin: 0 0 28px;
+      color: var(--muted);
       font-size: 0.95rem;
     }
+    .intro-example { margin: 1.4em 0; }
+    .intro-example pre { margin: 0; }
+    .intro-example figcaption { margin-top: 6px; color: var(--muted); font-size: 0.9rem; }
+
+    .demo {
+      margin: 1.2em 0 0;
+      border-top: 2px solid var(--text);
+      border-bottom: 1px solid var(--rule);
+      padding: 12px 0 20px;
+    }
+    .demo-episode { margin: 0; font-family: var(--sans); font-size: 0.85rem; }
+    .demo-episode span { color: var(--muted); }
     .demo-track {
       position: relative;
-      height: 54px;
-      margin: 16px 0 4px;
+      height: 4px;
+      margin: 18px 0 6px;
+      background: var(--rule);
     }
-    .demo-track::before {
-      content: "";
+    .demo-tick {
       position: absolute;
-      left: 0;
-      right: 0;
-      top: 15px;
-      height: 2px;
-      background: var(--border-strong);
+      top: -5px;
+      width: 2px;
+      height: 14px;
+      margin-left: -1px;
+      background: var(--muted);
     }
-    .demo-track-labels {
+    .demo-tick.is-active { background: var(--mark); width: 4px; margin-left: -2px; }
+    .demo-track-ends {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 22px;
-      color: var(--muted);
       font-family: var(--mono);
-      font-size: 0.74rem;
-    }
-    .demo-marker {
-      position: absolute;
-      top: 9px;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 11px;
-      border: 0;
-      background: transparent;
-      padding: 0;
-      cursor: pointer;
+      font-size: 0.72rem;
       color: var(--muted);
-      text-align: center;
+      margin-bottom: 16px;
     }
-    .demo-marker-dot {
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: 2px solid var(--border-strong);
-      box-sizing: border-box;
-      transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
-    }
-    .demo-marker:hover .demo-marker-dot { border-color: var(--text); }
-    .demo-marker-time {
-      display: block;
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      transition: color 0.18s;
-    }
-    .demo-marker.is-active { color: var(--text); }
-    .demo-marker.is-active .demo-marker-dot {
-      background: var(--accent);
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(229, 52, 31, 0.14);
-    }
-    .demo-detail {
-      max-width: 760px;
-    }
-    .demo-card {
+    .demo-body {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(160px, 220px);
-      gap: 20px;
-      align-items: stretch;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: var(--surface-muted);
-      padding: 18px;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 24px;
     }
-    .demo-copy {
-      min-width: 0;
-    }
-    .demo-art {
-      min-height: 150px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      background: var(--code-bg);
-      overflow: hidden;
-      position: relative;
-    }
-    .demo-art img {
-      width: 100%;
-      height: 100%;
-      min-height: 150px;
-      object-fit: cover;
+    .demo-list { list-style: none; margin: 0; padding: 0; font-family: var(--sans); font-size: 0.88rem; }
+    .demo-list li { margin: 0; }
+    .demo-moment {
       display: block;
-    }
-    .demo-art-fallback {
-      min-height: 150px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      color: var(--text);
-      font-family: var(--mono);
-      text-align: center;
-      padding: 16px;
-    }
-    .demo-art-type {
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .demo-art-title {
-      font-family: var(--serif);
-      font-size: 1.35rem;
-      line-height: 1.1;
-    }
-    .demo-art-time {
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
-    .demo-type {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-    .demo-copy h3 {
-      font-family: var(--serif);
-      font-weight: 500;
-      font-size: 1.9rem;
-      letter-spacing: 0;
-      margin-bottom: 10px;
-    }
-    .demo-copy p {
-      margin: 0 0 12px;
-      color: var(--muted);
-    }
-    .demo-quote {
-      padding-left: 12px;
-      border-left: 3px solid var(--border);
-      font-style: italic;
-    }
-    .demo-quote[hidden] { display: none; }
-    .demo-payload {
-      margin-top: 14px;
-    }
-    .demo-payload summary {
+      width: 100%;
+      text-align: left;
+      font: inherit;
+      color: var(--link);
+      background: none;
+      border: 0;
+      border-left: 3px solid transparent;
+      padding: 6px 0 6px 10px;
       cursor: pointer;
-      color: var(--text);
-      font-weight: 500;
-      text-decoration: underline;
-      text-decoration-color: var(--border-strong);
-      text-underline-offset: 2px;
-      margin-bottom: 8px;
     }
-    .demo-payload summary:hover { color: var(--accent); text-decoration-color: var(--accent); }
-    .demo-payload pre {
-      font-size: 0.82rem;
-      max-height: 260px;
-    }
-    .demo-jump-label {
-      margin-top: 18px;
-      margin-bottom: 8px;
+    .demo-moment:hover { text-decoration: underline; }
+    .demo-moment[aria-pressed="true"] { color: var(--text); border-left-color: var(--mark); }
+    .demo-moment-time { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); margin-right: 4px; }
+    .demo-detail h3 { margin: 0 0 4px; font-size: 1.3rem; }
+    .demo-meta { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+    .demo-detail p { margin: 0 0 10px; }
+    .demo-figure { float: right; width: 200px; margin: 0 0 10px 18px; }
+    .demo-figure img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--code-bg); }
+    .demo-figure figcaption { font-family: var(--sans); font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .demo-detail details { clear: both; padding-top: 4px; font-size: 0.92rem; }
+    .demo-detail summary { cursor: pointer; color: var(--link); }
+    .demo-detail details pre { max-height: 300px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    [hidden] { display: none !important; }
+
+    .spec { margin-top: 3em; }
+    footer {
+      margin-top: 4em;
+      padding-top: 16px;
+      padding-bottom: 40px;
+      border-top: 1px solid var(--rule);
       color: var(--muted);
       font-size: 0.9rem;
     }
-    .demo-chips {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .demo-chip {
-      border: 1px solid var(--border);
-      background: transparent;
-      border-radius: 4px;
-      padding: 10px 12px;
-      text-align: left;
-      cursor: pointer;
-      min-width: 170px;
-      font-family: inherit;
-    }
-    .demo-chip:hover { background: var(--surface-muted); }
-    .demo-chip span,
-    .demo-chip strong {
-      display: block;
-    }
-    .demo-chip span {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .demo-chip.is-active span { color: var(--accent); }
-    .demo-chip strong {
-      font-size: 0.95rem;
-      color: var(--text);
-    }
-    .demo-chip.is-active {
-      border-color: var(--text);
-      background: var(--surface-muted);
-    }
-    .spec-wrap {
-      margin-top: 48px;
-      padding-top: 36px;
-      border-top: 1px solid var(--border-strong);
-    }
-    #spec {
-      max-width: var(--max-spec);
-    }
-    #spec h1 {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: 2.6rem;
-      letter-spacing: -0.015em;
-      margin-bottom: 0.5rem;
-    }
-    #spec h2 {
-      font-family: var(--serif);
-      font-weight: 500;
-      font-size: 1.7rem;
-      letter-spacing: -0.01em;
-      margin-top: 2.8rem;
-      margin-bottom: 0.9rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid var(--border);
-    }
-    #spec h3 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-top: 1.7rem;
-      margin-bottom: 0.55rem;
-    }
-    #spec p, #spec ul, #spec ol, #spec table, #spec pre, #spec blockquote {
-      margin-bottom: 1rem;
-    }
-    #spec ul, #spec ol {
-      padding-left: 1.35rem;
-    }
-    #spec li {
-      margin-bottom: 0.35rem;
-    }
-    #spec table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
-    }
-    #spec th, #spec td {
-      text-align: left;
-      padding: 0.6rem 0.8rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    #spec thead th {
-      font-family: var(--mono);
-      font-weight: 500;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--muted);
-      border-bottom: 1px solid var(--border-strong);
-    }
-    #spec tbody tr:hover { background: var(--code-bg); }
-    #spec blockquote {
-      margin-left: 0;
-      padding-left: 1rem;
-      border-left: 3px solid var(--border);
-      color: var(--muted);
-    }
-    footer {
-      margin-top: 28px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-    @media (max-width: 900px) {
-      .intro,
-      .demo-card {
-        grid-template-columns: 1fr;
-      }
-    }
-    @media (max-width: 720px) {
-      body {
-        padding: 22px 14px 56px;
-      }
-      h1 {
-        font-size: 2.4rem;
-      }
-      .topbar {
-        display: block;
-      }
-      .topbar nav {
-        margin-top: 10px;
-      }
-      .demo-chip {
-        min-width: 0;
-        flex: 1 1 100%;
-      }
+
+    @media (max-width: 640px) {
+      body { font-size: 17px; }
+      main, .masthead, footer { padding: 0 16px; }
+      .masthead { padding-top: 14px; padding-bottom: 14px; }
+      h1 { font-size: 1.7rem; }
+      .demo-body { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+      .demo-figure { float: none; width: 100%; margin: 0 0 10px; }
+      .demo-figure img { aspect-ratio: 16 / 9; }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <header class="topbar">
-      <strong>Podcast Annotation Format</strong>
-      <nav>
-        <a href="#example">Example</a>
-        <a href="#standards">Standards</a>
-        <a href="#spec">Specification</a>
-        <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>
-      </nav>
-    </header>
+  <header class="masthead">
+    <a href="/">${escapeHtml(specTitle)}</a>
+    <nav>
+      <a href="#example">Example</a>
+      <a href="#overview">Specification</a>
+      <a href="#changelog">Changelog</a>
+      <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>
+    </nav>
+  </header>
 
-    <section class="intro">
-      <div>
-        <h1>Timestamped context for podcast audio.</h1>
-        <p class="lede">A podcast annotation marks a moment in an episode: a car at 24:33, a person at 47:26, a place at 1:12:29. It names the entity or topic, when it appears, and the context needed to make sense of it.</p>
-        <p class="intro-cta"><a class="cta-spec" href="#spec">Read the specification</a></p>
-        <dl class="spec-facts">
-          <div><dt>This version</dt><dd>${escapeHtml(specVersion)} (stable)</dd></div>
-          <div><dt>Last updated</dt><dd>${lastmod}</dd></div>
-          <div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></dd></div>
-          <div><dt>Source</dt><dd class="mono"><a href="https://github.com/carcurious/podcast-annotations-js">carcurious/podcast-annotations-js</a></dd></div>
-        </dl>
-      </div>
-      <figure class="code-figure">
-        <pre><code>{
+  <main>
+    <h1>${escapeHtml(specTitle)}</h1>
+    <p class="doc-status">Version ${escapeHtml(specVersion)}, last changed ${lastmod}. Published under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; source and issues on <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.</p>
+
+    <p>A podcast annotation marks a moment in an episode: a car at 24:33, a person at 47:26, a place at 1:12:29. It names the entity or topic, when it appears, and the context needed to make sense of it.</p>
+    <p>Only <code>startTime</code> and <code>endTime</code> are required. Fields like <code>type</code>, <code>title</code>, <code>explanation</code>, <code>url</code>, and <code>quote</code> are there for when a player, search index, archive, or show-notes tool needs more.</p>
+
+    <figure class="intro-example">
+      <pre><code>{
   "startTime": ${demoSnippet.startTime},
   "endTime": ${demoSnippet.endTime},
   "type": "${escapeHtml(demoSnippet.type)}",
   "title": "${escapeHtml(demoSnippet.title)}"
 }</code></pre>
-        <figcaption>A complete annotation as published: this one marks ${formatTime(demoSnippet.startTime)} to ${formatTime(demoSnippet.endTime)} in a real episode.</figcaption>
-      </figure>
-      <p class="field-note">Each annotation starts with <code>startTime</code> and <code>endTime</code>. Add optional fields like <code>type</code>, <code>title</code>, <code>url</code>, <code>quote</code>, and <code>data</code> when a player, search index, archive, or show-notes workflow needs more context.</p>
-    </section>
+      <figcaption>A complete annotation, marking ${formatRange(demoSnippet.startTime, demoSnippet.endTime)} of a real episode.</figcaption>
+    </figure>
 
-    <section class="section" id="example">
-      <h2>Example</h2>
-      <p>Three real annotations from <code>${escapeHtml(featured.file)}</code>. Click a marker to see what a player could show at that moment.</p>
-      <div class="demo">
-        <div class="demo-head">
-          <strong>${escapeHtml(displayText(featured.annotationSet.episode?.title ?? featured.slug))}</strong>
-          <p>${featured.annotationCount} annotations across ${formatTime(featured.duration)}</p>
-        </div>
-        <div class="demo-track">
-          ${renderDemoMarkers(demoMoments, featured.duration)}
-        </div>
-        <div class="demo-track-labels">
-          <span>0:00</span>
-          <span>${formatTime(featured.duration)}</span>
-        </div>
-        <div class="demo-detail">
-          <div class="demo-card">
-            <div class="demo-copy">
-              <div class="demo-type" id="demo-type">${escapeHtml(demoInitial?.type ?? 'unknown')}</div>
-              <h3 id="demo-title">${escapeHtml(demoInitial?.title ?? 'Annotation')}</h3>
-              <p id="demo-explanation">${escapeHtml(demoInitial?.explanation ?? 'This annotation provides timed context for the current moment.')}</p>
-              <p class="demo-quote" id="demo-quote"${demoInitial?.quote ? '' : ' hidden'}>${demoInitial?.quote ? escapeHtml(`"${demoInitial.quote}"`) : ''}</p>
-            </div>
-            <div class="demo-art">
-              <img id="demo-image" src="${escapeHtml(demoInitial?.payload?.image ?? '')}" alt="${escapeHtml(demoInitial?.title ?? '')}"${demoInitial?.payload?.image ? '' : ' hidden'}>
-              <div class="demo-art-fallback" id="demo-art-fallback"${demoInitial?.payload?.image ? ' hidden' : ''}>
-                <span class="demo-art-type" id="demo-art-type">${escapeHtml(demoInitial?.type ?? 'unknown')}</span>
-                <strong class="demo-art-title" id="demo-art-title">${escapeHtml(demoInitial?.title ?? 'Annotation')}</strong>
-                <span class="demo-art-time" id="demo-art-time">${formatTime(demoInitial?.startTime ?? 0)}-${formatTime(demoInitial?.endTime ?? demoInitial?.startTime ?? 0)}</span>
-              </div>
-            </div>
-          </div>
-          <details class="demo-payload">
-            <summary>View annotation JSON</summary>
+    <p id="standards">Annotations sit beside the formats podcasts already have: WebVTT and SRT carry the words, RSS and show notes describe the episode, and Wikidata or the BBC ontologies can supply stable identifiers for the entities. The spec defines the annotation itself; a sidecar JSON file is the simplest way to ship one, and RSS or an API work too.</p>
+
+    <h2 id="example">Example</h2>
+    <p>Three annotations taken from <a href="https://github.com/carcurious/podcast-annotations-js/blob/main/examples/${escapeHtml(featured.file)}"><code>${escapeHtml(featured.file)}</code></a>, shown the way a player might show them.</p>
+
+    <div class="demo">
+      <p class="demo-episode">${escapeHtml(displayText(featured.annotationSet.episode?.title ?? featured.slug))} <span>&middot; ${featured.annotationCount} annotations, ${formatTime(featured.duration)}</span></p>
+      <div class="demo-track" aria-hidden="true">
+        ${renderDemoMarkers(demoMoments, featured.duration)}
+      </div>
+      <div class="demo-track-ends" aria-hidden="true"><span>0:00</span><span>${formatTime(featured.duration)}</span></div>
+
+      <div class="demo-body">
+        <ol class="demo-list">
+        ${renderDemoList(demoMoments)}
+        </ol>
+        <div class="demo-detail" aria-live="polite">
+          <figure class="demo-figure" id="demo-figure"${demoInitial?.image ? '' : ' hidden'}>
+            <img id="demo-image" src="${escapeHtml(demoInitial?.image ?? '')}" alt="${escapeHtml(demoInitial?.title ?? '')}">
+            <figcaption id="demo-credit"${demoInitial?.imageCredit ? '' : ' hidden'}>Photo: ${escapeHtml(demoInitial?.imageCredit ?? '')}</figcaption>
+          </figure>
+          <h3 id="demo-title">${escapeHtml(demoInitial?.title ?? '')}</h3>
+          <p class="demo-meta" id="demo-meta">${escapeHtml(demoInitial?.type ?? 'unknown')}, ${formatRange(demoInitial?.startTime, demoInitial?.endTime)}</p>
+          <p id="demo-explanation"${demoInitial?.explanation ? '' : ' hidden'}>${escapeHtml(demoInitial?.explanation ?? '')}</p>
+          <details>
+            <summary>Annotation JSON</summary>
             <pre id="demo-payload">${escapeHtml(JSON.stringify(demoInitial?.payload ?? {}, null, 2))}</pre>
           </details>
         </div>
-        <div class="demo-jump-label">Jump to moment</div>
-        <div class="demo-chips">
-          ${renderDemoButtons(demoMoments)}
-        </div>
       </div>
-    </section>
+    </div>
 
-    <section class="section" id="standards">
-      <h2>Where this fits</h2>
-      <p>This spec defines the annotation, not the transport. A sidecar JSON file is the simplest carrier today, but the same annotation model can be embedded in RSS, returned from an API, or delivered however a producer and consumer choose.</p>
-      <p>WebVTT and SRT carry the words. RSS and show notes describe the episode. BBC-style ontologies and Wikidata name the entities. Annotations sit across those layers: each one pairs an entity or topic reference with the time range where it is being discussed, plus whatever extra context (title, link, image, quote, speaker, tags) a producer wants to attach. These are references for identifiers and related concepts, not dependencies. A producer can use any, all, or none of them.</p>
-      <p>Not a transcript format, not a chapter format, not a player, not a CMS. Just timestamped references on audio.</p>
-    </section>
-
-    <section class="spec-wrap">
-      <article id="spec">
+    <article class="spec" id="spec">
 ${body}
-      </article>
-    </section>
+    </article>
+  </main>
 
-    <footer>
-      Version ${escapeHtml(specVersion)}. Released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Last updated ${lastmod}. <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.
-    </footer>
-  </div>
+  <footer>
+    ${escapeHtml(specTitle)} ${escapeHtml(specVersion)}, last changed ${lastmod}. <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="https://github.com/carcurious/podcast-annotations-js">GitHub</a>.
+  </footer>
 
   <script>
     function formatTime(totalSeconds) {
@@ -875,56 +494,37 @@ ${body}
       return minutes + ':' + String(seconds).padStart(2, '0')
     }
 
-    const demoMoments = ${JSON.stringify(demoMoments)}
-    const chips = [...document.querySelectorAll('.demo-chip')]
-    const markers = [...document.querySelectorAll('.demo-marker')]
-    const typeEl = document.getElementById('demo-type')
-    const titleEl = document.getElementById('demo-title')
-    const explanationEl = document.getElementById('demo-explanation')
-    const quoteEl = document.getElementById('demo-quote')
+    const demoMoments = ${JSON.stringify(demoMoments).replaceAll('<', '\\u003c')}
+    const buttons = [...document.querySelectorAll('.demo-moment')]
+    const ticks = [...document.querySelectorAll('.demo-tick')]
+    const figureEl = document.getElementById('demo-figure')
     const imageEl = document.getElementById('demo-image')
-    const artFallbackEl = document.getElementById('demo-art-fallback')
-    const artTypeEl = document.getElementById('demo-art-type')
-    const artTitleEl = document.getElementById('demo-art-title')
-    const artTimeEl = document.getElementById('demo-art-time')
+    const creditEl = document.getElementById('demo-credit')
+    const titleEl = document.getElementById('demo-title')
+    const metaEl = document.getElementById('demo-meta')
+    const explanationEl = document.getElementById('demo-explanation')
     const payloadEl = document.getElementById('demo-payload')
 
     function selectDemo(index) {
-      const annotation = demoMoments.find((moment) => moment.index === index)
-      if (!annotation) return
+      const moment = demoMoments.find((m) => m.index === index)
+      if (!moment) return
 
-      chips.forEach((chip) => chip.classList.toggle('is-active', Number(chip.dataset.index) === index))
-      markers.forEach((marker) => marker.classList.toggle('is-active', Number(marker.dataset.index) === index))
-      typeEl.textContent = annotation.type || 'unknown'
-      titleEl.textContent = annotation.title || 'Annotation'
-      explanationEl.textContent = annotation.explanation || 'This annotation provides timed context for the current moment.'
-      quoteEl.hidden = !annotation.quote
-      quoteEl.textContent = annotation.quote ? '"' + annotation.quote + '"' : ''
-      const image = annotation.payload && annotation.payload.image
-      imageEl.hidden = !image
-      imageEl.src = image || ''
-      imageEl.alt = annotation.title || ''
-      artFallbackEl.hidden = Boolean(image)
-      artTypeEl.textContent = annotation.type || 'unknown'
-      artTitleEl.textContent = annotation.title || 'Annotation'
-      artTimeEl.textContent = formatTime(annotation.startTime || 0) + '-' + formatTime(annotation.endTime || annotation.startTime || 0)
-      payloadEl.textContent = JSON.stringify(annotation.payload || {}, null, 2)
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.index) === index)))
+      ticks.forEach((t) => t.classList.toggle('is-active', Number(t.dataset.index) === index))
+      figureEl.hidden = !moment.image
+      imageEl.src = moment.image || ''
+      imageEl.alt = moment.title || ''
+      creditEl.hidden = !moment.imageCredit
+      creditEl.textContent = 'Photo: ' + moment.imageCredit
+      titleEl.textContent = moment.title
+      metaEl.textContent = moment.type + ', ' + formatTime(moment.startTime || 0) + '\\u2013' + formatTime(moment.endTime || moment.startTime || 0)
+      explanationEl.hidden = !moment.explanation
+      explanationEl.textContent = moment.explanation
+      payloadEl.textContent = JSON.stringify(moment.payload, null, 2)
     }
 
-    imageEl.addEventListener('error', () => {
-      imageEl.hidden = true
-      artFallbackEl.hidden = false
-    })
-
-    chips.forEach((chip) => {
-      chip.addEventListener('click', () => selectDemo(Number(chip.dataset.index)))
-    })
-
-    markers.forEach((marker) => {
-      marker.addEventListener('click', () => selectDemo(Number(marker.dataset.index)))
-    })
-
-    if (demoMoments[0]) selectDemo(demoMoments[0].index)
+    imageEl.addEventListener('error', () => { figureEl.hidden = true })
+    buttons.forEach((b) => b.addEventListener('click', () => selectDemo(Number(b.dataset.index))))
   </script>
 </body>
 </html>`
