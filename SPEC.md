@@ -27,7 +27,7 @@ Two fields are required, `startTime` and `endTime`. Everything else is optional,
 
 ## Prior Art & Inspiration
 
-Timed context on media has a long track record; podcasting has transcripts, chapters, and show notes, but no compact file for within-episode references. VH1's *Pop-Up Video* was overlaying timestamped trivia on music videos in the late 1990s. Amazon's X-Ray on Prime Video does the same job today, syncing cast, characters, and trivia to the current scene, and it is the closest thing this spec has to a canonical reference. Amazon has never published X-Ray's underlying data model, which is part of why writing this one down in the open is worth doing, though the format has been observed: researchers [reading the JSON out of the player](https://weltliteratur.net/extracting-network-data-from-amazon-prime-videos/) found scene-level time ranges and entities keyed to IMDb identifiers, the same two ideas this spec carries in the open as `startTime`/`endTime` and `canonicalId`. On the audio side, SoundCloud's timed comments were among the earliest mainstream timestamped annotations on sound: listeners drop a comment at any `t=` position in a track, and they use the feature heavily enough to show that people will engage with audio at the level of a single moment.
+Timed context on media has a long track record; podcasting has transcripts, chapters, and show notes, but no compact file for within-episode references. VH1's *Pop-Up Video* was overlaying timestamped trivia on music videos in the late 1990s. Amazon's X-Ray on Prime Video does the same job today, syncing cast, characters, and trivia to the current scene, and it is the closest thing this spec has to a canonical reference. Amazon has never published X-Ray's underlying data model, which is part of why writing this one down in the open is worth doing, though the format has been observed: researchers [reading the JSON out of the player](https://weltliteratur.net/extracting-network-data-from-amazon-prime-videos/) found scene-level time ranges and entities keyed to IMDb identifiers, the same two ideas this spec carries in the open as `startTime`/`endTime` and `canonicalId`. On the audio side, SoundCloud's timed comments were among the earliest mainstream timestamped annotations on sound: listeners drop a comment at any `t=` position in a track, and they use the feature heavily enough to show that people will engage with audio at the level of a single moment. [Hypothesis](https://web.hypothes.is/), one of the largest deployments of the W3C Web Annotation model, extends its reader annotation to video and audio through the transcript: each note is anchored to both the quoted passage and the media time range it covers (see [W3C Web Annotation Mapping](#w3c-web-annotation-mapping)).
 
 Three products outside podcasting show the pattern holding up at scale. Genius built a community annotation layer on song lyrics and turned entity-level annotation on media content into a durable product; structurally it is the closest analog to this format, an annotation body attached to an anchor in the media, with a URL for more context. YouTube's automatic concepts identifies key concepts in educational videos and surfaces "images and short text snippets" about them on the watch page. It is the one *machine-generated* layer cited here, inferred by a pipeline rather than written by the creator, and a creator who finds a wrong definition on their own video can switch the feature off. A listener meeting that annotation inside a player has no such switch, which is the job of `confidence`, `source`, and [layers](#layers). The BBC's public Linked Data ontologies approach the problem from the graph side, modeling "Things" (people, places, organisations, themes, programmes, web documents) so content can be connected through shared topics. Podcast annotations address a smaller layer: when one of those things becomes relevant inside an audio episode.
 
@@ -680,7 +680,7 @@ Maps to this W3C Web Annotation:
 | `type` | Custom `body.type` or encoded within `body.purpose`, depending on implementation |
 | `url` | Additional `body` with `purpose: "linking"` |
 | `image` | Additional `body` with `purpose: "depicting"` |
-| `quote` | `body[1]` with `purpose: "quoting"` |
+| `quote` | `TextQuoteSelector` (`exact`) on a second `target` whose `source` is a transcript URL from `transcripts`; with no transcript, a `body` with `purpose: "quoting"` |
 | `speaker` | May be represented via `creator` or external metadata in W3C systems |
 | `participation` | Not mapped (application-specific) |
 | `confidence` | Not mapped (application-specific) |
@@ -688,6 +688,10 @@ Maps to this W3C Web Annotation:
 | `episode.audioUrl` | `target.source` |
 
 > **Note:** The W3C mapping requires `episode.audioUrl` to populate `target.source`. Annotation sets without `episode.audioUrl` cannot produce complete W3C Web Annotations.
+
+### Importing from W3C tools
+
+Not every W3C implementation targets time with Media Fragments. Hypothesis stores a transcript annotation's time range as its own selector type, `{ "type": "MediaTimeSelector", "start": 12.0, "end": 18.5 }` in seconds, next to a `TextQuoteSelector` for the passage, and its JSON-LD export passes `MediaTimeSelector` through unchanged. A consumer converting W3C annotations into this format SHOULD read either selector into `startTime`/`endTime`, SHOULD carry `TextQuoteSelector.exact` into `quote`, and SHOULD publish the result as its own [layer](#layers) rather than merging it into the producer's. Times recorded this way are usually snapped to caption-cue boundaries, so they are coarser than timings a producer derives from the audio.
 
 ## Relationship to Other Standards
 
