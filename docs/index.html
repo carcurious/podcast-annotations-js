@@ -279,6 +279,21 @@
 <p>The Podcast Annotation Format is a JSON spec for timestamped entity and topic annotations on spoken audio. Annotation sets can be produced by humans, automated pipelines, or hybrid workflows. The goal is to make the references inside a podcast episode addressable, so that a player, search index, archive, or show-notes generator can do something useful with them.</p>
 <p>In the moment, annotations give a player something to render: an overlay, a timeline, a side panel synced to playback. The larger payoff builds up across a catalog. Once entities carry stable identifiers (see <a href="#canonical-ids">Canonical IDs</a>), a single episode&#39;s annotations join a corpus-wide index, &quot;every episode that discusses the 2JZ engine&quot; becomes a query, and an AI agent can answer it over a back catalog without re-listening or re-transcribing. Producers publish one file per episode, but most of the value ends up in the entity graph that accumulates across those files.</p>
 <p>This spec defines the annotation, not the transport. A sidecar JSON file is the simplest carrier today, but the same annotation model can be embedded in RSS, returned from an API, or delivered however a producer and consumer choose. Because annotations live beside the audio rather than inside it, a producer can add, correct, or remove them without re-encoding or re-publishing the episode, and several producers can annotate the same audio independently (see <a href="#layers">Layers</a>).</p>
+<h3 id="who-its-for">Who It&#39;s For</h3>
+<ul>
+<li><strong>Players and apps</strong> get something to render at the right moment: an overlay, a timeline, a side panel, a tappable entity in the transcript. Every field but the time range is optional, so a player can support as much of the format as it needs.</li>
+<li><strong>Producers</strong> publish one file per episode, then add, correct, or remove annotations without re-encoding or re-publishing the audio. Several producers can annotate the same episode as separate <a href="#layers">layers</a>, and <code>source</code> and <code>confidence</code> let a listener tell human work from machine work.</li>
+<li><strong>Search indexes, archives, and AI agents</strong> join annotations across episodes through <a href="#canonical-ids"><code>canonicalId</code></a>, so a question about a topic can be answered over a whole back catalog without re-listening or re-transcribing.</li>
+</ul>
+<h3 id="whats-in-the-spec">What&#39;s in the Spec</h3>
+<ul>
+<li><strong><a href="#annotation-object">Annotation Object</a></strong>: one entity or topic reference, anchored to a time range.</li>
+<li><strong><a href="#annotation-set">Annotation Set</a></strong>: the file that carries an episode&#39;s annotations, with its container fields and <a href="#layers">layers</a>.</li>
+<li><strong><a href="#canonical-ids">Canonical IDs</a></strong>: stable identifiers that connect the same entity across episodes.</li>
+<li><strong><a href="#transcripts">Transcripts</a>, <a href="#speakers">Speakers</a>, and <a href="#ad-breaks">Ad Breaks</a></strong>: optional companion data for syncing text, attributing speech, and staying aligned when ads are inserted dynamically.</li>
+<li><strong><a href="#recommended-entity-types">Recommended Entity Types</a></strong>: shared type names for interoperability, open to extension.</li>
+<li><strong><a href="#w3c-web-annotation-mapping">W3C Web Annotation Mapping</a> and <a href="#relationship-to-other-standards">Relationship to Other Standards</a></strong>: how the format maps to and sits beside existing standards.</li>
+</ul>
 <h3 id="design-principles">Design Principles</h3>
 <p>Two fields are required, <code>startTime</code> and <code>endTime</code>. Everything else is optional, and anything app-specific belongs in the open <code>data</code> object rather than in new top-level fields. The format itself is plain JSON: no JSON-LD, no XML, no runtime dependencies. It should also read well raw. A developer opening an annotation set for the first time ought to be able to work out what it means without consulting this spec.</p>
 <h3 id="non-goals">Non-Goals</h3>

@@ -14,6 +14,21 @@ In the moment, annotations give a player something to render: an overlay, a time
 
 This spec defines the annotation, not the transport. A sidecar JSON file is the simplest carrier today, but the same annotation model can be embedded in RSS, returned from an API, or delivered however a producer and consumer choose. Because annotations live beside the audio rather than inside it, a producer can add, correct, or remove them without re-encoding or re-publishing the episode, and several producers can annotate the same audio independently (see [Layers](#layers)).
 
+### Who It's For
+
+- **Players and apps** get something to render at the right moment: an overlay, a timeline, a side panel, a tappable entity in the transcript. Every field but the time range is optional, so a player can support as much of the format as it needs.
+- **Producers** publish one file per episode, then add, correct, or remove annotations without re-encoding or re-publishing the audio. Several producers can annotate the same episode as separate [layers](#layers), and `source` and `confidence` let a listener tell human work from machine work.
+- **Search indexes, archives, and AI agents** join annotations across episodes through [`canonicalId`](#canonical-ids), so a question about a topic can be answered over a whole back catalog without re-listening or re-transcribing.
+
+### What's in the Spec
+
+- **[Annotation Object](#annotation-object)**: one entity or topic reference, anchored to a time range.
+- **[Annotation Set](#annotation-set)**: the file that carries an episode's annotations, with its container fields and [layers](#layers).
+- **[Canonical IDs](#canonical-ids)**: stable identifiers that connect the same entity across episodes.
+- **[Transcripts](#transcripts), [Speakers](#speakers), and [Ad Breaks](#ad-breaks)**: optional companion data for syncing text, attributing speech, and staying aligned when ads are inserted dynamically.
+- **[Recommended Entity Types](#recommended-entity-types)**: shared type names for interoperability, open to extension.
+- **[W3C Web Annotation Mapping](#w3c-web-annotation-mapping) and [Relationship to Other Standards](#relationship-to-other-standards)**: how the format maps to and sits beside existing standards.
+
 ### Design Principles
 
 Two fields are required, `startTime` and `endTime`. Everything else is optional, and anything app-specific belongs in the open `data` object rather than in new top-level fields. The format itself is plain JSON: no JSON-LD, no XML, no runtime dependencies. It should also read well raw. A developer opening an annotation set for the first time ought to be able to work out what it means without consulting this spec.
