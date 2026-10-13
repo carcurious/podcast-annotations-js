@@ -18,14 +18,14 @@ This spec defines the annotation, not the transport. A sidecar JSON file is the 
 
 - **Players and apps** get something to render at the right moment: an overlay, a timeline, a side panel, a tappable entity in the transcript. Every field but the time range is optional, so a player can support as much of the format as it needs.
 - **Producers** publish one file per episode, then add, correct, or remove annotations without re-encoding or re-publishing the audio. Several producers can annotate the same episode as separate [layers](#layers), and `source` and `confidence` let a listener tell human work from machine work.
-- **Search indexes, archives, and AI agents** join annotations across episodes through [`canonicalId`](#canonical-ids), so a question about a topic can be answered over a whole back catalog without re-listening or re-transcribing.
+- **Search indexes, archives, and AI agents** join annotations across episodes through [`canonicalId`](#canonical-ids), so an agent can answer a question about a topic across a whole back catalog without re-listening or re-transcribing.
 
 ### What's in the Spec
 
-- **[Annotation Object](#annotation-object)**: one entity or topic reference, anchored to a time range.
+- **[Annotation Object](#annotation-object)**: one entity or topic reference tied to a time range.
 - **[Annotation Set](#annotation-set)**: the file that carries an episode's annotations, with its container fields and [layers](#layers).
 - **[Canonical IDs](#canonical-ids)**: stable identifiers that connect the same entity across episodes.
-- **[Transcripts](#transcripts), [Speakers](#speakers), and [Ad Breaks](#ad-breaks)**: optional companion data for syncing text, attributing speech, and staying aligned when ads are inserted dynamically.
+- **[Transcripts](#transcripts), [Speakers](#speakers), and [Ad Breaks](#ad-breaks)**: optional companion data for syncing text, attributing speech, and keeping text aligned with audio under dynamic ad insertion.
 - **[Recommended Entity Types](#recommended-entity-types)**: shared type names for interoperability, open to extension.
 - **[W3C Web Annotation Mapping](#w3c-web-annotation-mapping) and [Relationship to Other Standards](#relationship-to-other-standards)**: how the format maps to and sits beside existing standards.
 
