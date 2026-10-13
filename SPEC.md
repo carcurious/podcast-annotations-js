@@ -40,6 +40,10 @@ Two fields are required, `startTime` and `endTime`. Everything else is optional,
 - A fixed ontology. Recommended types exist for interoperability, but producers may extend the format.
 - Prescribing a UI. A player may render overlays, timelines, side panels, search results, or no direct UI at all.
 
+### Status
+
+Version 1.2.0 is the current release. Changes within 1.x are additive and existing files stay valid; a breaking change bumps the major version (see the [Changelog](#changelog)). To propose a change or report a problem, [open an issue or pull request](https://github.com/carcurious/podcast-annotations-js) on GitHub.
+
 ## Prior Art & Inspiration
 
 Timed context on media has a long track record; podcasting has transcripts, chapters, and show notes, but no compact file for within-episode references. VH1's *Pop-Up Video* was overlaying timestamped trivia on music videos in the late 1990s. Amazon's X-Ray on Prime Video does the same job today, syncing cast, characters, and trivia to the current scene, and it is the closest thing this spec has to a canonical reference. Amazon has never published X-Ray's underlying data model, which is part of why writing this one down in the open is worth doing, though the format has been observed: researchers [reading the JSON out of the player](https://weltliteratur.net/extracting-network-data-from-amazon-prime-videos/) found scene-level time ranges and entities keyed to IMDb identifiers, the same two ideas this spec carries in the open as `startTime`/`endTime` and `canonicalId`. On the audio side, SoundCloud's timed comments were among the earliest mainstream timestamped annotations on sound: listeners drop a comment at any `t=` position in a track, and they use the feature heavily enough to show that people will engage with audio at the level of a single moment. [Hypothesis](https://web.hypothes.is/), one of the largest deployments of the W3C Web Annotation model, extends its reader annotation to video and audio through the transcript: each note is anchored to both the quoted passage and the media time range it covers (see [W3C Web Annotation Mapping](#w3c-web-annotation-mapping)).
